@@ -1,0 +1,5 @@
+__pycache__
+ENV/
+.DS_Store
+UpCloud.egg-info/
+*.pyc

@@ -1,0 +1,20 @@
+{
+    "storage": {
+        "access": "private",
+        "backup_rule": {},
+        "backups": {
+            "backup": []
+        },
+        "license": 0,
+        "servers": {
+            "server": []
+        },
+        "size": 10,
+        "state": "online",
+        "tier": "hdd",
+        "title": "My data collection",
+        "type": "normal",
+        "uuid": "013ff32b-5e17-4b8e-918b-f1ea996fa82e",
+        "zone": "fi-hel1"
+    }
+}

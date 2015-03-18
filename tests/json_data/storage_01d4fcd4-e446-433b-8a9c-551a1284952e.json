@@ -1,0 +1,22 @@
+{
+	"storage" : {
+		"access" : "private",
+		"backup_rule": "",
+		"backups" : {
+			"backup" : []
+			},
+		"license" : 0,
+		"servers" : {
+			"server" : [
+				"00798b85-efdc-41ca-8021-f6ef457b8531"
+			]
+		},
+		"size" : 10,
+		"state" : "online",
+		"tier" : "ssd",
+		"title" : "Operating system disk",
+		"type" : "normal",
+		"uuid" : "01d4fcd4-e446-433b-8a9c-551a1284952e",
+		"zone" : "fi-hel1"
+	}
+}

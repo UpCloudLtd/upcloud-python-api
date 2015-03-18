@@ -1,0 +1,51 @@
+{
+	"server" : {
+		"boot_order" : "disk",
+		"core_number" : "0",
+		"firewall" : "on",
+		"hostname" : "fi.example.com",
+		"ip_addresses" : {
+			"ip_address" : [
+				{
+					"access" : "private",
+					"address" : "10.0.0.0"
+				},
+				{
+					"access" : "public",
+					"address" : "0.0.0.0"
+				}
+			]
+		},
+		"license" : 0,
+		"memory_amount" : "512",
+		"nic_model" : "e1000",
+		"state" : "started",
+		"storage_devices" : {
+			"storage_device" : [
+				{
+					"address" : "virtio:0",
+					"storage" : "012580a1-32a1-466e-a323-689ca16f2d43",
+					"storage_size" : 100,
+					"storage_title" : "Storage for server1.example.com",
+					"type" : "disk"
+				},
+				{
+					"storage_size": 10,
+					"storage": "01d4fcd4-e446-433b-8a9c-551a1284952e",
+					"storage_title": "Operating system disk",
+					"address": "ide:0:0",
+					"type": "disk"
+				}
+			]
+		},
+		"timezone" : "UTC",
+		"title" : "Helsinki server",
+		"uuid" : "00798b85-efdc-41ca-8021-f6ef457b8531",
+		"video_model" : "cirrus",
+		"vnc" : "on",
+		"vnc_host" : "fi-he1l.vnc.upcloud.com",
+		"vnc_password" : "aabbccdd",
+		"vnc_port" : "00000",
+		"zone" : "fi-hel1"
+	}
+}

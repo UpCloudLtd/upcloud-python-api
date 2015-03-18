@@ -1,0 +1,24 @@
+{
+    "ip_addresses": {
+        "ip_address": [
+            {
+                "access": "private",
+                "address": "10.1.0.101",
+                "ptr_record": "",
+                "server": "008c365d-d307-4501-8efc-cd6d3bb0e494"
+            },
+            {
+                "access": "private",
+                "address": "10.1.0.115",
+                "ptr_record": "",
+                "server": "00887721-4fad-4e9c-b781-6f2265753f11"
+            },
+            {
+                "access": "private",
+                "address": "10.1.1.97",
+                "ptr_record": "",
+                "server": "00ee2cf4-91c9-4e7a-89b9-a8087e32896b"
+            }
+        ]
+    }
+}

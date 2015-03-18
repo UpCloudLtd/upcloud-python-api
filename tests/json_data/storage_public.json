@@ -1,0 +1,33 @@
+{
+    "storages": {
+        "storage": [
+            {
+                "access": "public",
+                "license": 0,
+                "size": 1,
+                "state": "online",
+                "title": "Windows Server 2003 R2 Standard (CD 1)",
+                "type": "cdrom",
+                "uuid": "01000000-0000-4000-8000-000010010101"
+            },
+            {
+                "access": "public",
+                "license": 0,
+                "size": 1,
+                "state": "online",
+                "title": "Windows Server 2003 R2 Standard (CD 2)",
+                "type": "cdrom",
+                "uuid": "01000000-0000-4000-8000-000010010102"
+            },
+            {
+                "access": "public",
+                "license": 0,
+                "size": 1,
+                "state": "online",
+                "title": "Windows Server 2003 R2 Standard (CD 1)",
+                "type": "cdrom",
+                "uuid": "01000000-0000-4000-8000-000010010201"
+            }
+        ]
+    }
+}

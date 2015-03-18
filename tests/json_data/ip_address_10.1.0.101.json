@@ -1,0 +1,8 @@
+{
+    "ip_address": {
+        "access": "private",
+        "address": "10.1.0.101",
+        "ptr_record": "a.ptr.record",
+        "server": "008c365d-d307-4501-8efc-cd6d3bb0e494"
+    }
+}
