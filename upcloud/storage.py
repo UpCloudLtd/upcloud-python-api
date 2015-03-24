@@ -1,38 +1,40 @@
+from .tools import assignIfExists
+from .tools import OperatingSystems
+
 class Storage():
 		
 	def __init__(self, **kwargs):
-		self.cloud_manager = kwargs.pop("cloud_manager")
 		self.__reset(**kwargs)
 
 	def __reset(self, **kwargs):
 		"""
 		Reset after repopulating from API.
 		"""
-		
-		# Always present
-		self.type = kwargs["type"]
-		self.uuid = self.assignIfExists(["uuid", "storage"], **kwargs) # self.uuid either "uuid" or "storage"
-		self.title = self.assignIfExists(["title", "storage_title"], **kwargs) # self.title either "title" or "storage_title"
-		self.size = self.assignIfExists(["size", "storage_size"], **kwargs) # self.size either "size" or "storage_size"
+
+		# When creating locally (optional)
+		self.os = assignIfExists(["os"], **kwargs)
+
+		# When not creating locally (always injected when populating object from API response)
+		self.cloud_manager = assignIfExists(["cloud_manager"], **kwargs)
+
+		# Always present in responses
+		self.type = assignIfExists(["type"], **kwargs)
+		self.uuid = assignIfExists(["uuid", "storage"], **kwargs) # self.uuid either "uuid" or "storage"
+		self.title = assignIfExists(["title", "storage_title"], **kwargs) # self.title either "title" or "storage_title"
+		self.size = assignIfExists(["size", "storage_size"], 10,  **kwargs) # self.size either "size" or "storage_size"
 		
 		# Present if populated via /storage/ or /storage/uuid
-		self.access = self.assignIfExists(["access"], **kwargs)
-		self.license = self.assignIfExists(["license"], **kwargs)
-		self.state = self.assignIfExists(["state"], **kwargs)
+		self.access = assignIfExists(["access"], **kwargs)
+		self.license = assignIfExists(["license"], **kwargs)
+		self.state = assignIfExists(["state"], **kwargs)
 
 		# Only present when populated via /server/uuid
-		self.address = self.assignIfExists(["address"], **kwargs)
+		self.address = assignIfExists(["address"], **kwargs)
 
 		# Only present when populated via /storage/uuid
-		self.tier = self.assignIfExists(["tier"], **kwargs)
-		self.zone = self.assignIfExists(["zone"], **kwargs)
+		self.tier = assignIfExists(["tier"], **kwargs)
+		self.zone = assignIfExists(["zone"], **kwargs)
 		
-
-	def assignIfExists(self, opts, **kwargs):
-		for opt in opts:
-			if(opt in kwargs):
-				return kwargs[opt]
-
 
 	def destroy(self):
 		self.cloud_manager.delete_storage(self.uuid)
@@ -43,11 +45,63 @@ class Storage():
 		self.__reset(**data["storage"])
 
 	def __str__(self):
-		return self.title + ", size: " + str(self.size) + " (" + self.tier + ")"
+		return str(self.title) + ", size: " + str(self.size) + " (" + str(self.tier) + ")"
 
-	@classmethod
-	def prepare_put_body(cls, size, title):
+	@staticmethod
+	def prepare_put_body(size, title):
 		body = {"storage": {}}
 		if(size): 	body["storage"]["size"] = size
 		if(title): 	body["storage"]["title"] = title
 		return body
+
+	
+	def prepare_post_body(self, hostname, storage_title_id):
+			body = dict()
+
+			# clone from public template OR create empty storage
+			if self.os:
+				body["action"] = "clone"
+			else:
+				body["action"] = "create"
+
+			# default tier is maxiops
+			if self.tier:
+				body["tier"] = self.tier
+			else:
+				body["tier"] = "maxiops"
+
+			# reasonable default title
+			if self.title:
+				body["title"] = self.title
+			else:
+				if self.os:
+					body["title"] = hostname + " OS disk"
+				else:
+					body["title"] = hostname + " storage disk " + str(storage_title_id)
+
+			# don't specify size if attaching CDROM (CDROMS not yet supported)
+			if body["action"] == "create" or body["action"] == "clone":
+				body["size"] = self.size
+
+			# figure out public template (CDROMS not yet supported)
+			if body["action"] == "attach" or body["action"] == "clone":
+				body["storage"] = OperatingSystems.get_OS_UUID(self.os)
+
+			return body
+
+	@staticmethod
+	def _create_storage_objs(storages, cloud_manager):
+		if "storage" in storages:
+			storages = storages["storage"]
+
+		if "storage_device" in storages:
+			storages = storages["storage_device"]
+
+		storage_objs = list()
+		for storage in storages:
+			storage_objs.append( Storage(cloud_manager = cloud_manager, **storage) )
+		return storage_objs
+
+	@staticmethod
+	def _create_storage_obj(storage, cloud_manager):
+		return Storage(cloud_manager = cloud_manager, **storage)

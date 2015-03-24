@@ -1,0 +1,49 @@
+{
+	"server" : {
+		"boot_order" : "disk",
+		"core_number" : "2",
+		"firewall" : "off",
+		"hostname" : "my.example.com",
+		"ip_addresses" : {
+			"ip_address" : [
+				{
+					"access" : "private",
+					"address" : "10.3.0.49"
+				},
+				{
+					"access" : "public",
+					"address" : "38.100.118.31"
+				}
+			]
+		},
+		"license" : 0,
+		"memory_amount" : "1024",
+		"nic_model" : "virtio",
+		"state" : "started",
+		"storage_devices" : {
+			"storage_device" : [
+				{
+					"address" : "virtio:0",
+					"storage" : "01215a5a-c330-4565-81ca-0e0e22eac672",
+					"storage_size" : 20,
+					"storage_title" : "Ubuntu 14.04 from template",
+					"type" : "disk"
+				},
+				{
+					"address" : "virtio:1",
+					"storage" : "01a8fc6b-8aa3-42ff-bbce-ed5c544bbd74",
+					"storage_size" : 100,
+					"storage_title" : "storage disk 1",
+					"type" : "disk"
+				}
+			]
+		},
+		"timezone" : "UTC",
+		"title" : "my.example.com",
+		"uuid" : "00825599-2df7-4a83-99b4-c9a9c6812f59",
+		"video_model" : "cirrus",
+		"vnc" : "off",
+		"vnc_password" : "aabbccdd",
+		"zone" : "us-chi1"
+	}
+}

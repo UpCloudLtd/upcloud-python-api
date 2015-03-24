@@ -1,6 +1,4 @@
 from ..storage import Storage
-from ..tools import _create_storage_obj
-from ..tools import _create_storage_objs
 
 class StorageManager():
 	"""
@@ -13,14 +11,14 @@ class StorageManager():
 		Storage types: public, private, normal, backup, cdrom, template, favorite
 		"""
 		res = self.get_request("/storage/" + storage_type)
-		return _create_storage_objs( res["storages"], cloud_manager = self )
+		return Storage._create_storage_objs( res["storages"], cloud_manager = self )
 
 	def get_storage(self, UUID):
 		"""
 		Returns a Storage object from the API.
 		"""
 		res = self.get_request("/storage/" + UUID)
-		return _create_storage_obj( res["storage"], cloud_manager = self )
+		return Storage._create_storage_obj( res["storage"], cloud_manager = self )
 
 	def create_storage(self, size, tier, title, zone):
 		"""
@@ -34,7 +32,7 @@ class StorageManager():
 			"zone": zone
 		}
 		res = self.post_request("/storage", body)
-		return _create_storage_obj( res["storage"], cloud_manager = self )
+		return Storage._create_storage_obj( res["storage"], cloud_manager = self )
 
 	def modify_storage(self, UUID, size, title):
 		"""
@@ -43,7 +41,7 @@ class StorageManager():
 
 		body = Storage.prepare_put_body(size, title)
 		res = self.request("PUT","/storage/" + UUID, body)
-		return _create_storage_obj( res["storage"], cloud_manager = self )
+		return Storage._create_storage_obj( res["storage"], cloud_manager = self )
 
 	def delete_storage(self, UUID):
 		"""
@@ -62,7 +60,7 @@ class StorageManager():
 
 		res = self.post_request("/server/" + server_uuid + "/storage/attach", body)
 		print(res)
-		return _create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )
+		return Storage._create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )
 
 	def detach_storage(self, server_uuid, address):
 		"""
@@ -71,4 +69,4 @@ class StorageManager():
 		body = { "storage_device": { "address": address } }
 		res = self.post_request("/server/" + server_uuid + "/storage/detach", body)
 		print(res)
-		return _create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )
+		return Storage._create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )

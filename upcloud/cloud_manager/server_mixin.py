@@ -1,7 +1,10 @@
-from ..tools import _create_ip_address_objs
-from ..tools import _create_storage_objs
+from ..ip_address import IP_address
+from ..storage import Storage 
 
 from ..server import Server
+
+from ..tools import assignIfExists
+
 
 class ServerManager():
 	"""
@@ -40,52 +43,58 @@ class ServerManager():
 						cloud_manager = self )
 
 
-	def create_server(self, VM, storage_devices):
-		body = dict()
-		body["server"] = {
-			"core_number": VM["cores"],
-			"memory_amount": VM["ram"],
-			"hostname": VM["hostname"],
-			"zone": VM["zone"],
-			"title": VM["title"],
-			"storage_devices": {}
-		}
-		body["server"]["storage_devices"] = {
-			"storage_device": []
-		}
+	def create_server(self, server):
+		"""
+		Creates a server and its storages based on a (locally created) Server object. 
+		Populates the given Server instance with the API response.
 
-		for storage in storage_devices:
-			device = dict()
-			device["action"] = storage["action"]
-			device["tier"] = storage["tier"]
-			device["title"] = storage["title"]
+		Example:
+		server1 = Server( core_number = 1,
+					memory_amount = 512, 
+					hostname = "my.example.1", 
+					zone = ZONE.London, 
+					storage_devices = [
+						Storage(os = "Ubuntu 14.04", size=10, tier=maxiops, title='The OS drive'),
+						Storage(size=10),
+						Storage()
+					title = "My Example Server"
+				])
+		manager.create_server(server1)
 
-			if device["action"] == "create" or device["action"] == "clone":
-				device["size"] = storage["size"]
+		All Server fields are mandatory except title (defaults to hostname).
 
-			if device["action"] == "attach" or device["action"] == "clone":
-				device["storage"] = storage["storage"]
+		One storage should contain an OS. Otherwise storage fields are optional.
+		- size defaults to 10,
+		- title defaults to hostname + " OS disk" and hostname + " storage disk id" (id is a running starting from 1)
+		- tier defaults to maxiops
+		- valid operating systems are: 
+			"CentOS 6.5", "CentOS 7.0"
+			"Debian 7.8"
+			"Ubuntu 12.04", "Ubuntu 14.04"
+			"Windows 2003","Windows 2008" ,"Windows 2012"
 
-			if "type" in storage:
-				device["type"] = storage["type"]
+		"""
 
-			body["server"]["storage_devices"]["storage_device"].append(device)
+		body = server.prepare_post_body()
 
 		res = self.post_request("/server", body)
-		server = res["server"]
 		
 		# Populate subobjects
-		IP_addresses = _create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
-		storages = _create_storage_objs( server.pop("storage_devices"), cloud_manager = self )
+		IP_addresses = IP_address._create_ip_address_objs( res["server"].pop("ip_addresses"), cloud_manager = self )
+		storages = Storage._create_storage_objs( res["server"].pop("storage_devices"), cloud_manager = self )
 
-		return Server(	server, 
-						ip_addresses = IP_addresses, 
-						storage_devices = storages, 
-						populated = True,
-						cloud_manager = self )
+		server._reset( res["server"], 
+					ip_addresses = IP_addresses, 
+					storage_devices = storages, 
+					populated = True)
+		return server
 
 
 	def modify_server(self, UUID, **kwargs):
+		"""
+		modify_server allows updating the server's updateable_fields.
+		Note: Server's IP-addresses and Storages are managed by their own add/remove methods.
+		"""
 		body = dict()
 		body["server"] = {}
 		for arg in kwargs:
@@ -97,8 +106,8 @@ class ServerManager():
 		server = res["server"]
 		
 		# Populate subobjects
-		IP_addresses = _create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
-		storages = _create_storage_objs( server.pop("storage_devices"), cloud_manager = self )
+		IP_addresses = IP_address._create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
+		storages = Storage._create_storage_objs( server.pop("storage_devices"), cloud_manager = self )
 
 		return Server(	server, 
 						ip_addresses = IP_addresses, 
@@ -108,6 +117,10 @@ class ServerManager():
 
 
 	def delete_server(self, UUID):
+		"""
+		DELETE '/server/UUID'. Permanently destroys the virtual machine. 
+		DOES NOT remove the storage disks.
+		"""
 		return self.request("DELETE", "/server/" + UUID)
 	
 	def __fetch_servers(self):
@@ -127,7 +140,7 @@ class ServerManager():
 		server = data["server"]
 		
 		# Populate subobjects
-		IP_addresses = _create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
-		storages = _create_storage_objs( server.pop("storage_devices"), cloud_manager = self )
+		IP_addresses = IP_address._create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
+		storages = Storage._create_storage_objs( server.pop("storage_devices"), cloud_manager = self )
 
 		return server, IP_addresses, storages

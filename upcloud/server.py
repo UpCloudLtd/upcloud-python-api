@@ -15,8 +15,10 @@ class Server(BaseAPI):
 
 	def __init__(self, *initial_data, **kwargs):
 		object.__setattr__(self, "populated", False)
-		object.__setattr__(self, "cloud_manager", kwargs["cloud_manager"])
-		self.__reset(*initial_data, **kwargs)
+		self._reset(*initial_data, **kwargs)
+
+		if not hasattr(self, "title"):
+			self.title = self.hostname
 
 	def __setattr__(self, name, value):
 		"""
@@ -27,9 +29,10 @@ class Server(BaseAPI):
 		else:
 			object.__setattr__(self, name, value)
 
-	def __reset(self, *initial_data, **kwargs):
+	def _reset(self, *initial_data, **kwargs):
 		"""
 		Reset all given attributes.
+		May also be given 
 		"""
 		for dictionary in initial_data:
 			for key in dictionary:
@@ -44,7 +47,7 @@ class Server(BaseAPI):
 		Note: syncs ip_addresses and storage_devices too (/server/uuid endpoint)
 		"""
 		server, IP_addresses, storages = self.cloud_manager.get_server_data(self.uuid)
-		self.__reset( server, 
+		self._reset( server, 
 					ip_addresses = IP_addresses, 
 					storage_devices = storages, 
 					populated = True)
@@ -62,8 +65,11 @@ class Server(BaseAPI):
 			kwargs[field] = getattr(self, field)
 
 		self.cloud_manager.modify_server(self.uuid, **kwargs)
-		self.__reset(kwargs)
+		self._reset(kwargs)
 			
+	def destroy(self):
+		self.cloud_manager.delete_server(self.uuid)
+
 	def shutdown(self):
 		"""
 		Shutdown/stop the server. Issue a soft shutdown with a timeout of 30s. 
@@ -146,7 +152,30 @@ class Server(BaseAPI):
 		self.cloud_manager.detach_storage(server_uuid=self.uuid, address=Storage.address)
 		self.storage_devices.remove(Storage)
 
+	def prepare_post_body(self):
+		body = dict()
+		body["server"] = {
+			"core_number": self.core_number,
+			"memory_amount": self.memory_amount,
+			"hostname": self.hostname,
+			"zone": self.zone,
+			"title": self.title,
+			"storage_devices": {}
+		}
+		body["server"]["storage_devices"] = {
+			"storage_device": []
+		}
+
+
+		storage_title_id = 0 # running number for unique storage titles
+		for storage in self.storage_devices:
+			if storage.os == None:
+				storage_title_id +=  1
+			storage_body = storage.prepare_post_body(self.hostname, storage_title_id)
+			body["server"]["storage_devices"]["storage_device"].append(storage_body)
+
+		return body
+
+
 	def __str__(self):
-		if self.populated: status = "populated"
-		else: status = "not populated"
-		return self.title + " (" + status + ")"
+		return "Server: " + self.hostname

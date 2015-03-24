@@ -1,27 +1,46 @@
-from .storage import Storage
-from .ip_address import IP_address
 
-def _create_ip_address_objs(IP_addrs, cloud_manager):
-		IP_addrs = IP_addrs["ip_address"]
-		IP_objs = list()
-		for IP_addr in IP_addrs:
-			IP_objs.append( IP_address(cloud_manager = cloud_manager, **IP_addr) )
-		return IP_objs
 
-def _create_ip_address_obj(IP_addr, cloud_manager):
-	return IP_address(cloud_manager = cloud_manager, **IP_addr)
 
-def _create_storage_objs(storages, cloud_manager):
-	if "storage" in storages:
-		storages = storages["storage"]
+def assignIfExists(opts, default=None, **kwargs):
+	"""
+	Helper for assigning object attributes from API responses.
+	"""
+	for opt in opts:
+		if(opt in kwargs):
+			return kwargs[opt]
+	return default
 
-	if "storage_device" in storages:
-		storages = storages["storage_device"]
+class ZONE:
+	"""
+	Enums for UpCloud's Zones.
+	"""
+	Helsinki = "fi-hel1"
+	London = "uk-lon1"
+	Chicago = "us-chi1"
 
-	storage_objs = list()
-	for storage in storages:
-		storage_objs.append( Storage(cloud_manager = cloud_manager, **storage) )
-	return storage_objs
+class OperatingSystems:
+	templates = {
+		"CentOS 6.5":	"01000000-0000-4000-8000-000050010200",
+		"CentOS 7.0":	"01000000-0000-4000-8000-000050010300",
+		"Debian 7.8":	"01000000-0000-4000-8000-000020020100",
+		"Ubuntu 12.04":	"01000000-0000-4000-8000-000030030200",
+		"Ubuntu 14.04":	"01000000-0000-4000-8000-000030040200",
+		"Windows 2003":	"01000000-0000-4000-8000-000010040400",
+		"Windows 2008":	"01000000-0000-4000-8000-000010030200",
+		"Windows 2012":	"01000000-0000-4000-8000-000010050200"
+	}
 
-def _create_storage_obj(storage, cloud_manager):
-	return Storage(cloud_manager = cloud_manager, **storage)
+	@classmethod
+	def get_OS_UUID(cls, os):
+		"""
+		Validate Storage OS, return the public template UUID for server creation (Server.prepate_post_body)
+		"""
+
+		if os in cls.templates:
+			return cls.templates[os]
+		else:
+			raise Exception('Invalid OS -- valid options are: "CentOS 6.5", "CentOS 7.0", "Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04", "Windows 2003", "Windows 2008", "Windows 2012"')
+
+
+
+			

@@ -48,3 +48,15 @@ class IP_address(BaseAPI):
 
 	def __str__(self):
 		return "IP-address: " + self.address
+
+	@staticmethod
+	def _create_ip_address_objs(IP_addrs, cloud_manager):
+		IP_addrs = IP_addrs["ip_address"]
+		IP_objs = list()
+		for IP_addr in IP_addrs:
+			IP_objs.append( IP_address(cloud_manager = cloud_manager, **IP_addr) )
+		return IP_objs
+
+	@staticmethod
+	def _create_ip_address_obj(IP_addr, cloud_manager):
+		return IP_address(cloud_manager = cloud_manager, **IP_addr)

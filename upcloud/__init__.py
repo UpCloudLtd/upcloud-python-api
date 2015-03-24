@@ -14,3 +14,5 @@ from .storage import Storage
 from .ip_address import IP_address
 from .firewall import Firewall
 from .cloud_manager import CloudManager
+from .tools import OperatingSystems
+from .tools import ZONE
