@@ -1,6 +1,4 @@
 
-
-
 def assignIfExists(opts, default=None, **kwargs):
 	"""
 	Helper for assigning object attributes from API responses.

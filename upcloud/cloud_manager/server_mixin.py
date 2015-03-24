@@ -17,7 +17,8 @@ class ServerManager():
 		Populate = False (default) => 1 API request, returns unpopulated Server instances.
 		Populate = True => Does 1 + n API requests (n = # of servers), returns populated Server instances.
 		"""
-		servers = self.__fetch_servers()		
+		
+		servers = self.get_request("/server")["servers"]["server"]		
 
 		server_list = list()
 		for server in servers:
@@ -120,16 +121,11 @@ class ServerManager():
 		"""
 		DELETE '/server/UUID'. Permanently destroys the virtual machine. 
 		DOES NOT remove the storage disks.
+
+		Returns an empty object.
 		"""
 		return self.request("DELETE", "/server/" + UUID)
 	
-	def __fetch_servers(self):
-		"""
-		Returns '/servers' data in Python dict.
-		"""
-		data = self.get_request("/server")
-		return data["servers"]["server"]
-
 	
 	def get_server_data(self, UUID):
 		"""

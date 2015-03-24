@@ -1,6 +1,18 @@
 from .base import BaseAPI
 
 class IP_address(BaseAPI):
+	"""
+	Object representation of the IP-address. 
+
+	Attributes:
+	access -- "public" or "private"
+	address -- the actual IP_address (string)
+	ptr_record -- the reverse DNS name (string)
+	server -- the UUID of the server this IP is attached to (string)
+	
+	The only updateable field is the ptr_record. 
+	ptr_record and server are present only if /server/uuid endpoint was used.
+	"""
 
 	def __init__(self, access, address, cloud_manager, ptr_record=None, server=None):
 		"""
@@ -10,25 +22,15 @@ class IP_address(BaseAPI):
 		self._cloud_manager = cloud_manager
 		self.__reset(access, address, ptr_record, server)
 
-	@property
-	def address(self):
-		return self._address
-	
-	@property
-	def access(self):
-		return self._access	
-	
-	@property
-	def server_uuid(self):
-		return self._server_uuid
-		
-
 	def __reset(self, access, address, ptr_record=None, server=None):
 		"""
 		Reset after repopulating from API.
 		"""
+		# Always present
 		self._access = access
 		self._address = address
+
+		# Present when populated from /server/uuid endpoint
 		self._server_uuid = server
 		self.ptr = ptr_record
 
@@ -49,14 +51,21 @@ class IP_address(BaseAPI):
 	def __str__(self):
 		return "IP-address: " + self.address
 
-	@staticmethod
-	def _create_ip_address_objs(IP_addrs, cloud_manager):
-		IP_addrs = IP_addrs["ip_address"]
-		IP_objs = list()
-		for IP_addr in IP_addrs:
-			IP_objs.append( IP_address(cloud_manager = cloud_manager, **IP_addr) )
-		return IP_objs
+	@property
+	def address(self):
+		return self._address
+	
+	@property
+	def access(self):
+		return self._access	
+	
+	@property
+	def server_uuid(self):
+		return self._server_uuid
 
 	@staticmethod
-	def _create_ip_address_obj(IP_addr, cloud_manager):
-		return IP_address(cloud_manager = cloud_manager, **IP_addr)
+	def _create_ip_address_objs(IP_addrs, cloud_manager):
+		IP_objs = list()
+		for IP_addr in IP_addrs["ip_address"]:
+			IP_objs.append( IP_address(cloud_manager = cloud_manager, **IP_addr) )
+		return IP_objs	
