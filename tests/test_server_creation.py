@@ -27,6 +27,17 @@ class TestCreateServer():
 		assert body2['action'] == 'create'
 		assert body2['size'] == 100	
 
+	def test_storage_prepare_post_body_optional_attributes(self, manager):
+		s2 = Storage(size=100, address="virtio:0", type="disk")
+		body2 = s2.prepare_post_body("my.example.com", 1)
+
+		assert body2['title'] == 'my.example.com storage disk 1'
+		assert body2['tier'] == 'maxiops'
+		assert body2['action'] == 'create'
+		assert body2['size'] == 100
+		assert body2['address'] == "virtio:0"
+		assert body2['type'] == "disk"
+
 	def test_server_init(self, manager):
 		server1 = Server(core_number=2, memory_amount=1024, hostname="my.example.com",zone=ZONE.Chicago, storage_devices=[
 				Storage(os="Ubuntu 14.04", size=10),
@@ -64,6 +75,21 @@ class TestCreateServer():
 		assert body["server"]["memory_amount"] == 1024
 		assert body["server"]["hostname"] == server.title
 		assert body["server"]["zone"] == "us-chi1"
+
+	def test_server_prepare_post_body_optional_attributes(self):
+		server = Server(core_number=2, memory_amount=1024, 
+						hostname="my.example.com",zone=ZONE.Chicago, 
+						storage_devices=[ Storage(os="Ubuntu 14.04", size=10)],
+						vnc_password="my-passwd", password_delivery="email" 	)
+		
+		body = server.prepare_post_body()
+		assert body["server"]["title"] == "my.example.com"
+		assert body["server"]["core_number"] == 2
+		assert body["server"]["memory_amount"] == 1024
+		assert body["server"]["hostname"] == server.title
+		assert body["server"]["zone"] == "us-chi1"
+		assert body["server"]["vnc_password"] == "my-passwd"
+		assert body["server"]["password_delivery"] == "email"
 
 	@responses.activate
 	def test_create_server(self, manager):

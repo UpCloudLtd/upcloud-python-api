@@ -12,6 +12,8 @@ class Server(BaseAPI):
 	updateable_fields = [ 	"boot_order", "core_number", "firewall", "hostname", "memory_amount", 
 							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
 
+	post_fields = []
+
 
 	def __init__(self, *initial_data, **kwargs):
 		object.__setattr__(self, "populated", False)
@@ -162,10 +164,20 @@ class Server(BaseAPI):
 			"title": self.title,
 			"storage_devices": {}
 		}
+
+		# optionals
+		if hasattr(self, "boot_order"): 		body["server"]["boot_order"] = self.boot_order
+		if hasattr(self, "firewall"): 			body["server"]["firewall"] = self.firewall
+		if hasattr(self, "nic_model"):			body["server"]["nic_model"] = self.nic_model
+		if hasattr(self, "password_delivery"):	body["server"]["password_delivery"] = self.password_delivery
+		if hasattr(self, "timezone"):			body["server"]["timezone"] = self.timezone
+		if hasattr(self, "video_model"):		body["server"]["video_model"] = self.video_model
+		if hasattr(self, "vnc_password"):		body["server"]["vnc_password"] = self.vnc_password
+
+
 		body["server"]["storage_devices"] = {
 			"storage_device": []
 		}
-
 
 		storage_title_id = 0 # running number for unique storage titles
 		for storage in self.storage_devices:

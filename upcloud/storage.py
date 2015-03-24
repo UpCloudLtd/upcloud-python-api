@@ -87,6 +87,10 @@ class Storage():
 			if body["action"] == "attach" or body["action"] == "clone":
 				body["storage"] = OperatingSystems.get_OS_UUID(self.os)
 
+			# optionals
+			if self.type: 		body["type"] = self.type
+			if self.address:	body["address"] = self.address
+
 			return body
 
 	@staticmethod
