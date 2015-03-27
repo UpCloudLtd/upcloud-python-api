@@ -55,7 +55,7 @@ class Storage():
 		return body
 
 	
-	def prepare_post_body(self, hostname, storage_title_id):
+	def prepare_post_body(self, storage_title=None, storage_title_id=None):
 			body = dict()
 
 			# clone from public template OR create empty storage
@@ -75,9 +75,9 @@ class Storage():
 				body["title"] = self.title
 			else:
 				if self.os:
-					body["title"] = hostname + " OS disk"
+					body["title"] = storage_title + " OS disk"
 				else:
-					body["title"] = hostname + " storage disk " + str(storage_title_id)
+					body["title"] = storage_title + " storage disk " + str(storage_title_id)
 
 			# don't specify size if attaching CDROM (CDROMS not yet supported)
 			if body["action"] == "create" or body["action"] == "clone":
@@ -90,6 +90,7 @@ class Storage():
 			# optionals
 			if self.type: 		body["type"] = self.type
 			if self.address:	body["address"] = self.address
+			if self.zone:	body["zone"] = self.zone
 
 			return body
 

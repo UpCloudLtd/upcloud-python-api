@@ -62,8 +62,6 @@ class ServerManager():
 				])
 		manager.create_server(server1)
 
-		All Server fields are mandatory except title (defaults to hostname).
-
 		One storage should contain an OS. Otherwise storage fields are optional.
 		- size defaults to 10,
 		- title defaults to hostname + " OS disk" and hostname + " storage disk id" (id is a running starting from 1)

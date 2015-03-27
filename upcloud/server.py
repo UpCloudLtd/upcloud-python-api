@@ -126,6 +126,7 @@ class Server(BaseAPI):
 		"""
 		IP = self.cloud_manager.attach_IP(self.uuid)
 		self.ip_addresses.append(IP)
+		return IP
 
 	def remove_IP(self, IP_address):
 		"""
@@ -156,16 +157,17 @@ class Server(BaseAPI):
 
 	def prepare_post_body(self):
 		body = dict()
+		# mandatory
 		body["server"] = {
-			"core_number": self.core_number,
-			"memory_amount": self.memory_amount,
 			"hostname": self.hostname,
 			"zone": self.zone,
 			"title": self.title,
 			"storage_devices": {}
 		}
 
-		# optionals
+		# optional
+		if hasattr(self, "core_number"): 		body["server"]["core_number"] = self.core_number
+		if hasattr(self, "memory_amount"): 		body["server"]["memory_amount"] = self.memory_amount
 		if hasattr(self, "boot_order"): 		body["server"]["boot_order"] = self.boot_order
 		if hasattr(self, "firewall"): 			body["server"]["firewall"] = self.firewall
 		if hasattr(self, "nic_model"):			body["server"]["nic_model"] = self.nic_model

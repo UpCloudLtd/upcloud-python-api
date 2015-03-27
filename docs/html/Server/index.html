@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Server - UpCloud API Python</title>
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../html/css/highlight.css" rel="stylesheet">
+  <link href="../html/css/theme.css" rel="stylesheet">
+  <link href="../html/css/theme_extra.css" rel="stylesheet">
+  <link href="../html/html/css/highlight.css" rel="stylesheet">
+  <link href="../html/html/css/theme.css" rel="stylesheet">
+  <link href="../html/html/css/theme_extra.css" rel="stylesheet">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../html/html/js/highlight.pack.js"></script>
+  <script src="../html/html/js/theme.js"></script>
+  <script src="../html/js/highlight.pack.js"></script>
+  <script src="../html/js/theme.js"></script>
+
+  <style>
+    body {font-size: 90%;}
+    pre, code {font-size: 100%;}
+    h3, h4, h5, h6 {color: #2980b9; font-weight: 300}
+  </style> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> UpCloud API Python</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+        <span>Usage</span>
+            
+                <li class="toctree-l1 current">
+                    <a class="current" href=".">Server</a>
+                    
+                        <ul>
+                        
+                            <li class="toctree-l2"><a href="#start-stop-restart">Start / Stop / Restart</a></li>
+                            
+                                <li><a class="toctree-l3" href="#list-get">List / Get</a></li>
+                            
+                                <li><a class="toctree-l3" href="#create">Create</a></li>
+                            
+                                <li><a class="toctree-l3" href="#update">Update</a></li>
+                            
+                                <li><a class="toctree-l3" href="#destroy">Destroy</a></li>
+                            
+                        
+                        </ul>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../Storage">Storage</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../IP-address">IP-address</a>
+                    
+                </li>
+            
+        
+
+    
+        
+        <span>CloudManager API</span>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../CloudManager">General Info</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../server-mixin">Server Manager</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../storage-mixin">Storage Manager</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../IP-address-mixin">IP-address Manager</a>
+                    
+                </li>
+            
+        
+
+    
+</ul>
+
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href=".."></a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    <li>Server</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <p>The examples use the following:</p>
+<pre><code class="python">import upcloud
+from upcloud import Server
+from upcloud import Storage
+from upcloud import ZONE
+
+manager = upcloud.CloudManager(&quot;username&quot;, &quot;password&quot;)
+</code></pre>
+
+<h1 id="start-stop-restart">Start / Stop / Restart</h1>
+<pre><code class="python">
+server.stop()       
+server.start()
+server.restart()
+
+# populate the object with updated information from API
+server.populate()
+
+</code></pre>
+
+<p>Please note that the server might not be stopped/started/restarted immediately when the API responds. The <code>.populate()</code> method updates the object's fields from the API and is thus useful for checking <code>server.state</code>.</p>
+<pre><code>Server states: 
+    &quot;started&quot;,&quot;stopped&quot; -- server is shut down or running
+    &quot;maintenance&quot;       -- when shutting down or (re)starting
+    &quot;error&quot;             -- erronous state in UpCloud's backend
+</code></pre>
+
+<h2 id="list-get">List / Get</h2>
+<p>The CloudManager returns Server instances.</p>
+<pre><code class="python">
+servers = manager.get_servers()
+server = manager.get_server(servers[0].uuid)
+
+</code></pre>
+
+<h2 id="create">Create</h2>
+<p>Creation of servers in the API is handled by the CloudManager. It accepts a Server instance, forms the correct POST request and populates the Server instance's fields from the POST response.</p>
+<pre><code class="python">
+server = Server(
+            core_number = 1, 
+            memory_amount = 512, 
+            hostname = &quot;web1.example.com&quot;, 
+            zone = ZONE.London, 
+            storage_devices = [
+                Storage(os = &quot;Ubuntu 14.04&quot;, size=10),
+                Storage(size=10, tier=&quot;hdd&quot;)
+            ])
+
+manager.create_server( server )
+
+</code></pre>
+
+<p>Currently available Storage operating systems are the following UpCloud public templates:</p>
+<pre><code class="python"># upcloud/tools.py
+
+Operating Systems:
+    &quot;CentOS 6.5&quot;, &quot;CentOS 7.0&quot;, 
+    &quot;Debian 7.8&quot;, &quot;Ubuntu 12.04&quot;, &quot;Ubuntu 14.04&quot;, 
+    &quot;Windows 2003&quot;, &quot;Windows 2008&quot;, &quot;Windows 2012&quot;
+
+</code></pre>
+
+<p>Please refer to the <a href="https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf">API documentation</a> for the allowed Server attributes.</p>
+<h2 id="update">Update</h2>
+<h3 id="attributes">Attributes</h3>
+<p>Updating a Server's attributes is done with its <code>.save()</code> method that does a PUT request. If you want to manage the Server's Storages or IP-addresses, see below.</p>
+<pre><code class="python">
+server = manager.get_server( uuid )
+server.core_number = 4
+server.memory_amount = 4096
+server.save()
+
+</code></pre>
+
+<p>The following fields of Server instance may be updated, all other fields are read-only. Trying to assign values to other fields leads to an error.  </p>
+<pre><code class="python">Updateable attributes: 
+    &quot;boot_order&quot;, &quot;core_number&quot;, &quot;firewall&quot;, &quot;hostname&quot;, &quot;memory_amount&quot;,  
+    &quot;nic_model&quot;, &quot;title&quot;, &quot;timezone&quot;, &quot;video_model&quot;, &quot;vnc&quot;, &quot;vnc_password&quot;
+</code></pre>
+
+<p>Please refer to the <a href="https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf">API documentation</a> for the allowed values.</p>
+<h3 id="storages">Storages</h3>
+<p>A Server's Storages can be attached and detached with <code>.add_storage()</code> and <code>.remove_storage()</code>. Both requests issue an API request instantly.</p>
+<pre><code class="python">
+# attach
+storage = manager.create_storage( size=100, zone=ZONE.Helsinki )
+server.add_storage(storage)
+
+# detach
+storage = server.storage_devices[1]
+server.remove_storage(storage)
+
+</code></pre>
+
+<h3 id="ip-addresses">IP-addresses</h3>
+<p>A Server's Storages can be attached and detached with <code>.add_IP()</code> and <code>.remove_IP()</code>. Both requests issue an API request instantly. Note that the attached IP is allocated randomly as UpCloud's does not (yet) support floating IPs.</p>
+<pre><code class="python">
+# attach
+IP = server.add_IP()
+
+# detach
+server.remove_IP(IP)
+
+</code></pre>
+
+<h2 id="destroy">Destroy</h2>
+<p>Destroys the Server instance and its IP-addresses. However, does not destroy the Storages.</p>
+<pre><code class="python">
+server.destroy()
+
+</code></pre>
+
+
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../Storage" class="btn btn-neutral float-right" title="Storage"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+      <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../Storage" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+</body>
+</html>

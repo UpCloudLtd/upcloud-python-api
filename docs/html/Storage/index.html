@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Storage - UpCloud API Python</title>
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../html/css/highlight.css" rel="stylesheet">
+  <link href="../html/css/theme.css" rel="stylesheet">
+  <link href="../html/css/theme_extra.css" rel="stylesheet">
+  <link href="../html/html/css/highlight.css" rel="stylesheet">
+  <link href="../html/html/css/theme.css" rel="stylesheet">
+  <link href="../html/html/css/theme_extra.css" rel="stylesheet">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../html/html/js/highlight.pack.js"></script>
+  <script src="../html/html/js/theme.js"></script>
+  <script src="../html/js/highlight.pack.js"></script>
+  <script src="../html/js/theme.js"></script>
+
+  <style>
+    body {font-size: 90%;}
+    pre, code {font-size: 100%;}
+    h3, h4, h5, h6 {color: #2980b9; font-weight: 300}
+  </style> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> UpCloud API Python</a>
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <ul class="current">
+    
+        
+        <span>Usage</span>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../Server">Server</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 current">
+                    <a class="current" href=".">Storage</a>
+                    
+                        <ul>
+                        
+                            <li class="toctree-l2"><a href="#about">About</a></li>
+                            
+                                <li><a class="toctree-l3" href="#tiers">Tiers</a></li>
+                            
+                                <li><a class="toctree-l3" href="#templates">Templates</a></li>
+                            
+                                <li><a class="toctree-l3" href="#list-get">List / Get</a></li>
+                            
+                                <li><a class="toctree-l3" href="#create">Create</a></li>
+                            
+                                <li><a class="toctree-l3" href="#update">Update</a></li>
+                            
+                                <li><a class="toctree-l3" href="#destroy">Destroy</a></li>
+                            
+                        
+                        </ul>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../IP-address">IP-address</a>
+                    
+                </li>
+            
+        
+
+    
+        
+        <span>CloudManager API</span>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../CloudManager">General Info</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../server-mixin">Server Manager</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../storage-mixin">Storage Manager</a>
+                    
+                </li>
+            
+                <li class="toctree-l1 ">
+                    <a class="" href="../IP-address-mixin">IP-address Manager</a>
+                    
+                </li>
+            
+        
+
+    
+</ul>
+
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href=".."></a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    <li>Storage</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              <p>The code examples use the following:</p>
+<pre><code class="python">import upcloud
+from upcloud import Storage
+from upcloud import ZONE
+
+manager = upcloud.CloudManager(&quot;username&quot;, &quot;password&quot;)
+</code></pre>
+
+<h1 id="about">About</h1>
+<p>Storages are entirely separate from Servers and can be attached/detached from them. Storages can be created, updated and destroyed separately from servers. They can be loaded as CDROMs or disks and they can be cloned to create a new Storage that is a 1:1 clone of another one.</p>
+<h3 id="tiers">Tiers</h3>
+<p>UpCloud offers MaxIOPS (Extremely fast 100k IOPS Storage) and HDD storages. Older disks may still be on our SSD but can be moved to MaxIOPS by cloning.</p>
+<pre><code>Tiers:
+    &quot;maxiops&quot;, &quot;hdd&quot;, ( &quot;ssd&quot; )
+</code></pre>
+
+<h3 id="templates">Templates</h3>
+<p>Public templates such as the Ubuntu 14.04 can be cloned by anyone to get a pre-installed server image that is immediately ready to go. A user can also create private templates for themselves out of any storage. Storages can be cloned from templates during server creation.</p>
+<h2 id="list-get">List / Get</h2>
+<p>CloudManager returns Storage instances.</p>
+<pre><code class="python">
+manager.get_storages()
+manager.get_storage(storage.uuid)
+
+</code></pre>
+
+<p><code>get_storages()</code> accepts one of the following parameters to filter the query:</p>
+<pre><code>Storages list filters:
+    &quot;normal&quot; (default), &quot;public&quot;, &quot;private&quot;, 
+    &quot;backup&quot;, &quot;cdrom&quot;, &quot;template&quot;, &quot;favorite&quot;
+</code></pre>
+
+<h2 id="create">Create</h2>
+<p>Storage can be created with the CloudManager's <code>.create_storage(size=10, tier="maxiops", title="Storage disk", zone="fi-hel1")</code></p>
+<pre><code class="python">
+storage1 = manager.create_storage(  size=10, 
+                                    tier=&quot;maxiops&quot;, 
+                                    title=&quot;my storage disk&quot;, 
+                                    zone=ZONE.Helsinki )
+
+storage2 = manager.create_storage(100, zone=ZONE.Helsinki)
+
+</code></pre>
+
+<h2 id="update">Update</h2>
+<p>Only the size and title of a storage can be updated. Please note that size can not be reduced and that OS level actions are required to account for the increased size. </p>
+<pre><code class="python">
+storage = manager.get_storage(uuid)
+storage.update(size=100, title=&quot;new title&quot;)
+
+</code></pre>
+
+<h2 id="destroy">Destroy</h2>
+<p>Warning: data loss is permanent.</p>
+<pre><code class="python">
+storage.destroy()
+
+</code></pre>
+
+
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../IP-address" class="btn btn-neutral float-right" title="IP-address"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Server" class="btn btn-neutral" title="Server"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    <!-- Copyright etc -->
+    </p>
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        
+      <span><a href="../Server" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../IP-address" style="color: #fcfcfc">Next &raquo;</a></span>
+    </span>
+</div>
+</body>
+</html>

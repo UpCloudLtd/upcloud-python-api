@@ -5,7 +5,7 @@ class StorageManager():
 	Functions for managing Storage disks. Intended to be used as a mixin for CloudManager.
 	"""
 
-	def get_storages(self, storage_type=""):
+	def get_storages(self, storage_type="normal"):
 		"""
 		Returns a list of Storage objects from the API.
 		Storage types: public, private, normal, backup, cdrom, template, favorite
@@ -20,7 +20,7 @@ class StorageManager():
 		res = self.get_request("/storage/" + UUID)
 		return Storage._create_storage_obj( res["storage"], cloud_manager = self )
 
-	def create_storage(self, size, tier, title, zone):
+	def create_storage(self, size=10, tier="maxiops", title="Storage disk", zone="fi-hel1"):
 		"""
 		Create a Storage object. Returns an object based on the API's response.
 		"""

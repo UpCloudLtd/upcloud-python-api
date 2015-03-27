@@ -1,0 +1,13 @@
+site_name: UpCloud API Python
+theme: readthedocs
+site_dir: docs/html
+pages:
+- [index.md, Home]
+- [Server.md, Usage, Server]
+- [Storage.md, Usage, Storage]
+- [IP-address.md, Usage, IP-address]
+- [CloudManager.md, CloudManager API, General Info]
+- [server-mixin.md, CloudManager API, Server Manager]
+- [storage-mixin.md, CloudManager API, Storage Manager]
+- [IP-address-mixin.md, CloudManager API, IP-address Manager]
+
