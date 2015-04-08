@@ -131,6 +131,4 @@ py.test tests/
 
 ## Documentation
 
-* Server, Storage and IP_address attributes match UpCloud's API responses.
-* Source code is documented with Docstrings
-* Full API documentation coming soon...
+Documentation available [here](http://upcloudltd.github.io/upcloud-python-api/)
