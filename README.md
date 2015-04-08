@@ -3,6 +3,20 @@ Python client for [UpCloud's API](https://www.upcloud.com/documentation/api/).
 
 NOTE: This Python client is still work-in-progress and is not considered production ready.
 
+## Installation
+
+```
+pip install --pre upcloud-api-python
+
+# with older pip:
+pip install upcloud-api-python
+```
+
+Alternatively, clone the project and run 
+```
+python setup.py install
+```
+
 ## Features
 * OOP based management of Servers, Storages and IP-addresses with full CRUD.
 * Clear way to define your infrastructure, emphasis on clear and easy syntax
