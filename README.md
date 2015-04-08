@@ -45,9 +45,7 @@ You must take this into account in your automations.
 
 ```python
 import upcloud
-import upcloud.Server
-import upcloud.Storage
-import upcloud.ZONE
+from upcloud import Server, Storage, ZONE
 
 manager = upcloud.CloudManager("api_user", "password")
 manager.authenticate() # test credentials
@@ -56,7 +54,7 @@ cluster = {
 	"web1": Server( core_number = 1, # CPU cores
 					memory_amount = 512, # RAM in MB
 					hostname = "web1.example.com", 
-					zone = ZONE.London, # Zone.Helsinki and Zone.Chicago available also
+					zone = ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
 					storage_devices = [
 				        # OS: Ubuntu 14.04 from template
 				        # default tier: maxIOPS, the 100k IOPS storage backend
@@ -93,7 +91,7 @@ cluster = {
 }
 
 for server in cluster:
-  manager.create_server( server ) # automatically populates the Server objects with data from API
+  manager.create_server( cluster[server] ) # automatically populates the Server objects with data from API
 
 ```
 
