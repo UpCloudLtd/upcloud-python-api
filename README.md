@@ -141,6 +141,10 @@ Tests located in `project_root/tests/` directory. Run with:
 py.test tests/
 ```
 
+## Bugs, Issues, Problems, Ideas
+
+Feel free to open a new issue : )
+
 ## Documentation
 
 Documentation available [here](http://upcloudltd.github.io/upcloud-python-api/)
