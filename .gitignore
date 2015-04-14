@@ -3,3 +3,6 @@ ENV/
 .DS_Store
 UpCloud.egg-info/
 *.pyc
+build/
+dist/
+*.egg-info

@@ -3,7 +3,7 @@
 # from distutils.core import setup
 from setuptools import setup
 
-setup(name='UpCloud',
+setup(name='upcloud-api-python',
       version='0.1',
       description='UpCloud API Client',
       author='Elias Nygren',
