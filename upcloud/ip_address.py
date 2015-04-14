@@ -14,7 +14,7 @@ class IP_address(BaseAPI):
 	ptr_record and server are present only if /server/uuid endpoint was used.
 	"""
 
-	def __init__(self, access, address, cloud_manager, ptr_record=None, server=None):
+	def __init__(self, access, address, cloud_manager, ptr_record=None, server=None, *args, **kwargs):
 		"""
 		ptr_record and server not returned by the API in every case (e.g. when IP is nested).
 		Only ptr_record is editable due to restrictions of the API.
