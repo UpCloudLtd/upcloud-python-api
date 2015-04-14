@@ -3,6 +3,20 @@ Python client for [UpCloud's API](https://www.upcloud.com/documentation/api/).
 
 NOTE: This Python client is still work-in-progress and is not considered production ready.
 
+## Installation
+
+```
+pip install --pre upcloud-api-python
+
+# with older pip:
+pip install upcloud-api-python
+```
+
+Alternatively, clone the project and run 
+```
+python setup.py install
+```
+
 ## Features
 * OOP based management of Servers, Storages and IP-addresses with full CRUD.
 * Clear way to define your infrastructure, emphasis on clear and easy syntax
@@ -31,9 +45,7 @@ You must take this into account in your automations.
 
 ```python
 import upcloud
-import upcloud.Server
-import upcloud.Storage
-import upcloud.ZONE
+from upcloud import Server, Storage, ZONE
 
 manager = upcloud.CloudManager("api_user", "password")
 manager.authenticate() # test credentials
@@ -42,7 +54,7 @@ cluster = {
 	"web1": Server( core_number = 1, # CPU cores
 					memory_amount = 512, # RAM in MB
 					hostname = "web1.example.com", 
-					zone = ZONE.London, # Zone.Helsinki and Zone.Chicago available also
+					zone = ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
 					storage_devices = [
 				        # OS: Ubuntu 14.04 from template
 				        # default tier: maxIOPS, the 100k IOPS storage backend
@@ -79,7 +91,7 @@ cluster = {
 }
 
 for server in cluster:
-  manager.create_server( server ) # automatically populates the Server objects with data from API
+  manager.create_server( cluster[server] ) # automatically populates the Server objects with data from API
 
 ```
 
@@ -128,6 +140,10 @@ Tests located in `project_root/tests/` directory. Run with:
 ```python
 py.test tests/
 ```
+
+## Bugs, Issues, Problems, Ideas
+
+Feel free to open a new issue : )
 
 ## Documentation
 
