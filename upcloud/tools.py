@@ -1,3 +1,4 @@
+import re
 
 def assignIfExists(opts, default=None, **kwargs):
 	"""
@@ -31,14 +32,17 @@ class OperatingSystems:
 	@classmethod
 	def get_OS_UUID(cls, os):
 		"""
-		Validate Storage OS, return the public template UUID for server creation (Server.prepate_post_body)
+		Validate Storage OS, return the public template UUID for server creation (Server.prepate_post_body).
+		If the OS is a custom OS UUID, don't validate against templates.
 		"""
 
 		if os in cls.templates:
 			return cls.templates[os]
-		else:
-			raise Exception('Invalid OS -- valid options are: "CentOS 6.5", "CentOS 7.0", "Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04", "Windows 2003", "Windows 2008", "Windows 2012"')
 
+		uuid_regexp = '^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$'
+		if re.search(uuid_regexp, os): 
+			return os		
 
-
-			
+		raise Exception('Invalid OS -- valid options are: "CentOS 6.5", "CentOS 7.0"',
+						'"Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04", "Windows 2003"',
+						'"Windows 2008", "Windows 2012"')
