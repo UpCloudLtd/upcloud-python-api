@@ -85,6 +85,7 @@ class ServerManager():
 		server._reset( res["server"], 
 					ip_addresses = IP_addresses, 
 					storage_devices = storages, 
+					cloud_manager = self,
 					populated = True)
 		return server
 
