@@ -1,0 +1,5 @@
+include *.txt
+include README.md
+include mkdocs.yml
+include tox.ini
+recursive-include docs *.md

@@ -7,7 +7,9 @@
             [
                 ".git",
                 "__pycache__",
-                "ENV"
+                "ENV",
+                ".tox",
+                "upcloud_api_python.egg-info"
             ],
             "file_exclude_patterns":
             [
