@@ -17,6 +17,14 @@ Alternatively, clone the project and run
 python setup.py install
 ```
 
+**Supported versions** (offline tests pass with tox):
+
+* python 3.2
+* python 3.3 
+* python 3.4
+* python 3.5
+* pypi3  2.4.0
+
 ## Features
 * OOP based management of Servers, Storages and IP-addresses with full CRUD.
 * Clear way to define your infrastructure, emphasis on clear and easy syntax
@@ -157,6 +165,12 @@ Tests located in `project_root/tests/` directory. Run with:
 ```python
 py.test tests/
 ```
+
+To test against python3.2=< and pypy3-2.4.0, run:
+
+```python
+tox
+``` 
 
 ## Bugs, Issues, Problems, Ideas
 

@@ -8,3 +8,4 @@ dist/
 *.egg-info
 *.sublime-workspace
 docs/html/
+.tox
