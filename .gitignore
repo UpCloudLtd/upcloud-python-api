@@ -6,3 +6,4 @@ UpCloud.egg-info/
 build/
 dist/
 *.egg-info
+*.sublime-workspace

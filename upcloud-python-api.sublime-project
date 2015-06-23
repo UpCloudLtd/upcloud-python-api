@@ -1,0 +1,29 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "folder_exclude_patterns":
+            [
+                ".git",
+                "__pycache__",
+                "ENV"
+            ],
+            "file_exclude_patterns":
+            [
+                ".DS_Store",
+                "*.pid",
+                "*.pyc"
+            ]
+        }
+    ],
+    "settings":
+    {
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+        "trim_trailing_white_space_on_save": true,
+        "ensure_newline_at_eof_on_save": true,
+        "rulers": [ 79, 99 ],
+        "line_numbers": true
+    }
+}

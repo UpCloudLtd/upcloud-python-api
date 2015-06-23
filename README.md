@@ -12,7 +12,7 @@ pip install --pre upcloud-api-python
 pip install upcloud-api-python
 ```
 
-Alternatively, clone the project and run 
+Alternatively, clone the project and run
 ```
 python setup.py install
 ```
@@ -38,7 +38,7 @@ python setup.py install
 
 ## Examples
 
-Note that operations are not instant, for example a server is not fully shut down when the API responds. 
+Note that operations are not instant, for example a server is not fully shut down when the API responds.
 You must take this into account in your automations.
 
 ### Defining and creating Servers
@@ -53,38 +53,38 @@ manager.authenticate() # test credentials
 cluster = {
 	"web1": Server( core_number = 1, # CPU cores
 					memory_amount = 512, # RAM in MB
-					hostname = "web1.example.com", 
+					hostname = "web1.example.com",
 					zone = ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
 					storage_devices = [
 				        # OS: Ubuntu 14.04 from template
 				        # default tier: maxIOPS, the 100k IOPS storage backend
-						Storage(os = "Ubuntu 14.04", size=10), 
+						Storage(os = "Ubuntu 14.04", size=10),
 						# secondary storage, hdd for reduced cost
-						Storage(size=100, tier="hdd") 
+						Storage(size=100, tier="hdd")
 					]),
-	
-	"web2": Server( core_number = 1, 
-					memory_amount = 512, 
-					hostname = "web2.example.com", 
-					zone = ZONE.London, 
+
+	"web2": Server( core_number = 1,
+					memory_amount = 512,
+					hostname = "web2.example.com",
+					zone = ZONE.London,
 					storage_devices = [
-						Storage(os = "Ubuntu 14.04", size=10), 
+						Storage(os = "Ubuntu 14.04", size=10),
 						Storage(size=100, tier="hdd"),
 					]),
 
-	"db":	Server( core_number = 2, 
-					memory_amount = 2048, 
-					hostname = "db.example.com", 
-					zone = ZONE.London, 
+	"db":	Server( core_number = 2,
+					memory_amount = 2048,
+					hostname = "db.example.com",
+					zone = ZONE.London,
 					storage_devices = [
 						Storage(os = "Ubuntu 14.04", size=10),
 						Storage(size=100),
 					]),
 
-	"lb":	Server( core_number = 2, 
-					memory_amount = 1024, 
-					hostname = "balancer.example.com", 
-					zone = ZONE.London, 
+	"lb":	Server( core_number = 2,
+					memory_amount = 1024,
+					hostname = "balancer.example.com",
+					zone = ZONE.London,
 					storage_devices = [
 						Storage(os = "Ubuntu 14.04", size=10)
 					])
@@ -100,13 +100,13 @@ for server in cluster:
 
 for server in cluster:
 	server.shutdown()
-	# OR: 
+	# OR:
 	server.start()
-	# OR: 
+	# OR:
 	server.destroy()
-	for storage in server.storage_devices: 
+	for storage in server.storage_devices:
 	  storage.destroy()
-	  
+
 ```
 
 ### Upgrade a Server
@@ -134,6 +134,23 @@ ip_addr     = manager.get_IP(address) # e.g server1.ip_addresses[0].address
 ```
 
 ## Tests
+
+Set up environment and install dependencies:
+
+```
+# run at project root, python3 and virtualenv must be installed
+virtualenv ENV
+source ENV/bin/activate
+pip install -r requirements
+```
+
+Install the package in editable mode, as mentioned in
+[https://pytest.org/latest/goodpractises.html](https://pytest.org/latest/goodpractises.html)
+
+```python
+# run at project root
+pip install -e .
+```
 
 Tests located in `project_root/tests/` directory. Run with:
 
