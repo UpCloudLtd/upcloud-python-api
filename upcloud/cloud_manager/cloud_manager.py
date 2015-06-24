@@ -4,13 +4,14 @@ from ..firewall import Firewall
 from .server_mixin import ServerManager
 from .ip_address_mixin import IPManager
 from .storage_mixin import StorageManager
+from .firewall_mixin import FirewallManager
 
 import base64
 
 
-class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager):
+class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager):
 	"""
-	CloudManager contains the core functionality of the upcloud API library. 
+	CloudManager contains the core functionality of the upcloud API library.
 	All other managers are mixed in so code can be organized in corresponding submanager classes.
 	"""
 
@@ -21,8 +22,8 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager):
 		return self.get_account()
 
 	def get_account(self):
-		return self.get_request("/account")		
-		
+		return self.get_request("/account")
+
 	def get_zones(self):
 		return self.get_request("/zone")
 
@@ -34,4 +35,4 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager):
 
 	def get_server_sizes(self):
 		return self.get_request("/server_size")
-	
+

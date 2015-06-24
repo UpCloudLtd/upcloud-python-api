@@ -15,7 +15,7 @@ class Mock():
 
 	@staticmethod
 	def read_from_file(filename):
-		
+
 		filename = filename.replace("/", "_")
 
 		cwd = os.path.dirname(__file__)
@@ -23,8 +23,11 @@ class Mock():
 		return f.read()
 
 	@staticmethod
-	def mock_get(target):
-		data = Mock.read_from_file(target + '.json')
+	def mock_get(target, response_file=None):
+		if not response_file:
+			response_file = target + '.json'
+
+		data = Mock.read_from_file(response_file)
 		responses.add(responses.GET, Mock.base_url + '/' + target,
 						body=data,
 						status=200,
@@ -35,11 +38,10 @@ class Mock():
 	def __put_post_callback(request, target, data):
 		data_field = target.split("/")[0]
 		payload = json.loads(request.body)
-		
+
 		for field in data[data_field]:
 			if field in payload[data_field]:
 				data[data_field][field] = payload[data_field][field]
-		print(data)
 		return(200, {}, json.dumps(data))
 
 	@staticmethod
@@ -76,7 +78,7 @@ class Mock():
 		targetfile = "/".join( targetsplit[:2] )
 
 		data = json.loads( Mock.read_from_file(targetfile + '.json') )
-		
+
 		# API will always respond state: "started", see: Server.stop, Server.start, Server,restart
 		data["server"]["state"] = "started"
 
