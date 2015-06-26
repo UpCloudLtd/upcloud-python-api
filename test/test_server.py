@@ -2,7 +2,6 @@ import responses
 import json
 from conftest import Mock
 import pytest
-from upcloud import FirewallRule
 
 class TestServer():
 	@responses.activate
@@ -141,97 +140,3 @@ class TestServer():
 		with pytest.raises(Exception) as excinfo:
 			server.state = "rekt"
 		assert "'state' is a readonly field" in str(excinfo.value)
-
-	@responses.activate
-	def test_add_firewall_rule(self, manager):
-		Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
-		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
-
-		def callback(request):
-			required_fields = [
-				'position', 'direction', 'family', 'protocol',
-				'source_address_start', 'source_address_end',
-				'destination_port_start', 'destination_port_end',
-				'action'
-			]
-
-			request_body = json.loads(request.body)
-
-			for field in required_fields:
-				if field not in request_body:
-					raise Exception('missing required field: {0}'.format(field))
-
-			return(201, {}, json.dumps({ 'firewall_rule': request_body }))
-
-
-		responses.add_callback(
-			responses.POST,
-			Mock.base_url + "/server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule",
-			content_type='application/json',
-			callback=callback
-		)
-
-		returned_firewall = server.add_firewall_rule(FirewallRule(
-			position = "1",
-            direction = "in",
-            family = "IPv4",
-            protocol = "tcp",
-            source_address_start = "192.168.1.1",
-            source_address_end = "192.168.1.255",
-            destination_port_start = "22",
-            destination_port_end = "22",
-            action = "accept"
-		))
-
-		# everything should run without errors, returned created object
-		assert returned_firewall.position == "1"
-		assert returned_firewall.direction == "in"
-		assert returned_firewall.source_address_end == "192.168.1.255"
-
-
-	@responses.activate
-	def test_remove_firewall_rule(self, manager):
-		Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
-		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
-
-		target = "server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule"
-		Mock.mock_get(target, "firewall_rules.json")
-		firewall_rules = server.get_firewall_rules()
-
-		Mock.mock_delete("server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule/1")
-		res = firewall_rules[0].destroy()
-
-		Mock.mock_delete("server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule/1")
-		res = server.remove_firewall_rule(firewall_rules[0])
-
-		assert res == {}
-
-	@responses.activate
-	def test_list_and_get_firewall_rules(self, manager):
-		Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
-		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
-
-		target = "server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule"
-		Mock.mock_get(target, "firewall_rules.json")
-		firewall_rules = server.get_firewall_rules()
-
-		assert firewall_rules[0].position == "1"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

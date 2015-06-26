@@ -1,15 +1,9 @@
-#GET /1.1/server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule
-
 from .base import BaseAPI
 
-class Firewall(BaseAPI):
-
-	def rules(self, UUID, rule=""):
-		res = self.get("/server/" + UUID + "/firewall_rule/" + rule)
-		return res
-
-
 class FirewallRule(object):
+    """
+    Object representation of the FirewallRule in UpCloud's API.
+    """
 
     attributes = set([
         'action',
@@ -29,6 +23,12 @@ class FirewallRule(object):
     ])
 
     def __init__(self, **kwargs):
+        """
+        Creates a FirewallRule object from a dict.
+        Validates against FirewallRule.attributes and uses empty string as default
+        for all attributes (API wants them at least as empty strings).
+        """
+
         # set object attributes from params
         for key in kwargs:
             if key not in self.attributes:
@@ -36,18 +36,29 @@ class FirewallRule(object):
 
             setattr(self, key, kwargs[key])
 
-        # set attributes that were not given as empty strings
+        # set attributes that were not given as empty strings ("defaults")
         for attr in self.attributes:
             if not hasattr(self, attr):
                 setattr(self, attr, '')
 
     def prepare_post_body(self):
+        """
+        Returns a dict that can be serialised to JSON and sent to UpCloud's API.
+        """
+
         body = {}
         for attr in self.attributes:
             body[attr] = getattr(self, attr)
         return body
 
     def destroy(self):
+        """
+        Removes this FirewallRule from the API.
+
+        This instance must be associated with a server for this method to work,
+        which is done by instantiating via server.get_firewall_rule(position)
+        or server.get_firewall_rules().
+        """
         if not hasattr(self, 'server') or not self.server:
             raise Exception(
                 """FirewallRule not associated with server;
@@ -62,11 +73,18 @@ class FirewallRule(object):
 
 
     def _invalid_key_err(self, key):
-        attr_list = list(self.attributes.keys())
+        """
+        Raise exception on invalid parameters given to __init__.
+        """
+        attr_list = list(self.attributes)
         raise Exception(
             "invalid parameter to FirewallRule, '{key}' is not in {attributes}"
             .format(key=key, attributes=attr_list)
         )
 
     def _associate_with_server(self, server):
+        """
+        Internal function used by Server to associate itself with the FirewallRule.
+        """
+
         self.server = server

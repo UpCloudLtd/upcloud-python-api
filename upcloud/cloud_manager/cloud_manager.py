@@ -1,5 +1,4 @@
 from ..base import BaseAPI
-from ..firewall import Firewall
 
 from .server_mixin import ServerManager
 from .ip_address_mixin import IPManager

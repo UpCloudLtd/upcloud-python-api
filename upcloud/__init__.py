@@ -12,7 +12,6 @@ __copyright__ = "Copyright (c) 2015 Elias Nygren"
 from .server import Server
 from .storage import Storage
 from .ip_address import IP_address
-from .firewall import Firewall
 from .firewall import FirewallRule
 from .cloud_manager import CloudManager
 from .tools import OperatingSystems

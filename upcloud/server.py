@@ -1,5 +1,4 @@
 from .base import BaseAPI
-from .firewall import Firewall
 
 class Server(BaseAPI):
 	"""
@@ -174,12 +173,22 @@ class Server(BaseAPI):
 
 	def get_firewall_rules(self):
 		"""
-		Returns a FirewallRule instance that is associated with this server instance.
+		Returns all FirewallRule instances that are associated with this server instance.
 		"""
 		firewall_rules = self.cloud_manager.get_firewall_rules(self.uuid)
 		for firewall_rule in firewall_rules:
 			firewall_rule._associate_with_server(self)
 		return firewall_rules
+
+	def configure_firewall(self, FirewallRules):
+		"""
+		Helper function for automatically adding several FirewallRules in series.
+		"""
+		firewall_rule_bodies = []
+		for FirewallRule in FirewallRules:
+			firewall_rule_bodies.append(FirewallRule.prepare_post_body())
+
+		return self.cloud_manager.configure_firewall(self.uuid, firewall_rule_bodies)
 
 
 	def prepare_post_body(self):
