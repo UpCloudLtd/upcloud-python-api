@@ -188,7 +188,10 @@ class Server(BaseAPI):
 		for FirewallRule in FirewallRules:
 			firewall_rule_bodies.append(FirewallRule.prepare_post_body())
 
-		return self.cloud_manager.configure_firewall(self.uuid, firewall_rule_bodies)
+		firewall_rules = self.cloud_manager.configure_firewall(self.uuid, firewall_rule_bodies)
+		for firewall_rule in firewall_rules:
+			firewall_rule._associate_with_server(self)
+		return firewall_rules
 
 
 	def prepare_post_body(self):
