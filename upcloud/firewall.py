@@ -5,22 +5,24 @@ class FirewallRule(object):
     Object representation of the FirewallRule in UpCloud's API.
     """
 
-    attributes = set([
-        'action',
-        'destination_address_end',
-        'destination_address_start',
-        'destination_port_end',
-        'destination_port_start',
-        'direction',
-        'family',
-        'icmp_type',
-        'position',
-        'protocol',
-        'source_address_end',
-        'source_address_start',
-        'source_port_end',
-        'source_port_start',
-    ])
+    attributes = {
+        # attribute: default_value
+        # if none -> not sent to API unless given as param
+        'action': 'drop',
+        'direction': 'in',
+        'family': 'IPv4',
+        'destination_address_end': None,
+        'destination_address_start': None,
+        'destination_port_end': None,
+        'destination_port_start': None,
+        'icmp_type': None,
+        'position': None,
+        'protocol': None,
+        'source_address_end': None,
+        'source_address_start': None,
+        'source_port_end': None,
+        'source_port_start': None,
+    }
 
     def __init__(self, **kwargs):
         """
@@ -36,10 +38,10 @@ class FirewallRule(object):
 
             setattr(self, key, kwargs[key])
 
-        # set attributes that were not given as empty strings ("defaults")
+        # set defaults (if need be) where the default is not None
         for attr in self.attributes:
-            if not hasattr(self, attr):
-                setattr(self, attr, '')
+            if not hasattr(self, attr) and self.attributes[attr] != None:
+                setattr(self, attr, self.attributes[attr])
 
     def prepare_post_body(self):
         """
@@ -48,7 +50,8 @@ class FirewallRule(object):
 
         body = {}
         for attr in self.attributes:
-            body[attr] = getattr(self, attr)
+            if hasattr(self, attr):
+                body[attr] = getattr(self, attr)
         return body
 
     def destroy(self):
@@ -76,7 +79,7 @@ class FirewallRule(object):
         """
         Raise exception on invalid parameters given to __init__.
         """
-        attr_list = list(self.attributes)
+        attr_list = list(self.attributes.keys())
         raise Exception(
             "invalid parameter to FirewallRule, '{key}' is not in {attributes}"
             .format(key=key, attributes=attr_list)
