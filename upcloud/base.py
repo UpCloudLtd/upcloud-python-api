@@ -4,13 +4,13 @@ import requests
 
 class BaseAPI(object):
 	api = "api.upcloud.com"
-	api_v = "1.1"
+	api_v = "1.2"
 
 	def __init__(self, token):
 		self.token = token
 
 	"""
-	Performs a request with a given body to a given endpoint in UpCloud's API. 
+	Performs a request with a given body to a given endpoint in UpCloud's API.
 	Handles errors with __error_middleware.
 	"""
 	def request(self, method, endpoint, body=None):
@@ -18,8 +18,8 @@ class BaseAPI(object):
 			raise Exception("Invalid/Forbidden HTTP method")
 
 		url = "/" + self.api_v + endpoint
-		headers = { 	
-			"Authorization": self.token, 
+		headers = {
+			"Authorization": self.token,
 			"Content-Type": "application/json"
 		}
 
@@ -32,21 +32,21 @@ class BaseAPI(object):
 		if( res.text ):
 			res_json = res.json()
 		else: res_json = {}
-		
+
 		return self.__error_middleware(res, res_json)
 
 
 	"""
-	Performs a GET request to a given endpoint in UpCloud's API. 
+	Performs a GET request to a given endpoint in UpCloud's API.
 	"""
 	def get_request(self, endpoint):
-		return self.request("GET", endpoint)		
-		
+		return self.request("GET", endpoint)
+
 	"""
-	Performs a POST request to a given endpoint in UpCloud's API. 
+	Performs a POST request to a given endpoint in UpCloud's API.
 	"""
 	def post_request(self, endpoint, body=None):
-		return self.request("POST", endpoint, body)		
+		return self.request("POST", endpoint, body)
 
 	"""
 	Middleware that raises an exception when HTTP statuscode is an error code.

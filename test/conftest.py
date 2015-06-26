@@ -11,7 +11,7 @@ def manager():
 
 
 class Mock():
-	base_url = 'https://api.upcloud.com/1.1'
+	base_url = 'https://api.upcloud.com/1.2'
 
 	@staticmethod
 	def read_from_file(filename):
