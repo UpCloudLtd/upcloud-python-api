@@ -1,6 +1,9 @@
 # UpCloud-python-api Documentation
 
-Reading this documentation and using UpCloud-python-api requires that you are familiar with [UpCloud's API v1.1 documentation](https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf). Additionally, the documentation also assumes that the user refers to the source code, which is well commented and documented with Python's docstrings, for more detailed information.
+This is the documentation for the newest version of the client. For older versions,
+please download the correct source from [here](https://github.com/UpCloudLtd/upcloud-python-api/releases) and use `mkdocs` to build the documentation.
+
+Reading this documentation and using UpCloud-python-api requires that you are familiar with [UpCloud's API v1.2 documentation](https://www.upcloud.com/api/). Additionally, the documentation also assumes that the user refers to the source code, which is well commented and documented with Python's docstrings, for more detailed information.
 
 If you haven't used UpCloud's API before, please see [Getting Started With UpCloud’s API](https://www.upcloud.com/support/getting-started-with-upclouds-api/)
 
