@@ -27,20 +27,27 @@ python setup.py install
 
 ## Features
 * OOP based management of Servers, Storages and IP-addresses with full CRUD.
+	* since 0.2: manage both IPv4 and IPv6 addresses
+	* since 0.1.1: can use custom storage templates in addition to public templates
 * Clear way to define your infrastructure, emphasis on clear and easy syntax
 * Access all the data of the objects ( e.g. ssh credentials )
 * Scale horizontally by creating / destroying servers
 * Scale vertically by changing the RAM, CPU, storage specs of any server
+* Manage firewall (on/off and individual rules)
+	* since 0.2: full management of firewall rules 
 
 **TODO:**
 * Cloning of storages
 * Full management of special storage types:
   * CDROMs, custom OS templates
-  * custom templates can already be cloned to a disk via UUID
-* Full management of Firewall rules (per server on/off supported at the moment)
-  * defining a server's L2 firewall's rules through the API client
+  * (custom templates can already be cloned to a disk via UUID)
 * Full management of backups (instant and scheduled)
-* IPv6 support
+
+**Changelog:**
+* See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
+
+**Documentation:**
+* Available [here](http://upcloudltd.github.io/upcloud-python-api/)
 
 
 
