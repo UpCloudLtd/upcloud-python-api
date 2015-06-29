@@ -119,11 +119,11 @@ class Server(BaseAPI):
 		self.cloud_manager.post_request("/server/" + self.uuid + "/restart" , body)
 		object.__setattr__(self, "state", "maintenance") # post_request already handles any errors from API
 
-	def add_IP(self):
+	def add_IP(self, family="IPv4"):
 		"""
 		Allocate a new (random) IP-address to the Server.
 		"""
-		IP = self.cloud_manager.attach_IP(self.uuid)
+		IP = self.cloud_manager.attach_IP(self.uuid, family)
 		self.ip_addresses.append(IP)
 		return IP
 

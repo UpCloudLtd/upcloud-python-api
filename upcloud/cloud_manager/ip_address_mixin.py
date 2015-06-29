@@ -4,7 +4,7 @@ class IPManager():
 	"""
 	Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
 	"""
-	
+
 	def get_IP(self, address):
 		"""
 		Get an IP_address object with the IP address (string) from the API.
@@ -21,7 +21,7 @@ class IPManager():
 		IPs = IP_address._create_ip_address_objs( res["ip_addresses"], cloud_manager=self )
 		return IPs
 
-	def attach_IP(self, server):
+	def attach_IP(self, server, family="IPv4"):
 		"""
 		Attach a new (random) IP_address to the given server (object or UUID)
 		"""
@@ -31,7 +31,8 @@ class IPManager():
 
 		body = {
 			"ip_address": {
-				"server": server
+				"server": server,
+				"family": family
 			}
 		}
 
@@ -40,13 +41,13 @@ class IPManager():
 
 	def modify_IP(self, IP_addr, ptr_record):
 		"""
-		Modify an IP address' ptr-record (Reverse DNS). 
+		Modify an IP address' ptr-record (Reverse DNS).
 		Accepts an IP_address instance (object) or its address (string).
 		"""
 
 		if not isinstance(IP_addr, str):
 			IP_addr = IP_addr.address
-		
+
 		body = {
 			"ip_address": {
 				"ptr_record": ptr_record
