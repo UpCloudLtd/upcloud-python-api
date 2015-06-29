@@ -32,7 +32,7 @@ class IP_address(BaseAPI):
 		self._address = address
 		self._family = family
 
-		# Present when populated from /server/uuid endpoint
+		# Present when not populated from /server/uuid endpoint
 		self._server_uuid = server
 		self.ptr = ptr_record
 

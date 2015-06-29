@@ -3,7 +3,7 @@
 ```python
 class IPManager():
 	"""
-	Functions for managing IP-addresses. 
+	Functions for managing IP-addresses.
 	Intended to be used as a mixin for CloudManager.
 	"""
 ```
@@ -34,15 +34,15 @@ def get_IPs(self):
 ```
 
 ```python
-def attach_IP(self, server):
+def attach_IP(self, server, family="IPv4"):
 	"""
 	Attach a new (random) IP_address to the given server (object or UUID)
 	"""
-```		
+```
 ```python
 def modify_IP(self, IP_addr, ptr_record):
 	"""
-	Modify an IP address' ptr-record (Reverse DNS). 
+	Modify an IP address' ptr-record (Reverse DNS).
 	Accepts an IP_address instance (object) or its address (string).
 	"""
 ```
