@@ -36,7 +36,7 @@ class TestServer():
 		server = manager.get_server("009d64ef-31d1-4684-a26b-c86c955cbf46")
 
 		assert server.state == "stopped"
-		
+
 		data = Mock.mock_server_operation("server/009d64ef-31d1-4684-a26b-c86c955cbf46/start")
 		server.start()
 
@@ -48,7 +48,7 @@ class TestServer():
 		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
 
 		assert server.state == "started"
-		
+
 		data = Mock.mock_server_operation("server/00798b85-efdc-41ca-8021-f6ef457b8531/stop")
 		server.stop()
 
@@ -60,7 +60,7 @@ class TestServer():
 		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
 
 		assert server.state == "started"
-		
+
 		data = Mock.mock_server_operation("server/00798b85-efdc-41ca-8021-f6ef457b8531/restart")
 		server.restart()
 
@@ -71,17 +71,17 @@ class TestServer():
 		data = Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
 		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
 		assert len(server.ip_addresses) == 2
-		
+
 		data = Mock.mock_post("ip_address")
 		server.add_IP()
 		assert len(server.ip_addresses) == 3
-		
+
 		Mock.mock_delete("ip_address/"+server.ip_addresses[2].address)
 		server.remove_IP(server.ip_addresses[2])
 		assert len(server.ip_addresses) == 2
 
 	@responses.activate
-	def test_attach_and_detach_storage(self, manager):		
+	def test_attach_and_detach_storage(self, manager):
 		data = Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
 		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
 		assert len(server.storage_devices) == 1
@@ -90,9 +90,9 @@ class TestServer():
 		data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
 		storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
 
-		
+
 		responses.add(
-			responses.POST, 
+			responses.POST,
 			Mock.base_url + "/server/00798b85-efdc-41ca-8021-f6ef457b8531/storage/attach",
 			body = Mock.read_from_file("storage_attach.json"),
 			status = 200,
@@ -104,7 +104,7 @@ class TestServer():
 		assert server.storage_devices[1].title == "Operating system disk"
 
 		responses.add(
-			responses.POST, 
+			responses.POST,
 			Mock.base_url + "/server/00798b85-efdc-41ca-8021-f6ef457b8531/storage/detach",
 			body = Mock.read_from_file("storage_attach.json"),
 			status = 200,
@@ -136,8 +136,7 @@ class TestServer():
 	def test_update_server_non_updateable_fields(self, manager):
 		data = Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
 		server = manager.get_server("00798b85-efdc-41ca-8021-f6ef457b8531")
-		
-		with pytest.raises(Exception) as excinfo:
-			server.state = "rekt"	
-		assert "'state' is a readonly field" in str(excinfo.value)
 
+		with pytest.raises(Exception) as excinfo:
+			server.state = "rekt"
+		assert "'state' is a readonly field" in str(excinfo.value)

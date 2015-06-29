@@ -6,6 +6,7 @@ pages:
 - [Server.md, Usage, Server]
 - [Storage.md, Usage, Storage]
 - [IP-address.md, Usage, IP-address]
+- [Firewall.md, Usage, Firewall]
 - [CloudManager.md, CloudManager API, General Info]
 - [server-mixin.md, CloudManager API, Server Manager]
 - [storage-mixin.md, CloudManager API, Storage Manager]

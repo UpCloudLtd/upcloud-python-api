@@ -1,0 +1,86 @@
+{
+    "firewall_rules": {
+        "firewall_rule" : [
+            {
+                "action" : "accept",
+                "destination_address_end" : "",
+                "destination_address_start" : "",
+                "destination_port_end" : "80",
+                "destination_port_start" : "80",
+                "direction" : "in",
+                "family" : "IPv4",
+                "icmp_type" : "",
+                "position" : "1",
+                "protocol" : "",
+                "source_address_end" : "",
+                "source_address_start" : "",
+                "source_port_end" : "",
+                "source_port_start" : ""
+            },
+            {
+                "action" : "accept",
+                "destination_address_end" : "",
+                "destination_address_start" : "",
+                "destination_port_end" : "22",
+                "destination_port_start" : "22",
+                "direction" : "in",
+                "family" : "IPv4",
+                "icmp_type" : "",
+                "position" : "2",
+                "protocol" : "tcp",
+                "source_address_end" : "192.168.1.255",
+                "source_address_start" : "192.168.1.1",
+                "source_port_end" : "",
+                "source_port_start" : ""
+            },
+            {
+                "action" : "accept",
+                "destination_address_end" : "",
+                "destination_address_start" : "",
+                "destination_port_end" : "22",
+                "destination_port_start" : "22",
+                "direction" : "in",
+                "family" : "IPv6",
+                "icmp_type" : "",
+                "position" : "3",
+                "protocol" : "tcp",
+                "source_address_end" : "2a04:3540:1000:aaaa:bbbb:cccc:d001",
+                "source_address_start" : "2a04:3540:1000:aaaa:bbbb:cccc:d001",
+                "source_port_end" : "",
+                "source_port_start" : ""
+            },
+            {
+                "action" : "accept",
+                "destination_address_end" : "",
+                "destination_address_start" : "",
+                "destination_port_end" : "",
+                "destination_port_start" : "",
+                "direction" : "in",
+                "family" : "IPv4",
+                "icmp_type" : "8",
+                "position" : "4",
+                "protocol" : "icmp",
+                "source_address_end" : "",
+                "source_address_start" : "",
+                "source_port_end" : "",
+                "source_port_start" : ""
+            },
+            {
+                "action" : "drop",
+                "destination_address_end" : "",
+                "destination_address_start" : "",
+                "destination_port_end" : "",
+                "destination_port_start" : "",
+                "direction" : "in",
+                "family" : "",
+                "icmp_type" : "",
+                "position" : "5",
+                "protocol" : "",
+                "source_address_end" : "",
+                "source_address_start" : "",
+                "source_port_end" : "",
+                "source_port_start" : ""
+            }
+        ]
+    }
+}

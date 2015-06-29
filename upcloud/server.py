@@ -1,5 +1,4 @@
 from .base import BaseAPI
-from .firewall import Firewall
 
 class Server(BaseAPI):
 	"""
@@ -8,8 +7,8 @@ class Server(BaseAPI):
 	Partially immutable class; only fields that are persisted with .save() may be set with the server.field = value syntax.
 	See __setattr__ override. Any field can still be set with object.__setattr__(self, field, val) syntax.
 	"""
-	
-	updateable_fields = [ 	"boot_order", "core_number", "firewall", "hostname", "memory_amount", 
+
+	updateable_fields = [ 	"boot_order", "core_number", "firewall", "hostname", "memory_amount",
 							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
 
 	post_fields = []
@@ -24,7 +23,7 @@ class Server(BaseAPI):
 
 	def __setattr__(self, name, value):
 		"""
-		Override to prevent updating readonly fields. 
+		Override to prevent updating readonly fields.
 		"""
 		if name not in self.updateable_fields:
 			raise Exception( "'" + str(name) + "' is a readonly field")
@@ -34,7 +33,7 @@ class Server(BaseAPI):
 	def _reset(self, *initial_data, **kwargs):
 		"""
 		Reset all given attributes.
-		May also be given 
+		May also be given
 		"""
 		for dictionary in initial_data:
 			for key in dictionary:
@@ -49,17 +48,17 @@ class Server(BaseAPI):
 		Note: syncs ip_addresses and storage_devices too (/server/uuid endpoint)
 		"""
 		server, IP_addresses, storages = self.cloud_manager.get_server_data(self.uuid)
-		self._reset( server, 
-					ip_addresses = IP_addresses, 
-					storage_devices = storages, 
+		self._reset( server,
+					ip_addresses = IP_addresses,
+					storage_devices = storages,
 					populated = True)
 		return self
 
 	def save(self):
 		"""
-		Sync local changes in server's attributes to the API. 
-		
-		Note: DOES NOT sync IP_addresses and storage_devices, 
+		Sync local changes in server's attributes to the API.
+
+		Note: DOES NOT sync IP_addresses and storage_devices,
 		use add_IP, add_storage, remove_IP, remove_storage instead.
 		"""
 		kwargs = {}
@@ -68,16 +67,16 @@ class Server(BaseAPI):
 
 		self.cloud_manager.modify_server(self.uuid, **kwargs)
 		self._reset(kwargs)
-			
+
 	def destroy(self):
 		self.cloud_manager.delete_server(self.uuid)
 
 	def shutdown(self):
 		"""
-		Shutdown/stop the server. Issue a soft shutdown with a timeout of 30s. 
+		Shutdown/stop the server. Issue a soft shutdown with a timeout of 30s.
 		After the a timeout a hard shutdown is performed if the server has not stopped.
 
-		Note: API responds immediately (unlike in start), with state: started. 
+		Note: API responds immediately (unlike in start), with state: started.
 		This client will, however, set state as "maintenance" to signal that the server is neither started nor stopped.
 		"""
 		body = dict()
@@ -87,8 +86,8 @@ class Server(BaseAPI):
 		}
 		self.cloud_manager.post_request("/server/" + self.uuid + "/stop" , body)
 		object.__setattr__(self, "state", "maintenance") # post_request already handles any errors from API
-		
-	
+
+
 	def stop(self):
 		"""
 		Alias for shutdow.
@@ -97,7 +96,7 @@ class Server(BaseAPI):
 
 	def start(self):
 		"""
-		Starts the server. Note: slow and blocking request. 
+		Starts the server. Note: slow and blocking request.
 		The API waits for confirmation from UpCloud's IaaS backend before responding.
 		"""
 		res = self.cloud_manager.post_request("/server/" + self.uuid + "/start")
@@ -108,7 +107,7 @@ class Server(BaseAPI):
 		Restart the server. Issue a soft restart with a timeout of 30s.
 		After the a timeout a hard restart is performed if the server has not stopped.
 
-		Note: API responds immediately (unlike in start), with state: started. 
+		Note: API responds immediately (unlike in start), with state: started.
 		This client will, however, set state as "maintenance" to signal that the server is neither started nor stopped.
 		"""
 		body = dict()
@@ -154,6 +153,46 @@ class Server(BaseAPI):
 
 		self.cloud_manager.detach_storage(server_uuid=self.uuid, address=Storage.address)
 		self.storage_devices.remove(Storage)
+
+	def add_firewall_rule(self, FirewallRule):
+		"""
+		Adds the specified FirewallRule to this server. Returns a FirewallRule instance
+		that is associated with this server instance.
+
+		Instantly calls the API, no need to call .save(). This is because firewall can not
+		be configured with the same request as the rest of the Server.
+		"""
+		firewall_rule_body = FirewallRule.prepare_post_body()
+		firewall_rule = self.cloud_manager.create_firewall_rule(self.uuid, firewall_rule_body)
+		firewall_rule._associate_with_server(self)
+		return firewall_rule
+
+	def remove_firewall_rule(self, FirewallRule):
+		return FirewallRule.destroy()
+
+
+	def get_firewall_rules(self):
+		"""
+		Returns all FirewallRule instances that are associated with this server instance.
+		"""
+		firewall_rules = self.cloud_manager.get_firewall_rules(self.uuid)
+		for firewall_rule in firewall_rules:
+			firewall_rule._associate_with_server(self)
+		return firewall_rules
+
+	def configure_firewall(self, FirewallRules):
+		"""
+		Helper function for automatically adding several FirewallRules in series.
+		"""
+		firewall_rule_bodies = []
+		for FirewallRule in FirewallRules:
+			firewall_rule_bodies.append(FirewallRule.prepare_post_body())
+
+		firewall_rules = self.cloud_manager.configure_firewall(self.uuid, firewall_rule_bodies)
+		for firewall_rule in firewall_rules:
+			firewall_rule._associate_with_server(self)
+		return firewall_rules
+
 
 	def prepare_post_body(self):
 		body = dict()
