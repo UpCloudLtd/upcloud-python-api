@@ -172,6 +172,8 @@ To test against python3.2=< and pypy3-2.4.0, run:
 tox
 ``` 
 
+The project also supplies a small test suite to test against the live API at `test/live_test.py`. This suite is NOT run with `py.test` as it will permanently remove all resources related to an account. It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with PyPI releases. See source code on how to run the live tests.
+
 ## Bugs, Issues, Problems, Ideas
 
 Feel free to open a new issue : )
