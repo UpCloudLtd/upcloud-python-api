@@ -2,4 +2,6 @@ include *.txt
 include README.md
 include mkdocs.yml
 include tox.ini
+include test/conftest.py
+include test/json_data/*
 recursive-include docs *.md

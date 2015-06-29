@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 
-# from distutils.core import setup
 from setuptools import setup
 
 setup(
     name='upcloud-api-python',
-    version='0.1.1',
+    version='0.2.0',
     description='UpCloud API Client',
     author='Elias Nygren',
     author_email='elias.nygren@upcloud.com',
     maintainer='Elias Nygren',
     maintainer_email='elias.nygren@upcloud.com',
-    url='https://www.upcloud.com',
+    url='https://github.com/UpCloudLtd/upcloud-python-api',
     packages=['upcloud', 'upcloud.cloud_manager'],
-    download='https://github.com/UpCloudLtd/upcloud-python-api/tarball/v0.1.1',
+    download='https://github.com/UpCloudLtd/upcloud-python-api/tarball/v0.2.0',
     license='MIT',
     install_requires=[
         'mock==1.0.1',
