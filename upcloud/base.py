@@ -20,7 +20,7 @@ class BaseAPI(object):
 	Handles errors with __error_middleware.
 	"""
 	def request(self, method, endpoint, body=None):
-		if(method not in {"GET", "POST", "PUT", "DELETE"}):
+		if(method not in set(["GET", "POST", "PUT", "DELETE"])):
 			raise Exception("Invalid/Forbidden HTTP method")
 
 		url = "/" + self.api_v + endpoint
