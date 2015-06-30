@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import re
 
 def assignIfExists(opts, default=None, **kwargs):
@@ -9,7 +16,7 @@ def assignIfExists(opts, default=None, **kwargs):
 			return kwargs[opt]
 	return default
 
-class ZONE:
+class ZONE(object):
 	"""
 	Enums for UpCloud's Zones.
 	"""
@@ -17,7 +24,7 @@ class ZONE:
 	London = "uk-lon1"
 	Chicago = "us-chi1"
 
-class OperatingSystems:
+class OperatingSystems(object):
 	templates = {
 		"CentOS 6.5":	"01000000-0000-4000-8000-000050010200",
 		"CentOS 7.0":	"01000000-0000-4000-8000-000050010300",

@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import dict
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 from ..ip_address import IP_address
 from ..storage import Storage 
 
@@ -6,7 +15,7 @@ from ..server import Server
 from ..tools import assignIfExists
 
 
-class ServerManager():
+class ServerManager(object):
 	"""
 	Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
 	"""

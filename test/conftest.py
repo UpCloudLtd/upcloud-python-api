@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import open
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import os
 import pytest
 import responses
@@ -10,7 +18,7 @@ def manager():
     return upcloud.CloudManager("testuser", "mock-api-password")
 
 
-class Mock():
+class Mock(object):
 	base_url = 'https://api.upcloud.com/1.2'
 
 	@staticmethod
