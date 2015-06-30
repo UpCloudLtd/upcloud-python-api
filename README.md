@@ -19,8 +19,10 @@ python setup.py install
 
 **Supported versions** (offline tests pass with tox):
 
-* python 3.2
-* python 3.3 
+* python 2.6
+* python 2.7
+* <del>python 3.2</del> removed due to python2/3 support
+* python 3.3
 * python 3.4
 * python 3.5
 * pypi3  2.4.0
@@ -34,7 +36,7 @@ python setup.py install
 * Scale horizontally by creating / destroying servers
 * Scale vertically by changing the RAM, CPU, storage specs of any server
 * Manage firewall (on/off and individual rules)
-	* since 0.2: full management of firewall rules 
+	* since 0.2: full management of firewall rules
 
 **TODO:**
 * Cloning of storages
@@ -173,11 +175,11 @@ Tests located in `project_root/tests/` directory. Run with:
 py.test tests/
 ```
 
-To test against python3.2=< and pypy3-2.4.0, run:
+To test against all supported python versions, run:
 
 ```python
 tox
-``` 
+```
 
 The project also supplies a small test suite to test against the live API at `test/live_test.py`. This suite is NOT run with `py.test` as it will permanently remove all resources related to an account. It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with PyPI releases. See source code on how to run the live tests.
 
