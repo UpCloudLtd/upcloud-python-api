@@ -15,11 +15,13 @@ setup(
     download='https://github.com/UpCloudLtd/upcloud-python-api/tarball/v0.2.0',
     license='MIT',
     install_requires=[
+    	'future==0.14.3',
         'mock==1.0.1',
         'py==1.4.26',
         'pytest==2.6.4',
         'requests==2.6.0',
         'responses==0.3.0',
-        'six==1.9.0'
+        'six==1.9.0',
+        'wheel==0.24.0'
     ]
 )
