@@ -19,8 +19,6 @@ class Server(BaseAPI):
 	updateable_fields = [ 	"boot_order", "core_number", "firewall", "hostname", "memory_amount",
 							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
 
-	post_fields = []
-
 
 	def __init__(self, *initial_data, **kwargs):
 		object.__setattr__(self, "populated", False)
@@ -236,6 +234,34 @@ class Server(BaseAPI):
 			body["server"]["storage_devices"]["storage_device"].append(storage_body)
 
 		return body
+
+
+	def to_dict(self):
+		fields = dict(vars(self).items())
+
+		if self.populated:
+			fields['ip_addresses'] = []
+			fields['storage_devices'] = []
+
+			for ip in self.ip_addresses:
+				fields['ip_addresses'].append({
+					'address': ip.address,
+					'access': ip.access,
+					'family': ip.family
+				})
+
+			for storage in self.storage_devices:
+				fields['storage_devices'].append({
+					"address": storage.address,
+					"storage": storage.uuid,
+					"storage_size": storage.size,
+					"storage_title": storage.title,
+					"type": storage.type,
+				})
+
+		del fields['populated']
+		del fields['cloud_manager']
+		return fields
 
 
 	def __str__(self):
