@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 from upcloud import FirewallRule
 import responses
 import json
@@ -38,7 +45,7 @@ def firewall_rule_callback(request):
 
 
 
-class TestFirewall():
+class TestFirewall(object):
     @responses.activate
     def test_add_firewall_rule(self, manager):
         Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")

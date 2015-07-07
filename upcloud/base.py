@@ -1,3 +1,9 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
 import json
 import requests
 
@@ -14,7 +20,7 @@ class BaseAPI(object):
 	Handles errors with __error_middleware.
 	"""
 	def request(self, method, endpoint, body=None):
-		if(method not in {"GET", "POST", "PUT", "DELETE"}):
+		if(method not in set(["GET", "POST", "PUT", "DELETE"])):
 			raise Exception("Invalid/Forbidden HTTP method")
 
 		url = "/" + self.api_v + endpoint

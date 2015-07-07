@@ -1,6 +1,14 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 from .. import FirewallRule
 
-class FirewallManager():
+class FirewallManager(object):
     """
     Provides get / list / create / delete  functionality for firewall rules.
     These functions are used by the FirewallRule class but may also be used

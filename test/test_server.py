@@ -1,9 +1,17 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import responses
 import json
 from conftest import Mock
 import pytest
 
-class TestServer():
+class TestServer(object):
 	@responses.activate
 	def test_get_server(self, manager):
 		data = Mock.mock_get("server/00798b85-efdc-41ca-8021-f6ef457b8531")
