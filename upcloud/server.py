@@ -216,10 +216,11 @@ class Server(BaseAPI):
 		if hasattr(self, "boot_order"): 		body["server"]["boot_order"] = self.boot_order
 		if hasattr(self, "firewall"): 			body["server"]["firewall"] = self.firewall
 		if hasattr(self, "nic_model"):			body["server"]["nic_model"] = self.nic_model
-		if hasattr(self, "password_delivery"):	body["server"]["password_delivery"] = self.password_delivery
 		if hasattr(self, "timezone"):			body["server"]["timezone"] = self.timezone
 		if hasattr(self, "video_model"):		body["server"]["video_model"] = self.video_model
 		if hasattr(self, "vnc_password"):		body["server"]["vnc_password"] = self.vnc_password
+		if hasattr(self, "password_delivery"):	body["server"]["password_delivery"] = self.password_delivery
+		else: 									body["server"]["password_delivery"] = "none"
 
 
 		body["server"]["storage_devices"] = {
