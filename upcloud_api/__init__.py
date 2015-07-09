@@ -9,10 +9,10 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 
-__version__ = "0.0.1"
+__version__ = "0.3.0"
 __author__ = "Elias Nygren"
-__author_email__ = "elias.nygren@outlook.com"
-__license__ = "See: http://creativecommons.org/licenses/by-nd/3.0/ "
+__author_email__ = "elias.nygren@upcloud.com"
+__license__ = "MIT"
 __copyright__ = "Copyright (c) 2015 Elias Nygren"
 
 
