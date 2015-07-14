@@ -14,6 +14,19 @@ Alternatively, if you want the newest master or a devel branch - clone the proje
 python setup.py install
 ```
 
+**!! SSL security update for python 2 !!**
+* short story: `pip install requests[security]` should solve all of your problems.
+* long story:
+	* upcloud-python-api uses [requests](http://docs.python-requests.org/en/latest/) 
+	  for HTTP(S) that in turn uses [urllib3](https://urllib3.readthedocs.org/en/latest/)
+	* urllib3 may detect that your python2.x's SSL is lacking as described
+	  [here](https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning) and
+	  [here](https://urllib3.readthedocs.org/en/latest/security.html#pyopenssl).
+	* you may also be interested in (especially if `requests[security]` did not work for you on Ubuntu)
+	  [http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package]
+	  (http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package)
+
+
 **Supported versions as of 0.3.0** (offline tests pass with tox):
 
 * python 2.6
