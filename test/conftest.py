@@ -2,20 +2,16 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from builtins import open
+from builtins import object, open
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-import os
-import pytest
-import responses
-import json
 
+import json, os, pytest, responses
 
 @pytest.fixture(scope='module')
 def manager():
-    import upcloud
-    return upcloud.CloudManager("testuser", "mock-api-password")
+    import upcloud_api
+    return upcloud_api.CloudManager("testuser", "mock-api-password")
 
 
 class Mock(object):

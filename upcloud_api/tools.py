@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from builtins import object
+
 import re
 
 def assignIfExists(opts, default=None, **kwargs):
@@ -47,8 +48,8 @@ class OperatingSystems(object):
 			return cls.templates[os]
 
 		uuid_regexp = '^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$'
-		if re.search(uuid_regexp, os): 
-			return os		
+		if re.search(uuid_regexp, os):
+			return os
 
 		raise Exception('Invalid OS -- valid options are: "CentOS 6.5", "CentOS 7.0"',
 						'"Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04", "Windows 2003"',

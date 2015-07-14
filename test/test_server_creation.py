@@ -2,24 +2,22 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
+
+from upcloud_api import ZONE, Server, Storage
+
 from conftest import Mock
-from upcloud import ZONE
-from upcloud import Server
-from upcloud import Storage
-import responses
-import json
-import pytest
+import json, pytest, responses
 
-class TestCreateServer(object):	
 
+class TestCreateServer(object):
 
 	def test_storage_prepare_post_body(self, manager):
 		s1 = Storage(os="Ubuntu 14.04", size=10)
 		body1 = s1.prepare_post_body("my.example.com", 1)
-		
+
 		assert body1['title'] == "my.example.com OS disk"
 		assert body1['tier'] == "maxiops"
 		assert body1['size'] == 10
@@ -32,7 +30,7 @@ class TestCreateServer(object):
 		assert body2['title'] == 'my.example.com storage disk 1'
 		assert body2['tier'] == 'maxiops'
 		assert body2['action'] == 'create'
-		assert body2['size'] == 100	
+		assert body2['size'] == 100
 
 	def test_storage_prepare_post_body_optional_attributes(self, manager):
 		s2 = Storage(size=100, address="virtio:0", type="disk")
@@ -84,11 +82,11 @@ class TestCreateServer(object):
 		assert body["server"]["zone"] == "us-chi1"
 
 	def test_server_prepare_post_body_optional_attributes(self):
-		server = Server(core_number=2, memory_amount=1024, 
-						hostname="my.example.com",zone=ZONE.Chicago, 
+		server = Server(core_number=2, memory_amount=1024,
+						hostname="my.example.com",zone=ZONE.Chicago,
 						storage_devices=[ Storage(os="Ubuntu 14.04", size=10)],
 						vnc_password="my-passwd", password_delivery="email" 	)
-		
+
 		body = server.prepare_post_body()
 		assert body["server"]["title"] == "my.example.com"
 		assert body["server"]["core_number"] == 2
@@ -100,9 +98,9 @@ class TestCreateServer(object):
 
 	@responses.activate
 	def test_create_server(self, manager):
-		
+
 		responses.add(
-			responses.POST, 
+			responses.POST,
 			Mock.base_url + "/server",
 			body = Mock.read_from_file("server_create.json"),
 			status = 202,
@@ -115,7 +113,7 @@ class TestCreateServer(object):
 			])
 
 		manager.create_server(server1)
-		
+
 		# assert correct values in response
 		assert type(server1).__name__ == "Server"
 		assert server1.core_number == "2"

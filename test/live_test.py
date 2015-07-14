@@ -5,11 +5,11 @@ from __future__ import absolute_import
 from builtins import input
 from future import standard_library
 standard_library.install_aliases()
-import sys
-from time import sleep
 
-import upcloud
-from upcloud import CloudManager, Server, Storage, FirewallRule, ZONE
+from upcloud_api import CloudManager, Server, Storage, FirewallRule, ZONE
+
+from time import sleep
+import sys
 
 # cluster to be used in live tests
 cluster = {

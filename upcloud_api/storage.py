@@ -2,16 +2,14 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from builtins import dict
-from builtins import str
+from builtins import dict, object, str
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-from .tools import assignIfExists
-from .tools import OperatingSystems
+
+from upcloud_api.tools import assignIfExists, OperatingSystems
 
 class Storage(object):
-		
+
 	def __init__(self, **kwargs):
 		self.__reset(**kwargs)
 
@@ -31,7 +29,7 @@ class Storage(object):
 		self.uuid = assignIfExists(["uuid", "storage"], **kwargs) # self.uuid either "uuid" or "storage"
 		self.title = assignIfExists(["title", "storage_title"], **kwargs) # self.title either "title" or "storage_title"
 		self.size = assignIfExists(["size", "storage_size"], 10,  **kwargs) # self.size either "size" or "storage_size"
-		
+
 		# Present if populated via /storage/ or /storage/uuid
 		self.access = assignIfExists(["access"], **kwargs)
 		self.license = assignIfExists(["license"], **kwargs)
@@ -43,7 +41,7 @@ class Storage(object):
 		# Only present when populated via /storage/uuid
 		self.tier = assignIfExists(["tier"], **kwargs)
 		self.zone = assignIfExists(["zone"], **kwargs)
-		
+
 
 	def destroy(self):
 		self.cloud_manager.delete_storage(self.uuid)
@@ -63,7 +61,7 @@ class Storage(object):
 		if(title): 	body["storage"]["title"] = title
 		return body
 
-	
+
 	def prepare_post_body(self, storage_title=None, storage_title_id=None):
 			body = dict()
 
