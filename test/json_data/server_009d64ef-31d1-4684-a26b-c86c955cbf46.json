@@ -31,6 +31,11 @@
 				}
 			]
 		},
+		"tags": {
+			"tag": [
+				"web2"
+			]
+		},
 		"timezone" : "UTC",
 		"title" : "London server",
 		"uuid" : "009d64ef-31d1-4684-a26b-c86c955cbf46",
