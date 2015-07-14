@@ -7,7 +7,8 @@ from builtins import str
 from future import standard_library
 standard_library.install_aliases()
 
-from .base import BaseAPI
+from upcloud_api.base import BaseAPI
+
 from time import sleep
 
 

@@ -2,18 +2,19 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-import responses
-import json
+
 from conftest import Mock
+import json, responses
+
 
 class TestCloudManagerBasic(object):
 	@responses.activate
 	def test_get_account(self, manager):
 		data = Mock.mock_get("account")
-		
+
 		res = manager.authenticate()
 		assert json.loads(data) == res
 		res = manager.get_account()

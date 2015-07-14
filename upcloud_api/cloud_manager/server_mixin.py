@@ -3,14 +3,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from builtins import dict, str, object
-
 from future import standard_library
 standard_library.install_aliases()
 
-from upcloud.tools import assignIfExists
-from upcloud import IP_address
-from upcloud import Storage
-from upcloud import Server
+from upcloud_api import IP_address, Server, Storage
+from upcloud_api.tools import assignIfExists
 
 
 class ServerManager(object):
@@ -85,6 +82,7 @@ class ServerManager(object):
 			"Windows 2003","Windows 2008" ,"Windows 2012"
 
 		"""
+
 		if isinstance(server, Server):
 			body = server.prepare_post_body()
 		else:

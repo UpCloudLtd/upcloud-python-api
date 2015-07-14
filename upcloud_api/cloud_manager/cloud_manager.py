@@ -4,12 +4,12 @@ from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
-from ..base import BaseAPI
 
-from .server_mixin import ServerManager
-from .ip_address_mixin import IPManager
-from .storage_mixin import StorageManager
-from .firewall_mixin import FirewallManager
+from upcloud_api.base import BaseAPI
+from upcloud_api.cloud_manager import ServerManager
+from upcloud_api.cloud_manager import IPManager
+from upcloud_api.cloud_manager import StorageManager
+from upcloud_api.cloud_manager import FirewallManager
 
 import base64
 
