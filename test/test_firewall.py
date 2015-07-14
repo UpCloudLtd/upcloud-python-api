@@ -2,14 +2,14 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-from upcloud import FirewallRule
-import responses
-import json
+
+from upcloud_api import FirewallRule
+
 from conftest import Mock
-import pytest
+import json, pytest, responses
 
 
 def firewall_rule_callback(request):

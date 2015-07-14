@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-import responses
-import json
+
 from conftest import Mock
+import json, responses
 
 class TestIP(object):
 	@responses.activate
@@ -52,7 +52,7 @@ class TestIP(object):
 		data = Mock.mock_put("ip_address/10.1.0.101")
 		ip_addr = manager.modify_IP("10.1.0.101", ptr_record="my.ptr.record")
 		assert ip_addr.ptr == "my.ptr.record"
-		
+
 
 	@responses.activate
 	def test_ip_delete(self, manager):

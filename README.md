@@ -1,15 +1,15 @@
-# UpCloud-python-api
-Python client for [UpCloud's API](https://www.upcloud.com/documentation/api/).
+# UpCloud's Python API Client
+OOP-based api client for [UpCloud's API](https://www.upcloud.com/documentation/api/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
 
-NOTE: This Python client is still work-in-progress and is not considered production ready.
+NOTE: This Python client is still evolving. Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
 
 ## Installation
 
 ```
-pip install --pre upcloud-api-python
+pip install --pre upcloud-api
 
 # with older pip:
-pip install upcloud-api-python
+pip install upcloud-api
 ```
 
 Alternatively, clone the project and run
@@ -17,7 +17,7 @@ Alternatively, clone the project and run
 python setup.py install
 ```
 
-**Supported versions** (offline tests pass with tox):
+**Supported versions as of 0.3.0** (offline tests pass with tox):
 
 * python 2.6
 * python 2.7
@@ -112,6 +112,11 @@ for server in cluster:
 
 ```
 
+New in 0.3.0: servers can now be defined as dicts without using Server or Storage classes.
+The syntax/attributes are exactly like above and under the hood they are converted to Server and Storage classes.
+This feature is mainly for easier usage of the module from Ansible, but may provide useful elsewhere.
+
+
 ### Stop / Start / Destroy Servers
 ```python
 
@@ -126,6 +131,18 @@ for server in cluster:
 
 ```
 
+New in 0.3.0: as the success of server.start() or server.destroy() and storage.destroy() 
+depend on the Server's `state`, new helpers have been added. The helpers may be called regardless of
+the server's current state.
+
+```python
+# makes sure that the server is stopped (blocking wait) and then destroys the server and its storages
+server.stop_and_destroy()
+
+# makes sure that the server is started (blocking wait)
+server.ensure_started()
+```
+
 ### Upgrade a Server
 ```python
 
@@ -135,6 +152,20 @@ server.core_number = 4
 server.memory_amount = 4096
 server.save()
 server.start()
+
+```
+
+### Easy access to servers and their information:
+
+New in 0.3.0.
+
+```python
+
+# returns a public IPv4 (preferred) IPv6 (no public IPv4 was attached) address
+server.get_public_ip()
+
+# returns a JSON serializable dict with the server's information (storages and ip-addresses included)
+server.to_dict()
 
 ```
 

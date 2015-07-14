@@ -2,12 +2,13 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-from builtins import object
-import responses
-import json
+
 from conftest import Mock
+import json, responses
+
 
 class TestStorage(object):
 	@responses.activate
@@ -38,7 +39,7 @@ class TestStorage(object):
 
 	@responses.activate
 	def test_storage_update(self, manager):
-		
+
 		Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
 		storage = manager.modify_storage("01d4fcd4-e446-433b-8a9c-551a1284952e", title="my bigger data collection", size=15)
 		assert type(storage).__name__ == "Storage"
@@ -49,7 +50,7 @@ class TestStorage(object):
 	def test_storage_update_oop(self, manager):
 		data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
 		storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
-		
+
 		Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
 		storage.update(title="my bigger data collection", size=15)
 		assert storage.title == "my bigger data collection"

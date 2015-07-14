@@ -6,7 +6,11 @@ from builtins import dict
 from builtins import str
 from future import standard_library
 standard_library.install_aliases()
-from .base import BaseAPI
+
+from upcloud_api.base import BaseAPI
+
+from time import sleep
+
 
 class Server(BaseAPI):
 	"""
@@ -16,10 +20,12 @@ class Server(BaseAPI):
 	See __setattr__ override. Any field can still be set with object.__setattr__(self, field, val) syntax.
 	"""
 
-	updateable_fields = [ 	"boot_order", "core_number", "firewall", "hostname", "memory_amount",
-							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
+	#
+	# Functionality for partial immutability and repopulating the object from API.
+	#
 
-	post_fields = []
+	updateable_fields = [   "boot_order", "core_number", "firewall", "hostname", "memory_amount",
+							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
 
 
 	def __init__(self, *initial_data, **kwargs):
@@ -62,6 +68,13 @@ class Server(BaseAPI):
 					populated = True)
 		return self
 
+	def __str__(self):
+		return "Server: " + self.hostname
+
+	#
+	# Main functionality, 1:1 with UpCloud's API
+	#
+
 	def save(self):
 		"""
 		Sync local changes in server's attributes to the API.
@@ -90,7 +103,7 @@ class Server(BaseAPI):
 		body = dict()
 		body["stop_server"] = {
 			"stop_type" : "soft",
- 			"timeout" : "30"
+			"timeout" : "30"
 		}
 		self.cloud_manager.post_request("/server/" + self.uuid + "/stop" , body)
 		object.__setattr__(self, "state", "maintenance") # post_request already handles any errors from API
@@ -121,8 +134,8 @@ class Server(BaseAPI):
 		body = dict()
 		body["restart_server"] = {
 			"stop_type" : "soft",
- 			"timeout" : "30",
- 			"timeout_action" : "destroy"
+			"timeout" : "30",
+			"timeout_action" : "destroy"
 		}
 		self.cloud_manager.post_request("/server/" + self.uuid + "/restart" , body)
 		object.__setattr__(self, "state", "maintenance") # post_request already handles any errors from API
@@ -188,6 +201,12 @@ class Server(BaseAPI):
 			firewall_rule._associate_with_server(self)
 		return firewall_rules
 
+
+	#
+	# Helper and convenience functions.
+	# May perform several API requests and contain more complex logic.
+	#
+
 	def configure_firewall(self, FirewallRules):
 		"""
 		Helper function for automatically adding several FirewallRules in series.
@@ -203,6 +222,11 @@ class Server(BaseAPI):
 
 
 	def prepare_post_body(self):
+		"""
+		Prepares a JSON serializable dict from a Server instance with nested
+		Storage instances.
+		"""
+
 		body = dict()
 		# mandatory
 		body["server"] = {
@@ -213,15 +237,16 @@ class Server(BaseAPI):
 		}
 
 		# optional
-		if hasattr(self, "core_number"): 		body["server"]["core_number"] = self.core_number
-		if hasattr(self, "memory_amount"): 		body["server"]["memory_amount"] = self.memory_amount
-		if hasattr(self, "boot_order"): 		body["server"]["boot_order"] = self.boot_order
-		if hasattr(self, "firewall"): 			body["server"]["firewall"] = self.firewall
-		if hasattr(self, "nic_model"):			body["server"]["nic_model"] = self.nic_model
-		if hasattr(self, "password_delivery"):	body["server"]["password_delivery"] = self.password_delivery
-		if hasattr(self, "timezone"):			body["server"]["timezone"] = self.timezone
-		if hasattr(self, "video_model"):		body["server"]["video_model"] = self.video_model
-		if hasattr(self, "vnc_password"):		body["server"]["vnc_password"] = self.vnc_password
+		if hasattr(self, "core_number"):        body["server"]["core_number"] = self.core_number
+		if hasattr(self, "memory_amount"):      body["server"]["memory_amount"] = self.memory_amount
+		if hasattr(self, "boot_order"):         body["server"]["boot_order"] = self.boot_order
+		if hasattr(self, "firewall"):           body["server"]["firewall"] = self.firewall
+		if hasattr(self, "nic_model"):          body["server"]["nic_model"] = self.nic_model
+		if hasattr(self, "timezone"):           body["server"]["timezone"] = self.timezone
+		if hasattr(self, "video_model"):        body["server"]["video_model"] = self.video_model
+		if hasattr(self, "vnc_password"):       body["server"]["vnc_password"] = self.vnc_password
+		if hasattr(self, "password_delivery"):  body["server"]["password_delivery"] = self.password_delivery
+		else:                                   body["server"]["password_delivery"] = "none"
 
 
 		body["server"]["storage_devices"] = {
@@ -238,5 +263,119 @@ class Server(BaseAPI):
 		return body
 
 
-	def __str__(self):
-		return "Server: " + self.hostname
+	def to_dict(self):
+		"""
+		Prepares a JSON serializable dict for read-only purposes. Includes storages and IP-addresses.
+		Use prepare_post_body for POST and .save() for PUT.
+		"""
+		fields = dict(vars(self).items())
+
+		if self.populated:
+			fields['ip_addresses'] = []
+			fields['storage_devices'] = []
+
+			for ip in self.ip_addresses:
+				fields['ip_addresses'].append({
+					'address': ip.address,
+					'access': ip.access,
+					'family': ip.family
+				})
+
+			for storage in self.storage_devices:
+				fields['storage_devices'].append({
+					"address": storage.address,
+					"storage": storage.uuid,
+					"storage_size": storage.size,
+					"storage_title": storage.title,
+					"type": storage.type,
+				})
+
+		del fields['populated']
+		del fields['cloud_manager']
+		return fields
+
+
+	def get_public_ip(self):
+		"""Returns a server's public IP. Prioritizes IPv4 over IPv6."""
+
+		if not hasattr(self, 'ip_addresses'):
+			self.populate()
+
+		# server can have several public IPs
+		public_ip_addrs = []
+		for ip_addr in self.ip_addresses:
+			if ip_addr.access == 'public':
+				public_ip_addrs.append(ip_addr)
+
+		if not public_ip_addrs:
+			return None
+
+		# prefer IPv4
+		for ip_addr in public_ip_addrs:
+			if ip_addr.family == 'IPv4':
+				return ip_addr.address
+
+		# ...but accept IPv6 too
+		return public_ip_addrs[0].address
+
+
+	def _wait_for_state_change(self, target_states, update_interval=10):
+		"""
+		Blocking wait until target_state reached. update_interval is in seconds.
+		Warning: state change must begin before calling this method.
+		"""
+
+		while self.state not in target_states:
+			if self.state == 'error':
+				raise Exception('server is in error state')
+
+			# update server state every 10s
+			sleep(update_interval)
+			self.populate()
+
+
+	def ensure_started(self):
+		"""Starts a server and waits (blocking wait) until a it is fully started."""
+
+		# server is either starting or stopping (or error)
+		if self.state in ['maintenance', 'error']:
+			self._wait_for_state_change(['stopped', 'started'])
+
+		if self.state == 'stopped':
+			self.start()
+			self._wait_for_state_change(['started'])
+
+		if self.state == 'started':
+			return True
+		else:
+			# something went wrong, fail explicitly
+			raise Exception('unknown server state: ' + self.state)
+
+
+	def stop_and_destroy(self):
+		"""Destroy a server and its storages. Stops the server (blocking wait) before destroying."""
+
+		def destroy_storages():
+			# list view does not return all server info, populate if necessary
+			if not hasattr(self, 'storage_devices'):
+				self.populate()
+
+			# destroy the server and all storages attached to it
+			self.destroy()
+			for storage in self.storage_devices:
+				storage.destroy()
+
+		# server is either starting or stopping (or error)
+		if self.state in ['maintenance', 'error']:
+			self._wait_for_state_change(['stopped', 'started'])
+
+		# server is started
+		if self.state != 'stopped':
+			self.stop()
+			self._wait_for_state_change(['stopped'])
+
+		if self.state == 'stopped':
+			destroy_storages()
+		else:
+			# something went wrong, fail explicitly
+			raise Exception('unknown server state: ' + self.state)

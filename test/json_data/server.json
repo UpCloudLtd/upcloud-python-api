@@ -8,7 +8,12 @@
 				"hostname" : "fi.example.com",
 				"memory_amount" : "512",
 				"uuid" : "00798b85-efdc-41ca-8021-f6ef457b8531",
-				"state" : "started"
+				"state" : "started",
+				"tags": {
+					"tag": [
+						"web1"
+					]
+				}
 			},
 			{
 				"zone" : "uk-lon1",
@@ -17,7 +22,12 @@
 				"hostname" : "uk.example.com",
 				"memory_amount" : "512",
 				"uuid" : "009d64ef-31d1-4684-a26b-c86c955cbf46",
-				"state" : "stopped"
+				"state" : "stopped",
+				"tags": {
+					"tag": [
+						"web2"
+					]
+				}
 			}
 		]
 	}

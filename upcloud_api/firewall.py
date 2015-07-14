@@ -4,7 +4,8 @@ from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
-from .base import BaseAPI
+
+from upcloud_api.base import BaseAPI
 
 class FirewallRule(object):
     """
