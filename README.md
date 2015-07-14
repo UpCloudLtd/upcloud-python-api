@@ -6,13 +6,10 @@ NOTE: This Python client is still evolving. Please test all of your use cases th
 ## Installation
 
 ```
-pip install --pre upcloud-api
-
-# with older pip:
 pip install upcloud-api
 ```
 
-Alternatively, clone the project and run
+Alternatively, if you want the newest master or a devel branch - clone the project and run:  
 ```
 python setup.py install
 ```
