@@ -119,6 +119,43 @@ class TestCreateServer(object):
 		assert server1.core_number == "2"
 		assert server1.memory_amount == "1024"
 
+		# assert ips and storages have correct types
+		assert type(server1.storage_devices[0]).__name__ == "Storage"
+		assert type(server1.ip_addresses[0]).__name__ == "IP_address"
+
+		# assert new data was populated
+		assert server1.video_model ==  "cirrus"
+		assert server1.vnc ==  "off"
+		assert server1.vnc_password ==  "aabbccdd"
+
+	@responses.activate
+	def test_create_server_with_dict(self, manager):
+		responses.add(
+			responses.POST,
+			Mock.base_url + "/server",
+			body = Mock.read_from_file("server_create.json"),
+			status = 202,
+			content_type='application/json'
+		)
+
+		server1 = {
+			'core_number': 2, 'memory_amount': 1024, 'hostname': "my.example.com", 'zone': ZONE.Chicago,
+			'storage_devices': [
+				{ 'os': "Ubuntu 14.04", 'size': 10 },
+				{ 'size': 100, 'title': "storage disk 1" },
+			]}
+
+		server1 = manager.create_server(server1)
+
+		# assert correct values in response
+		assert type(server1).__name__ == "Server"
+		assert server1.core_number == "2"
+		assert server1.memory_amount == "1024"
+
+		# assert ips and storages have correct types
+		assert type(server1.storage_devices[0]).__name__ == "Storage"
+		assert type(server1.ip_addresses[0]).__name__ == "IP_address"
+
 		# assert new data was populated
 		assert server1.video_model ==  "cirrus"
 		assert server1.vnc ==  "off"

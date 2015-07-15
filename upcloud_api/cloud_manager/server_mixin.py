@@ -15,14 +15,30 @@ class ServerManager(object):
 	Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
 	"""
 
-	def get_servers(self, populate=False):
+	def get_servers(self, populate=False, tags_has_one=None, tags_has_all=None):
 		"""
 		Returns a list of (populated or unpopulated) Server instances.
-		Populate = False (default) => 1 API request, returns unpopulated Server instances.
-		Populate = True => Does 1 + n API requests (n = # of servers), returns populated Server instances.
+		- populate = False (default) => 1 API request, returns unpopulated Server instances.
+		- populate = True => Does 1 + n API requests (n = # of servers), returns populated Server instances.
+
+		New in 0.3.0: the list can be filtered with tags:
+		- tags_has_one: returns servers that have at least one of the given tags
+		- tags_has_all: returns servers that have all of the tags
 		"""
 
-		servers = self.get_request("/server")["servers"]["server"]
+		if tags_has_all and tags_has_one:
+			raise Exception("only one of (tags_has_all, tags_has_one) is allowed.")
+
+		request = "/server"
+		if tags_has_all:
+			taglist = tags_has_all.join(":")
+			request = "/server/tag/" + taglist
+
+		if tags_has_one:
+			taglist = tags_has_all.join(",")
+			request = "/server/tag/" + taglist
+
+		servers = self.get_request(request)["servers"]["server"]
 
 		server_list = list()
 		for server in servers:
@@ -30,7 +46,7 @@ class ServerManager(object):
 			server['tags'] = server['tags']['tag']
 			server_list.append( Server(server, cloud_manager = self) )
 
-		if( populate ):
+		if populate:
 			for server_instance in server_list:
 				server_instance.populate()
 
@@ -86,23 +102,10 @@ class ServerManager(object):
 		if isinstance(server, Server):
 			body = server.prepare_post_body()
 		else:
-			ip_data = server.pop("ip_addresses", None)
-			storage_data = server.pop("storage_devices", None)
-
-			server_dict = dict()
-			server_dict['cloud_manager'] = self
-			if ip_data: 	 server_dict['ip_addresses'] = IP_address._create_ip_address_objs( ip_data, cloud_manager = self )
-			if storage_data: server_dict['storage_devices'] = Storage._create_storage_objs( storage_data, cloud_manager = self )
-
-			server_from_dict = Server(server, **server_dict)
-			body = server_from_dict.prepare_post_body()
-
+			server = Server._create_server_obj(server, cloud_manager=self)
+			body = server.prepare_post_body()
 
 		res = self.post_request("/server", body)
-
-		# Populate subobjects
-		IP_addresses = IP_address._create_ip_address_objs( res["server"].pop("ip_addresses"), cloud_manager = self )
-		storages = Storage._create_storage_objs( res["server"].pop("storage_devices"), cloud_manager = self )
 
 		if isinstance(server, Server):
 			server_to_return = server
@@ -110,8 +113,6 @@ class ServerManager(object):
 			server_to_return = server_from_dict
 
 		server_to_return._reset( res["server"],
-						ip_addresses = IP_addresses,
-						storage_devices = storages,
 						cloud_manager = self,
 						populated = True)
 		return server_to_return
