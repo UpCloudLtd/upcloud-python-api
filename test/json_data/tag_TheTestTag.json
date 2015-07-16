@@ -1,0 +1,12 @@
+{
+  "tag" : {
+    "description" : "Description of TheTestTag",
+    "name" : "TheTestTag",
+    "servers" : {
+      "server" : [
+        "0057e20a-6878-43a7-b2b3-530c4a4bdc55",
+        "00cc17bd-fe22-4305-a0d3-1b81da14de8a"
+      ]
+    }
+  }
+}

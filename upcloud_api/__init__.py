@@ -21,4 +21,5 @@ from upcloud_api.storage import Storage
 from upcloud_api.ip_address import IP_address
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.tools import OperatingSystems, ZONE
+from upcloud_api.tag import Tag
 from upcloud_api.cloud_manager.cloud_manager import CloudManager

@@ -22,8 +22,11 @@ class ServerManager(object):
 		- populate = True => Does 1 + n API requests (n = # of servers), returns populated Server instances.
 
 		New in 0.3.0: the list can be filtered with tags:
-		- tags_has_one: returns servers that have at least one of the given tags
-		- tags_has_all: returns servers that have all of the tags
+		- tags_has_one: list of Tag objects or strings
+			returns servers that have at least one of the given tags
+
+		- tags_has_all: list of Tag objects or strings
+			returns servers that have all of the tags
 		"""
 
 		if tags_has_all and tags_has_one:
@@ -31,19 +34,19 @@ class ServerManager(object):
 
 		request = "/server"
 		if tags_has_all:
-			taglist = tags_has_all.join(":")
+			tags_has_all = [ str(tag) for tag in tags_has_all]
+			taglist = ":".join(tags_has_all)
 			request = "/server/tag/" + taglist
 
 		if tags_has_one:
-			taglist = tags_has_all.join(",")
+			tags_has_one = [ str(tag) for tag in tags_has_one]
+			taglist = ",".join(tags_has_one)
 			request = "/server/tag/" + taglist
 
 		servers = self.get_request(request)["servers"]["server"]
 
 		server_list = list()
 		for server in servers:
-			# remove the extra "tag" dict to simplify accessing tags
-			server['tags'] = server['tags']['tag']
 			server_list.append( Server(server, cloud_manager = self) )
 
 		if populate:
@@ -161,9 +164,6 @@ class ServerManager(object):
 		"""
 		data = self.get_request("/server/" + UUID)
 		server = data["server"]
-
-		# remove the extra "tag" dict to simplify accessing tags
-		server['tags'] = server['tags']['tag']
 
 		# Populate subobjects
 		IP_addresses = IP_address._create_ip_address_objs( server.pop("ip_addresses"), cloud_manager = self )
