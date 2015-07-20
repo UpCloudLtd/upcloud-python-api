@@ -6,15 +6,14 @@ from future import standard_library
 standard_library.install_aliases()
 
 from upcloud_api.base import BaseAPI
-from upcloud_api.cloud_manager import ServerManager
-from upcloud_api.cloud_manager import IPManager
-from upcloud_api.cloud_manager import StorageManager
-from upcloud_api.cloud_manager import FirewallManager
+from upcloud_api.cloud_manager import (
+	ServerManager, IPManager, StorageManager, FirewallManager, TagManager
+)
 
 import base64
 
 
-class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager):
+class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager, TagManager):
 	"""
 	CloudManager contains the core functionality of the upcloud API library.
 	All other managers are mixed in so code can be organized in corresponding submanager classes.

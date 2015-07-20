@@ -33,7 +33,8 @@
 		},
 		"tags": {
 			"tag": [
-				"web1"
+				"web1",
+				"web2"
 			]
 		},
 		"timezone" : "UTC",

@@ -67,7 +67,6 @@ class StorageManager(object):
 		if(address): 		body["storage_device"]["address"] = address
 
 		res = self.post_request("/server/" + server_uuid + "/storage/attach", body)
-		print(res)
 		return Storage._create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )
 
 	def detach_storage(self, server_uuid, address):
@@ -76,5 +75,4 @@ class StorageManager(object):
 		"""
 		body = { "storage_device": { "address": address } }
 		res = self.post_request("/server/" + server_uuid + "/storage/detach", body)
-		print(res)
 		return Storage._create_storage_objs( res["server"]["storage_devices"], cloud_manager = self )

@@ -8,6 +8,7 @@ from future import standard_library
 standard_library.install_aliases()
 
 from upcloud_api.base import BaseAPI
+from upcloud_api import Storage, IP_address
 
 from time import sleep
 
@@ -28,11 +29,11 @@ class Server(BaseAPI):
 							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
 
 
-	def __init__(self, *initial_data, **kwargs):
+	def __init__(self, server=None, **kwargs):
 		object.__setattr__(self, "populated", False)
-		self._reset(*initial_data, **kwargs)
+		self._reset(server, **kwargs)
 
-		if not hasattr(self, "title"):
+		if not hasattr(self, "title") and hasattr(self, 'hostname'):
 			self.title = self.hostname
 
 	def __setattr__(self, name, value):
@@ -44,14 +45,21 @@ class Server(BaseAPI):
 		else:
 			object.__setattr__(self, name, value)
 
-	def _reset(self, *initial_data, **kwargs):
+	def _reset(self, server, **kwargs):
 		"""
-		Reset all given attributes.
-		May also be given
+		Resets the server object with new values given as params.
+		- server: a dict representing the server. e.g the API response.
+		- kwargs: any meta fields such as cloud_manager and populated.
+
+		Note: storage_devices and ip_addresses may be given in server as dicts or
+		in kwargs as lists containing Storage and IP_address objects.
 		"""
-		for dictionary in initial_data:
-			for key in dictionary:
-				object.__setattr__(self, key, dictionary[key])
+		if server:
+			# handle storage, ip_address dicts and tags if they exist
+			Server._handle_server_subobjs(server, kwargs.get('cloud_manager'))
+
+			for key in server:
+				object.__setattr__(self, key, server[key])
 
 		for key in kwargs:
 			object.__setattr__(self, key, kwargs[key])
@@ -69,7 +77,7 @@ class Server(BaseAPI):
 		return self
 
 	def __str__(self):
-		return "Server: " + self.hostname
+		return self.uuid
 
 	#
 	# Main functionality, 1:1 with UpCloud's API
@@ -200,6 +208,24 @@ class Server(BaseAPI):
 		for firewall_rule in firewall_rules:
 			firewall_rule._associate_with_server(self)
 		return firewall_rules
+
+
+	def add_tags(self, tags):
+		"""
+		Add tags to a server. Accepts tags as strings or Tag objects.
+		"""
+		if self.cloud_manager.assign_tags(self.uuid, tags):
+			tags = self.tags + [ str(tag) for tag in tags ]
+			object.__setattr__(self, "tags", tags)
+
+
+	def remove_tags(self, tags):
+		"""
+		Add tags to a server. Accepts tags as strings or Tag objects.
+		"""
+		if self.cloud_manager.remove_tags(self.uuid, tags):
+			new_tags = [ tag for tag in self.tags if tag not in tags ]
+			object.__setattr__(self, "tags", new_tags)
 
 
 	#
@@ -379,3 +405,33 @@ class Server(BaseAPI):
 		else:
 			# something went wrong, fail explicitly
 			raise Exception('unknown server state: ' + self.state)
+
+
+	@classmethod
+	def _handle_server_subobjs(cls, server, cloud_manager):
+		ip_data = server.pop("ip_addresses", None)
+		storage_data = server.pop("storage_devices", None)
+		tags = server.pop("tags", None)
+
+		if ip_data:
+			ip_addresses = IP_address._create_ip_address_objs(ip_data, cloud_manager = cloud_manager)
+			server['ip_addresses'] = ip_addresses
+
+		if storage_data:
+			storages = Storage._create_storage_objs(storage_data, cloud_manager = cloud_manager)
+			server['storage_devices'] = storages
+
+		if tags and "tag" in tags:
+			server['tags'] = tags['tag']
+
+
+	@classmethod
+	def _create_server_obj(cls, server, cloud_manager):
+
+		cls._handle_server_subobjs(server, cloud_manager)
+
+		server_dict = dict()
+		server_dict.update(server)
+		server_dict['cloud_manager'] = cloud_manager
+
+		return Server(**server_dict)
