@@ -8,7 +8,7 @@ from future import standard_library
 standard_library.install_aliases()
 
 from upcloud_api.base import BaseAPI
-from upcloud import Storage, IP_address
+from upcloud_api import Storage, IP_address
 
 from time import sleep
 
