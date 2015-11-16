@@ -9,3 +9,7 @@ dist/
 *.sublime-workspace
 docs/html/
 .tox
+
+# pyenv
+.python-version
+
