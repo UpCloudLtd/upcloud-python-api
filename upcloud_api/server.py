@@ -92,11 +92,13 @@ class Server(BaseAPI):
 		use add_IP, add_storage, remove_IP, remove_storage instead.
 		"""
 
-		kwargs = {
-			field: getattr(self, field)
+		# dict comprehension that also works with 2.6
+		# http://stackoverflow.com/questions/21069668/alternative-to-dict-comprehension-prior-to-python-2-7
+		kwargs = dict(
+			(field, getattr(self, field))
 			for field in self.updateable_fields
 			if hasattr(self, field)
-		}
+		)
 
 		self.cloud_manager.modify_server(self.uuid, **kwargs)
 		self._reset(kwargs)
