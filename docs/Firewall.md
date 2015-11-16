@@ -1,10 +1,10 @@
 The code examples use the following:
 
 ```python
-import upcloud
-from upcloud import FirewallRule
+import upcloud_api
+from upcloud_api import FirewallRule
 
-manager = upcloud.CloudManager("username", "password")
+manager = upcloud_api.CloudManager("username", "password")
 ```
 
 # About

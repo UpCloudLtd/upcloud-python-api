@@ -13,10 +13,10 @@ The documentation is divided into two parts. Usage describes the basic CRUD func
 The code examples use the following:
 
 ```python
-import upcloud
-from upcloud import Storage
-from upcloud import Server
-from upcloud import ZONE
+import upcloud_api
+from upcloud_api import Storage
+from upcloud_api import Server
+from upcloud_api import ZONE
 
-manager = upcloud.CloudManager("username", "password")
+manager = upcloud_api.CloudManager("username", "password")
 ```
