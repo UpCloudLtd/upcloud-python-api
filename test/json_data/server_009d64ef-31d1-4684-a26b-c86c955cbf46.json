@@ -44,6 +44,7 @@
 		"vnc_host" : "fi-he1l.vnc.upcloud.com",
 		"vnc_password" : "aabbccdd",
 		"vnc_port" : "00000",
-		"zone" : "uk-lon1"
+		"zone" : "uk-lon1",
+		"plan": "custom"
 	}
 }

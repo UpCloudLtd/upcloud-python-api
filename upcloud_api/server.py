@@ -26,7 +26,8 @@ class Server(BaseAPI):
 	#
 
 	updateable_fields = [   "boot_order", "core_number", "firewall", "hostname", "memory_amount",
-							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
+							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password",
+							"plan" ]
 
 
 	def __init__(self, server=None, **kwargs):
@@ -263,6 +264,7 @@ class Server(BaseAPI):
 		}
 
 		# optional
+		if hasattr(self, "plan"):        		body["server"]["plan"] = self.plan
 		if hasattr(self, "core_number"):        body["server"]["core_number"] = self.core_number
 		if hasattr(self, "memory_amount"):      body["server"]["memory_amount"] = self.memory_amount
 		if hasattr(self, "boot_order"):         body["server"]["boot_order"] = self.boot_order
