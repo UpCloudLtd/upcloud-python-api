@@ -9,7 +9,7 @@ NOTE: This Python client is still evolving. Please test all of your use cases th
 pip install upcloud-api
 ```
 
-Alternatively, if you want the newest master or a devel branch - clone the project and run:  
+Alternatively, if you want the newest master or a devel branch - clone the project and run:
 ```
 python setup.py install
 ```
@@ -17,7 +17,7 @@ python setup.py install
 **!! SSL security update for python 2 !!**
 * short story: `pip install requests[security]` should solve all of your problems.
 * long story:
-	* upcloud-python-api uses [requests](http://docs.python-requests.org/en/latest/) 
+	* upcloud-python-api uses [requests](http://docs.python-requests.org/en/latest/)
 	  for HTTP(S) that in turn uses [urllib3](https://urllib3.readthedocs.org/en/latest/)
 	* urllib3 may detect that your python2.x's SSL is lacking as described
 	  [here](https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning) and
@@ -71,10 +71,10 @@ You must take this into account in your automations.
 ### Defining and creating Servers
 
 ```python
-import upcloud
-from upcloud import Server, Storage, ZONE
+import upcloud_api
+from upcloud_api import Server, Storage, ZONE
 
-manager = upcloud.CloudManager("api_user", "password")
+manager = upcloud_api.CloudManager("api_user", "password")
 manager.authenticate() # test credentials
 
 cluster = {
@@ -141,7 +141,7 @@ for server in cluster:
 
 ```
 
-New in 0.3.0: as the success of server.start() or server.destroy() and storage.destroy() 
+New in 0.3.0: as the success of server.start() or server.destroy() and storage.destroy()
 depend on the Server's `state`, new helpers have been added. The helpers may be called regardless of
 the server's current state.
 
