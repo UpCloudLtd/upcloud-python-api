@@ -91,9 +91,12 @@ class Server(BaseAPI):
 		Note: DOES NOT sync IP_addresses and storage_devices,
 		use add_IP, add_storage, remove_IP, remove_storage instead.
 		"""
-		kwargs = {}
-		for field in self.updateable_fields:
-			kwargs[field] = getattr(self, field)
+
+		kwargs = {
+			field: getattr(self, field)
+			for field in self.updateable_fields
+			if hasattr(self, field)
+		}
 
 		self.cloud_manager.modify_server(self.uuid, **kwargs)
 		self._reset(kwargs)
