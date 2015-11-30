@@ -1,11 +1,11 @@
 The code examples use the following:
 
 ```python
-import upcloud
-from upcloud import Storage
-from upcloud import ZONE
+import upcloud_api
+from upcloud_api import Storage
+from upcloud_api import ZONE
 
-manager = upcloud.CloudManager("username", "password")
+manager = upcloud_api.CloudManager("username", "password")
 ```
 
 # About
@@ -40,7 +40,7 @@ manager.get_storage(storage.uuid)
 `get_storages()` accepts one of the following parameters to filter the query:
 ```
 Storages list filters:
-	"normal" (default), "public", "private", 
+	"normal" (default), "public", "private",
 	"backup", "cdrom", "template", "favorite"
 ```
 
@@ -51,9 +51,9 @@ Storage can be created with the CloudManager's `.create_storage(size=10, tier="m
 
 ```python
 
-storage1 = manager.create_storage(	size=10, 
-									tier="maxiops", 
-									title="my storage disk", 
+storage1 = manager.create_storage(	size=10,
+									tier="maxiops",
+									title="my storage disk",
 									zone=ZONE.Helsinki )
 
 storage2 = manager.create_storage(100, zone=ZONE.Helsinki)
@@ -63,7 +63,7 @@ storage2 = manager.create_storage(100, zone=ZONE.Helsinki)
 
 ## Update
 
-Only the size and title of a storage can be updated. Please note that size can not be reduced and that OS level actions are required to account for the increased size. 
+Only the size and title of a storage can be updated. Please note that size can not be reduced and that OS level actions are required to account for the increased size.
 
 ```python
 

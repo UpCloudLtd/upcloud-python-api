@@ -3,6 +3,7 @@
 		"server" : [
 			{
 				"zone" : "fi-hel1",
+				"plan": "custom",
 				"core_number" : "0",
 				"title" : "Helsinki server",
 				"hostname" : "fi.example.com",
@@ -17,6 +18,7 @@
 			},
 			{
 				"zone" : "uk-lon1",
+				"plan": "custom",
 				"core_number" : "0",
 				"title" : "London server",
 				"hostname" : "uk.example.com",

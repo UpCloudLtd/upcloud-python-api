@@ -1,18 +1,18 @@
 The examples use the following:
 ```python
-import upcloud
-from upcloud import Server
-from upcloud import Storage
-from upcloud import ZONE
+import upcloud_api
+from upcloud_api import Server
+from upcloud_api import Storage
+from upcloud_api import ZONE
 
-manager = upcloud.CloudManager("username", "password")
+manager = upcloud_api.CloudManager("username", "password")
 ```
 
 # Start / Stop / Restart
 
 ```python
 
-server.stop() 		
+server.stop()
 server.start()
 server.restart()
 
@@ -24,7 +24,7 @@ server.populate()
 Please note that the server might not be stopped/started/restarted immediately when the API responds. The `.populate()` method updates the object's fields from the API and is thus useful for checking `server.state`.
 
 ```
-Server states: 
+Server states:
 	"started","stopped" -- server is shut down or running
 	"maintenance" 		-- when shutting down or (re)starting
 	"error" 			-- erronous state in UpCloud's backend
@@ -50,10 +50,10 @@ Creation of servers in the API is handled by the CloudManager. It accepts a Serv
 ```python
 
 server = Server(
-			core_number = 1, 
-			memory_amount = 512, 
-			hostname = "web1.example.com", 
-			zone = ZONE.London, 
+			core_number = 1,
+			memory_amount = 512,
+			hostname = "web1.example.com",
+			zone = ZONE.London,
 			storage_devices = [
 				Storage(os = "Ubuntu 14.04", size=10),
 				Storage(size=10, tier="hdd")
@@ -66,11 +66,11 @@ manager.create_server( server )
 Currently available Storage operating systems are the following UpCloud public templates:
 
 ```python
-# upcloud/tools.py
+# upcloud_api/tools.py
 
 Operating Systems:
-	"CentOS 6.5", "CentOS 7.0", 
-	"Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04", 
+	"CentOS 6.5", "CentOS 7.0",
+	"Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04",
 	"Windows 2003", "Windows 2008", "Windows 2012"
 
 ```
@@ -93,11 +93,11 @@ server.save()
 
 ```
 
-The following fields of Server instance may be updated, all other fields are read-only. Trying to assign values to other fields leads to an error.  
-	
+The following fields of Server instance may be updated, all other fields are read-only. Trying to assign values to other fields leads to an error.
+
 ```python
-Updateable attributes: 
-	"boot_order", "core_number", "firewall", "hostname", "memory_amount",  
+Updateable attributes:
+	"boot_order", "core_number", "firewall", "hostname", "memory_amount",
 	"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password"
 ```
 

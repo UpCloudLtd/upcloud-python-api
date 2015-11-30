@@ -26,7 +26,8 @@ class Server(BaseAPI):
 	#
 
 	updateable_fields = [   "boot_order", "core_number", "firewall", "hostname", "memory_amount",
-							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password" ]
+							"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password",
+							"plan" ]
 
 
 	def __init__(self, server=None, **kwargs):
@@ -90,9 +91,14 @@ class Server(BaseAPI):
 		Note: DOES NOT sync IP_addresses and storage_devices,
 		use add_IP, add_storage, remove_IP, remove_storage instead.
 		"""
-		kwargs = {}
-		for field in self.updateable_fields:
-			kwargs[field] = getattr(self, field)
+
+		# dict comprehension that also works with 2.6
+		# http://stackoverflow.com/questions/21069668/alternative-to-dict-comprehension-prior-to-python-2-7
+		kwargs = dict(
+			(field, getattr(self, field))
+			for field in self.updateable_fields
+			if hasattr(self, field)
+		)
 
 		self.cloud_manager.modify_server(self.uuid, **kwargs)
 		self._reset(kwargs)
@@ -263,6 +269,7 @@ class Server(BaseAPI):
 		}
 
 		# optional
+		if hasattr(self, "plan"):        		body["server"]["plan"] = self.plan
 		if hasattr(self, "core_number"):        body["server"]["core_number"] = self.core_number
 		if hasattr(self, "memory_amount"):      body["server"]["memory_amount"] = self.memory_amount
 		if hasattr(self, "boot_order"):         body["server"]["boot_order"] = self.boot_order

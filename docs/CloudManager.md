@@ -13,7 +13,7 @@ manager.get_account()
 
 # Zone
 
-Zones are already hardcoded as Enums in `upcloud.ZONE`. However, they can be queried from the API too.
+Zones are already hardcoded as Enums in `upcloud_api.ZONE`. However, they can be queried from the API too.
 
 ```python
 
