@@ -27,7 +27,7 @@ python setup.py install
 	  (http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package)
 
 
-**Supported versions as of 0.3.0** (offline tests pass with tox):
+**Supported versions as of 0.3.3** (offline tests pass with tox):
 
 * python 2.6
 * python 2.7
@@ -65,7 +65,7 @@ python setup.py install
 
 ## Examples
 
-Note that operations are not instant, for example a server is not fully shut down when the API responds.
+Note that some operations are not instant, for example a server is not fully shut down when the API responds.
 You must take this into account in your automations.
 
 ### Defining and creating Servers
