@@ -9,7 +9,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __author__ = "Elias Nygren"
 __author_email__ = "elias.nygren@upcloud.com"
 __license__ = "MIT"

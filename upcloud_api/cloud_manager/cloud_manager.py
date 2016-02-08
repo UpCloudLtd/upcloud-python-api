@@ -19,8 +19,16 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallMa
 	All other managers are mixed in so code can be organized in corresponding submanager classes.
 	"""
 
-	def __init__(self, username, password):
+	def __init__(self, username, password, timeout=10):
+		"""
+		Initiates CloudManager that handles all HTTP conections with UpCloud's API.
+		Optionally determine a timeout for API connections (in seconds). A timeout with the value
+		`None` means that there is no timeout.
+		"""
+
 		self.token = "Basic " + base64.b64encode( (username + ":" + password).encode() ).decode()
+		self.timeout = timeout
+
 
 	def authenticate(self):
 		return self.get_account()

@@ -1,9 +1,22 @@
-# Account / Authentication
+# Cloud Manager
+
+CloudManager handles all HTTP communications with UpCloud and mixes in the behavior of all Manager
+classes.
+
+In addition to the credentials, CloudManager can be given a timeout parameter that is
+relayed to requests library, see [here](http://docs.python-requests.org/en/master/user/advanced/?highlight=timeout#timeouts).
+Default timeout is 10.
 
 ```python
 
 # create manager and form a token
-manager = CloudManager("api-username", "password")
+manager = CloudManager("api-username", "password", timeout=15) # default timeout is 10
+
+```
+
+# Account / Authentication
+
+```python
 
 # test token
 manager.authenticate() # alias: get_account()

@@ -12,8 +12,9 @@ class BaseAPI(object):
 	api = "api.upcloud.com"
 	api_v = "1.2"
 
-	def __init__(self, token):
+	def __init__(self, token, timeout=None):
 		self.token = token
+		self.timeout = timeout
 
 	"""
 	Performs a request with a given body to a given endpoint in UpCloud's API.
@@ -33,7 +34,11 @@ class BaseAPI(object):
 		else: json_body_or_None = None
 
 		APIcall = getattr(requests, method.lower())
-		res = APIcall("https://api.upcloud.com" + url, data=json_body_or_None, headers=headers)
+		res = APIcall("https://api.upcloud.com" + url,
+			data=json_body_or_None,
+			headers=headers,
+			timeout=self.timeout
+		)
 
 		if( res.text ):
 			res_json = res.json()
