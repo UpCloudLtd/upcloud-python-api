@@ -348,27 +348,47 @@ class Server(BaseAPI):
     return fields
 
 
-  def get_public_ip(self):
-    """Returns a server's public IP. Prioritizes IPv4 over IPv6."""
+  def get_public_ip(self, addr_family='IPv4', strict=False):
+    """
+    Returns a server's public IP.
+
+    Params:
+    - addr_family: prefer IPv4 (default) or IPv6.
+    - strict mode (false/off by default): only return IP if it belongs to addr_family (IPv4 or IPv6).
+
+    Tries to fetch Server data from API if ip_addresses not set.
+
+    New in 3.4:
+    - possibility to specify which protocol is preferred via addr_family,
+      instead of always preferring IPv4.
+    - strict mode
+    """
+
+    if addr_family not in ['IPv4', 'IPv6']:
+        raise Exception("`addr_family` must be 'IPv4' or 'IPv6'")
 
     if not hasattr(self, 'ip_addresses'):
-      self.populate()
+        self.populate()
 
     # server can have several public IPs
     public_ip_addrs = []
     for ip_addr in self.ip_addresses:
-      if ip_addr.access == 'public':
-        public_ip_addrs.append(ip_addr)
+        if ip_addr.access == 'public':
+            public_ip_addrs.append(ip_addr)
 
     if not public_ip_addrs:
-      return None
+        return None
 
-    # prefer IPv4
+    # prefer addr_family
     for ip_addr in public_ip_addrs:
-      if ip_addr.family == 'IPv4':
-        return ip_addr.address
+        if ip_addr.family == addr_family:
+            return ip_addr.address
 
-    # ...but accept IPv6 too
+    # strict mode: either find addr_family or don't
+    if strict:
+        return None
+
+    # not stict mode: any public IP will do if addr_family didn't match
     return public_ip_addrs[0].address
 
 
