@@ -36,12 +36,12 @@ class ServerManager(object):
     if tags_has_all:
       tags_has_all = [ str(tag) for tag in tags_has_all]
       taglist = ':'.join(tags_has_all)
-      request = '/server/tag/{}'.format(taglist)
+      request = '/server/tag/{0}'.format(taglist)
 
     if tags_has_one:
       tags_has_one = [ str(tag) for tag in tags_has_one]
       taglist = ','.join(tags_has_one)
-      request = '/server/tag/{}'.format(taglist)
+      request = '/server/tag/{0}'.format(taglist)
 
     servers = self.get_request(request)['servers']['server']
 
@@ -134,10 +134,10 @@ class ServerManager(object):
     body['server'] = {}
     for arg in kwargs:
       if arg not in Server.updateable_fields:
-        Exception('{} is not an updateable field'.format(arg))
+        Exception('{0} is not an updateable field'.format(arg))
       body['server'][arg] = kwargs[arg]
 
-    res = self.request('PUT', '/server/{}'.format(UUID), body)
+    res = self.request('PUT', '/server/{0}'.format(UUID), body)
     server = res['server']
 
     # Populate subobjects
@@ -160,7 +160,7 @@ class ServerManager(object):
 
     Returns an empty object.
     """
-    return self.request('DELETE', '/server/{}'.format(UUID))
+    return self.request('DELETE', '/server/{0}'.format(UUID))
 
 
   def get_server_data(self, UUID):
@@ -168,7 +168,7 @@ class ServerManager(object):
     Returns '/server/uuid' data in Python dict.
     Creates object representations of any IP-address and Storage.
     """
-    data = self.get_request('/server/{}'.format(UUID))
+    data = self.get_request('/server/{0}'.format(UUID))
     server = data['server']
 
     # Populate subobjects

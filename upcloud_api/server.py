@@ -43,7 +43,7 @@ class Server(BaseAPI):
     Override to prevent updating readonly fields.
     """
     if name not in self.updateable_fields:
-      raise Exception("'{}' is a readonly field".format(name))
+      raise Exception("'{0}' is a readonly field".format(name))
     else:
       object.__setattr__(self, name, value)
 
@@ -124,7 +124,7 @@ class Server(BaseAPI):
       'timeout' : '30'
     }
 
-    path = '/server/{}/stop'.format(self.uuid)
+    path = '/server/{0}/stop'.format(self.uuid)
     self.cloud_manager.post_request(path, body)
     object.__setattr__(self, 'state', 'maintenance')
 
@@ -140,7 +140,7 @@ class Server(BaseAPI):
     Starts the server. Note: slow and blocking request.
     The API waits for confirmation from UpCloud's IaaS backend before responding.
     """
-    path = '/server/{}/start'.format(self.uuid)
+    path = '/server/{0}/start'.format(self.uuid)
     res = self.cloud_manager.post_request(path)
     object.__setattr__(self, 'state', 'started')
 
@@ -160,7 +160,7 @@ class Server(BaseAPI):
       'timeout_action' : 'destroy'
     }
 
-    path = '/server/{}/restart'.format(self.uuid)
+    path = '/server/{0}/restart'.format(self.uuid)
     self.cloud_manager.post_request(path, body)
     object.__setattr__(self, 'state', 'maintenance')
 
