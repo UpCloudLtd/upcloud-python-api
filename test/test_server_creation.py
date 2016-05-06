@@ -6,7 +6,7 @@ from builtins import object
 from future import standard_library
 standard_library.install_aliases()
 
-from upcloud_api import ZONE, Server, Storage
+from upcloud_api import ZONE, Server, Storage, login_user_block
 
 from conftest import Mock
 import json, pytest, responses
@@ -57,10 +57,16 @@ class TestCreateServer(object):
 
 
   def test_server_prepare_post_body(self):
-    server = Server(core_number=2, memory_amount=1024, hostname='my.example.com',zone=ZONE.Chicago, storage_devices=[
-        Storage(os='Ubuntu 14.04', size=10),
-        Storage()
-      ])
+    server = Server(
+        core_number=2,
+        memory_amount=1024,
+        hostname='my.example.com',
+        zone=ZONE.Chicago,
+        storage_devices=[
+            Storage(os='Ubuntu 14.04', size=10),
+            Storage()
+        ]
+    )
     body = server.prepare_post_body()
 
     s1 = body['server']['storage_devices']['storage_device'][0]
@@ -82,10 +88,22 @@ class TestCreateServer(object):
     assert body['server']['zone'] == 'us-chi1'
 
   def test_server_prepare_post_body_optional_attributes(self):
-    server = Server(core_number=2, memory_amount=1024,
-            hostname='my.example.com',zone=ZONE.Chicago,
-            storage_devices=[ Storage(os='Ubuntu 14.04', size=10)],
-            vnc_password='my-passwd', password_delivery='email'   )
+    server = Server(
+        core_number=2,
+        memory_amount=1024,
+        hostname='my.example.com',
+        zone=ZONE.Chicago,
+        storage_devices=[
+            Storage(
+                os='Ubuntu 14.04',
+                size=10
+            )
+        ],
+        vnc_password='my-passwd',
+        password_delivery='email',
+        login_user=login_user_block('upclouduser', ['this-is-a-SSH-key']),
+        avoid_host='12345678'
+    )
 
     body = server.prepare_post_body()
     assert body['server']['title'] == 'my.example.com'
@@ -95,6 +113,14 @@ class TestCreateServer(object):
     assert body['server']['zone'] == 'us-chi1'
     assert body['server']['vnc_password'] == 'my-passwd'
     assert body['server']['password_delivery'] == 'email'
+    assert body['server']['login_user'] == {
+        'username': 'upclouduser',
+        'create_password': 'yes',
+        'ssh_keys': {
+            'ssh_key': [ 'this-is-a-SSH-key' ]
+        }
+    }
+    assert body['server']['avoid_host'] == '12345678'
 
   @responses.activate
   def test_create_server(self, manager):
@@ -160,4 +186,3 @@ class TestCreateServer(object):
     assert server1.video_model ==  'cirrus'
     assert server1.vnc ==  'off'
     assert server1.vnc_password ==  'aabbccdd'
-

@@ -13,6 +13,20 @@ from upcloud_api import Storage, IP_address
 from time import sleep
 
 
+def login_user_block(username, ssh_keys, create_password=True):
+    """
+    Helper function for creating Server.login_user blocks.
+    (see: https://www.upcloud.com/api/8-servers/#create-server)
+    """
+    return {
+        'username': username,
+        'create_password': 'yes' if create_password is True else 'no',
+        'ssh_keys': {
+            'ssh_key': ssh_keys
+        }
+    }
+
+
 class Server(BaseAPI):
   """
   Object representation of UpCloud Server instance.
@@ -26,8 +40,14 @@ class Server(BaseAPI):
   #
 
   updateable_fields = [
-    'boot_order', 'core_number', 'firewall', 'hostname', 'memory_amount', 'nic_model', 'title',
-    'timezone', 'video_model', 'vnc', 'vnc_password', 'plan'
+    'boot_order', 'core_number', 'firewall', 'hostname', 'memory_amount', 'nic_model',
+    'title', 'timezone', 'video_model', 'vnc', 'vnc_password', 'plan'
+  ]
+
+  optional_fields = [
+    'plan', 'core_number', 'memory_amount', 'boot_order', 'firewall', 'nic_model',
+    'timezone', 'video_model', 'vnc_password', 'password_delivery', 'avoid_host',
+    'login_user'
   ]
 
 
@@ -288,19 +308,21 @@ class Server(BaseAPI):
       'storage_devices': {}
     }
 
-    # optional
-    if hasattr(self, 'plan'):               body['server']['plan'] = self.plan
-    if hasattr(self, 'core_number'):        body['server']['core_number'] = self.core_number
-    if hasattr(self, 'memory_amount'):      body['server']['memory_amount'] = self.memory_amount
-    if hasattr(self, 'boot_order'):         body['server']['boot_order'] = self.boot_order
-    if hasattr(self, 'firewall'):           body['server']['firewall'] = self.firewall
-    if hasattr(self, 'nic_model'):          body['server']['nic_model'] = self.nic_model
-    if hasattr(self, 'timezone'):           body['server']['timezone'] = self.timezone
-    if hasattr(self, 'video_model'):        body['server']['video_model'] = self.video_model
-    if hasattr(self, 'vnc_password'):       body['server']['vnc_password'] = self.vnc_password
-    if hasattr(self, 'password_delivery'):  body['server']['password_delivery'] = self.password_delivery
-    else:                                   body['server']['password_delivery'] = 'none'
+    # optional fields
 
+    for optional_field in self.optional_fields:
+        if hasattr(self, optional_field):
+            body['server'][optional_field] = getattr(self, optional_field)
+
+
+    # set password_delivery default as 'none' to prevent API from sending
+    # emails (with credentials) about each created server
+    if not hasattr(self, 'password_delivery'):
+        body['server']['password_delivery'] = 'none'
+
+
+    # collect storage devices and create a unique title (see: Storage.title in API doc)
+    # for each of them
 
     body['server']['storage_devices'] = {
       'storage_device': []
