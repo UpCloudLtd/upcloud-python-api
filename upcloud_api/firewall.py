@@ -18,6 +18,7 @@ class FirewallRule(object):
         'action': 'drop',
         'direction': 'in',
         'family': 'IPv4',
+        'comment': '',
         'destination_address_end': None,
         'destination_address_start': None,
         'destination_port_end': None,
@@ -40,9 +41,6 @@ class FirewallRule(object):
 
         # set object attributes from params
         for key in kwargs:
-            if key not in self.attributes:
-                self._invalid_key_err(key)
-
             setattr(self, key, kwargs[key])
 
         # set defaults (if need be) where the default is not None
@@ -81,16 +79,6 @@ class FirewallRule(object):
             self.position
         )
 
-
-    def _invalid_key_err(self, key):
-        """
-        Raise exception on invalid parameters given to __init__.
-        """
-        attr_list = list(self.attributes.keys())
-        raise Exception(
-            "invalid parameter to FirewallRule, '{key}' is not in {attributes}"
-            .format(key=key, attributes=attr_list)
-        )
 
     def _associate_with_server(self, server):
         """

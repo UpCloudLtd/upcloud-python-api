@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='upcloud-api',
-    version='0.3.4',
+    version='0.3.5',
     description='UpCloud API Client',
     author='Elias Nygren',
     author_email='elias.nygren@upcloud.com',
@@ -12,7 +12,7 @@ setup(
     maintainer_email='elias.nygren@upcloud.com',
     url='https://github.com/UpCloudLtd/upcloud-python-api',
     packages=['upcloud_api', 'upcloud_api.cloud_manager'],
-    download='https://github.com/UpCloudLtd/upcloud-python-api/tarball/v0.3.3',
+    download='https://github.com/UpCloudLtd/upcloud-python-api/tarball/v0.3.5',
     license='MIT',
     install_requires=[
     	'future==0.14.3',
