@@ -1,3 +1,4 @@
+.gitignore
 __pycache__
 ENV/
 .DS_Store
@@ -9,7 +10,10 @@ dist/
 *.sublime-workspace
 docs/html/
 .tox
+.cache
 
 # pyenv
 .python-version
 
+# local
+.test-snippets

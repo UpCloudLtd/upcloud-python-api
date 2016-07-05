@@ -6,7 +6,17 @@ from builtins import object, open
 from future import standard_library
 standard_library.install_aliases()
 
-import json, os, pytest, responses
+import json, os, pytest, responses, sys
+
+
+# make files under helpers available for import
+HELPERS_PATH = os.path.join(os.path.dirname(__file__), 'helpers')
+sys.path.append(HELPERS_PATH)
+
+
+def pytest_addoption(parser):
+    parser.addoption('--integration-tests', action='store_true', help='run integration tests')
+
 
 @pytest.fixture(scope='module')
 def manager():
@@ -84,11 +94,7 @@ class Mock(object):
 		data = json.loads( Mock.read_from_file(targetfile + '.json') )
 
 		# API will always respond state: "started", see: Server.stop, Server.start, Server,restart
-		data["server"]["state"] = "started"
+		data['server']['state'] = 'started'
 
 		data = json.dumps( data )
 		responses.add(responses.POST, Mock.base_url + "/" + target, status=200, body = data, content_type='application/json')
-
-
-
-
