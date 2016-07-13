@@ -1,2 +1,9 @@
-pytest==2.6.4
-py==1.4.26
+pytest>=2.9.2
+py>=1.4.26
+mock>=1.0.1
+responses>=0.3.0
+
+# flake8
+flake8>=2.6.2
+flake8-docstrings>=0.2.8
+hacking>=0.11.0

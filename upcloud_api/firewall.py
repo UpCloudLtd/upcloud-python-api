@@ -1,11 +1,5 @@
 from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
 
-from upcloud_api.base import BaseAPI
 
 class FirewallRule(object):
     """
@@ -34,25 +28,24 @@ class FirewallRule(object):
 
     def __init__(self, **kwargs):
         """
-        Creates a FirewallRule object from a dict.
-        Validates against FirewallRule.attributes and uses empty string as default
+        Create a FirewallRule object from a dict.
+
+        Validate against FirewallRule.attributes and uses empty string as default
         for all attributes (API wants them at least as empty strings).
         """
-
         # set object attributes from params
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
         # set defaults (if need be) where the default is not None
         for attr in self.attributes:
-            if not hasattr(self, attr) and self.attributes[attr] != None:
+            if not hasattr(self, attr) and self.attributes[attr] is not None:
                 setattr(self, attr, self.attributes[attr])
 
     def prepare_post_body(self):
         """
-        Returns a dict that can be serialised to JSON and sent to UpCloud's API.
+        Return a dict that can be serialised to JSON and sent to UpCloud's API.
         """
-
         body = {}
         for attr in self.attributes:
             if hasattr(self, attr):
@@ -61,7 +54,7 @@ class FirewallRule(object):
 
     def destroy(self):
         """
-        Removes this FirewallRule from the API.
+        Remove this FirewallRule from the API.
 
         This instance must be associated with a server for this method to work,
         which is done by instantiating via server.get_firewall_rule(position)
@@ -79,10 +72,8 @@ class FirewallRule(object):
             self.position
         )
 
-
     def _associate_with_server(self, server):
         """
         Internal function used by Server to associate itself with the FirewallRule.
         """
-
         self.server = server
