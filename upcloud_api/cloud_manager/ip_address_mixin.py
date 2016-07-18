@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from builtins import str
+
+import six
 
 from upcloud_api import IP_address
 
@@ -33,7 +34,7 @@ class IPManager(object):
         """
         Attach a new (random) IP_address to the given server (object or UUID).
         """
-        if not isinstance(server, str):
+        if not isinstance(server, six.string_types):
             server = server.uuid
 
         body = {
@@ -52,7 +53,7 @@ class IPManager(object):
 
         Accepts an IP_address instance (object) or its address (string).
         """
-        if not isinstance(IP_addr, str):
+        if not isinstance(IP_addr, six.string_types):
             IP_addr = IP_addr.address
 
         body = {
@@ -70,7 +71,7 @@ class IPManager(object):
 
         Accepts an IP_address instance (object) or its address (string).
         """
-        if not isinstance(IP_addr, str):
+        if not isinstance(IP_addr, six.string_types):
             IP_addr = IP_addr.address
 
         return self.request('DELETE', '/ip_address/' + IP_addr)
