@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
+
+import itertools
 from time import sleep
 
-from upcloud_api import Storage, IP_address
+from upcloud_api import Storage, IP_address, UpCloudAPIError
+from upcloud_api.utils import try_it_n_times
 
 
 def login_user_block(username, ssh_keys, create_password=True):
@@ -429,7 +432,7 @@ class Server(object):
 
     def ensure_started(self):
         """
-        Start a server and waits (blocking wait) until a it is fully started.
+        Start a server and waits (blocking wait) until it is fully started.
         """
         # server is either starting or stopping (or error)
         if self.state in ['maintenance', 'error']:
@@ -445,35 +448,45 @@ class Server(object):
             # something went wrong, fail explicitly
             raise Exception('unknown server state: ' + self.state)
 
-    def stop_and_destroy(self):
+    def stop_and_destroy(self, sync=True):
         """
-        Destroy a server and its storages.
+        Destroy a server and its storages. Stops the server before destroying.
 
-        Stops the server (blocking wait) before destroying.
+        Syncs the server state from the API, use sync=False to disable.
         """
-        def destroy_storages():
-            # list view does not return all server info, populate if necessary
-            if not hasattr(self, 'storage_devices'):
-                self.populate()
+        def _self_destruct():
+            """destroy the server and all storages attached to it."""
 
-            # destroy the server and all storages attached to it
-            self.destroy()
+            # try_it_n_times util is used as a convenience because
+            # Servers and Storages can fluctuate between "maintenance" and their
+            # original state due to several different reasons especially when
+            # destroying infrastructure.
+
+            # first destroy server
+            try_it_n_times(operation=self.destroy,
+                           expected_error_codes=['SERVER_STATE_ILLEGAL'],
+                           custom_error='stopping server failed')
+
+            # storages may be deleted instantly after server DELETE
             for storage in self.storage_devices:
-                storage.destroy()
+                try_it_n_times(operation=storage.destroy,
+                               expected_error_codes=['STORAGE_STATE_ILLEGAL'],
+                               custom_error='destroying storage failed')
+
+        if sync:
+            self.populate()
 
         # server is either starting or stopping (or error)
         if self.state in ['maintenance', 'error']:
             self._wait_for_state_change(['stopped', 'started'])
 
-        # server is started
-        if self.state != 'stopped':
+        if self.state == 'started':
             self.stop()
             self._wait_for_state_change(['stopped'])
 
         if self.state == 'stopped':
-            destroy_storages()
+            _self_destruct()
         else:
-            # something went wrong, fail explicitly
             raise Exception('unknown server state: ' + self.state)
 
     @classmethod
