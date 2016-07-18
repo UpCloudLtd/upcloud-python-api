@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
-from builtins import dict, str
+
+import six
 
 from upcloud_api import Server
 
@@ -42,7 +43,7 @@ class Tag(object):
             servers = kwargs['servers']
 
         # convert UUIDs into server objects
-        if servers and isinstance(servers[0], str):
+        if servers and isinstance(servers[0], six.string_types):
             kwargs['servers'] = [Server(uuid=server, populated=False) for server in servers]
         else:
             kwargs['servers'] = servers

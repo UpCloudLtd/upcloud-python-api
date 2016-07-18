@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from builtins import dict, object, str
 
 from upcloud_api.tools import assignIfExists, OperatingSystems
 

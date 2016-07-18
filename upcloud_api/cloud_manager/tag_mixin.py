@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from builtins import str
+
+import six
+
 from upcloud_api import Tag
 
 
@@ -80,7 +82,7 @@ class TagManager(object):
 
     def delete_tag(self, tag):
         """Delete the Tag. Returns and empty object."""
-        if not isinstance(tag, str):
+        if not isinstance(tag, six.string_types):
             tag = tag.name
 
         return self.request('DELETE', '/tag/' + tag)
