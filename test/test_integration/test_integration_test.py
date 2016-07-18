@@ -34,26 +34,21 @@ CREATED_TAGS = []
 def teardown_module(module):
     manager = CloudManager(USERNAME, PASSWORD, timeout=120)
 
-    try:
-        # if we are at CIRCLECI, clean up everything
-        # useful as we don't want to manually clean anything after erroneous builds
-        if os.environ.get('CIRCLECI', False):
-            for server in manager.get_servers():
-                server.stop_and_destroy()
+    # if we are at CIRCLECI, clean up everything
+    if os.environ.get('CIRCLECI', False):
+        for server in manager.get_servers():
+            server.stop_and_destroy()
 
-            for tag in manager.get_tags():
-                tag.destroy()
-        else:
-            print('removing {}'.format(CREATED_SERVERS))
-            for server in CREATED_SERVERS:
-                server.stop_and_destroy()
+        for tag in manager.get_tags():
+            tag.destroy()
+    else:
+        print('removing {}'.format(CREATED_SERVERS))
+        for server in CREATED_SERVERS:
+            server.stop_and_destroy()
 
-            print('removing {}'.format(CREATED_TAGS))
-            for tag in CREATED_TAGS:
-                manager.delete_tag(tag)
-
-    except Exception as e:
-        raise Exception('Cleanup failed due to: {}'.format(e))
+        print('removing {}'.format(CREATED_TAGS))
+        for tag in CREATED_TAGS:
+            manager.delete_tag(tag)
 
 
 @integration_test
