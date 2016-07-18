@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
+
 import json
 import requests
+
+from upcloud_api import UpCloudAPIError
 
 
 class BaseAPI(object):
@@ -65,6 +68,8 @@ class BaseAPI(object):
         Middleware that raises an exception when HTTP statuscode is an error code.
         """
         if(res.status_code in [400, 401, 402, 403, 404, 405, 406, 409]):
-            raise Exception(res_json)
+            err_dict = res_json.get('error', {})
+            raise UpCloudAPIError(error_code=err_dict.get('error_code'),
+                                  error_message=err_dict.get('error_message'))
 
         return res_json
