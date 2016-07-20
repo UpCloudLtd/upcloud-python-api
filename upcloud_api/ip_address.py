@@ -15,7 +15,7 @@ class IP_address(object):
     ptr_record and server are present only if /server/uuid endpoint was used.
     """
 
-    def __init__(self, access, address, cloud_manager, family='IPv4',
+    def __init__(self, access, cloud_manager, address=None, family='IPv4',
                  ptr_record=None, server=None, *args, **kwargs):
         """
         Initialize IP address with at least access and address.
