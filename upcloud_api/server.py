@@ -47,7 +47,7 @@ class Server(object):
     optional_fields = [
         'plan', 'core_number', 'memory_amount', 'boot_order', 'firewall', 'nic_model',
         'timezone', 'video_model', 'vnc_password', 'password_delivery', 'avoid_host',
-        'login_user'
+        'login_user', 'user_data'
     ]
 
     def __init__(self, server=None, **kwargs):

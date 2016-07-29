@@ -106,7 +106,8 @@ class TestCreateServer(object):
             vnc_password='my-passwd',
             password_delivery='email',
             login_user=login_user_block('upclouduser', ['this-is-a-SSH-key']),
-            avoid_host='12345678'
+            avoid_host='12345678',
+            user_data='https://my.script.com/some_script.py'
         )
 
         body = server.prepare_post_body()
@@ -125,6 +126,7 @@ class TestCreateServer(object):
             }
         }
         assert body['server']['avoid_host'] == '12345678'
+        assert body['server']['user_data'] == 'https://my.script.com/some_script.py'
 
     @responses.activate
     def test_create_server(self, manager):
