@@ -465,7 +465,7 @@ class Server(object):
             # first destroy server
             try_it_n_times(operation=self.destroy,
                            expected_error_codes=['SERVER_STATE_ILLEGAL'],
-                           custom_error='stopping server failed')
+                           custom_error='destroying server failed')
 
             # storages may be deleted instantly after server DELETE
             for storage in self.storage_devices:
@@ -481,7 +481,10 @@ class Server(object):
             self._wait_for_state_change(['stopped', 'started'])
 
         if self.state == 'started':
-            self.stop()
+            try_it_n_times(operation=self.stop,
+                           expected_error_codes=['SERVER_STATE_ILLEGAL'],
+                           custom_error='stopping server failed')
+
             self._wait_for_state_change(['stopped'])
 
         if self.state == 'stopped':
