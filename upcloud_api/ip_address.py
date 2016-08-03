@@ -15,7 +15,7 @@ class IP_address(object):
     ptr_record and server are present only if /server/uuid endpoint was used.
     """
 
-    def __init__(self, access, address, cloud_manager, family='IPv4',
+    def __init__(self, access, cloud_manager, address=None, family='IPv4',
                  ptr_record=None, server=None, *args, **kwargs):
         """
         Initialize IP address with at least access and address.
@@ -73,8 +73,18 @@ class IP_address(object):
         return self._family
 
     @staticmethod
-    def _create_ip_address_objs(IP_addrs, cloud_manager):
-        IP_objs = list()
-        for ip_addr in IP_addrs['ip_address']:
-            IP_objs.append(IP_address(cloud_manager=cloud_manager, **ip_addr))
-        return IP_objs
+    def _create_ip_address_objs(ip_addresses, cloud_manager):
+
+        # ip-addresses might be provided as a flat array or as a following dict:
+        # {'ip_addresses': {'ip_address': [...]}} || {'ip_address': [...]}
+
+        if 'ip_addresses' in ip_addresses:
+            ip_addresses = ip_addresses['ip_addresses']
+
+        if 'ip_address' in ip_addresses:
+            ip_addresses = ip_addresses['ip_address']
+
+        ip_address_objs = list()
+        for ip_addr in ip_addresses:
+            ip_address_objs.append(IP_address(cloud_manager=cloud_manager, **ip_addr))
+        return ip_address_objs

@@ -112,11 +112,23 @@ class Storage(object):
 
     @staticmethod
     def _create_storage_objs(storages, cloud_manager):
-        if 'storage' in storages:
-            storages = storages['storage']
+
+        # storages might be provided as a flat array or as a following dict:
+        # {'storage_devices': {'storage_device': [...]}} || {'storage_device': [...]}
+
+        if 'storage_devices' in storages:
+            storages = storages['storage_devices']
 
         if 'storage_device' in storages:
             storages = storages['storage_device']
+
+        # or {'storages': {'storage': [...]}} || {'storage': [...]}
+
+        if 'storages' in storages:
+            storages = storages['storages']
+
+        if 'storage' in storages:
+            storages = storages['storage']
 
         storage_objs = list()
         for storage in storages:
