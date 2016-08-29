@@ -135,9 +135,9 @@ class Server(object):
     def destroy(self):  # noqa
         self.cloud_manager.delete_server(self.uuid)
 
-    def shutdown(self):
+    def shutdown(self, hard=False, timeout=30):
         """
-        Shutdown/stop the server. Issue a soft shutdown with a timeout of 30s.
+        Shutdown/stop the server. By default, issue a soft shutdown with a timeout of 30s.
 
         After the a timeout a hard shutdown is performed if the server has not stopped.
 
@@ -147,8 +147,8 @@ class Server(object):
         """
         body = dict()
         body['stop_server'] = {
-            'stop_type': 'soft',
-            'timeout': '30'
+            'stop_type': 'hard' if hard else 'soft',
+            'timeout': '{0}'.format(timeout)
         }
 
         path = '/server/{0}/stop'.format(self.uuid)
@@ -171,9 +171,10 @@ class Server(object):
         self.cloud_manager.post_request(path)
         object.__setattr__(self, 'state', 'started')
 
-    def restart(self):
+    def restart(self, hard=False, timeout=30, force=True):
         """
-        Restart the server. Issue a soft restart with a timeout of 30s.
+        Restart the server. By default, issue a soft restart with a timeout of 30s
+        and a hard restart after the timeout.
 
         After the a timeout a hard restart is performed if the server has not stopped.
 
@@ -183,9 +184,9 @@ class Server(object):
         """
         body = dict()
         body['restart_server'] = {
-            'stop_type': 'soft',
-            'timeout': '30',
-            'timeout_action': 'destroy'
+            'stop_type': 'hard' if hard else 'soft',
+            'timeout': '{0}'.format(timeout),
+            'timeout_action': 'destroy' if force else 'ignore'
         }
 
         path = '/server/{0}/restart'.format(self.uuid)
