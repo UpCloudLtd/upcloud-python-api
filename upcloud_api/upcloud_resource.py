@@ -1,5 +1,5 @@
 
-class UpCloudResource():
+class UpCloudResource(object):
 
     ATTRIBUTES = {}  # subclass should define this
 
