@@ -159,7 +159,7 @@ class TestCreateServer(object):
 
         # assert ips and storages have correct types
         assert type(server1.storage_devices[0]).__name__ == 'Storage'
-        assert type(server1.ip_addresses[0]).__name__ == 'IP_address'
+        assert type(server1.ip_addresses[0]).__name__ == 'IPAddress'
 
         # assert new data was populated
         assert server1.video_model == 'cirrus'
@@ -196,7 +196,7 @@ class TestCreateServer(object):
 
         # assert ips and storages have correct types
         assert type(server1.storage_devices[0]).__name__ == 'Storage'
-        assert type(server1.ip_addresses[0]).__name__ == 'IP_address'
+        assert type(server1.ip_addresses[0]).__name__ == 'IPAddress'
 
         # assert new data was populated
         assert server1.video_model == 'cirrus'

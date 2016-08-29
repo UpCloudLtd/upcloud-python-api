@@ -191,8 +191,8 @@ servers     = manager.get_servers()
 server1     = manager.get_server(UUID) # e.g servers[0].uuid
 storages    = manager.get_storages()
 storage1    = manager.get_storage(UUID) # e.g sever1.storage_devices[0].uuid
-ip_addrs    = manager.get_IPs()
-ip_addr     = manager.get_IP(address) # e.g server1.ip_addresses[0].address
+ip_addrs    = manager.get_ips()
+ip_addr     = manager.get_ip(address) # e.g server1.ip_addresses[0].address
 
 ```
 

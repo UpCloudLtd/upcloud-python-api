@@ -21,8 +21,8 @@ CloudManager returns IP-address objects.
 
 ```python
 
-manager.get_IPs()
-manager.get_IP("185.20.31.125")
+manager.get_ips()
+manager.get_ip("185.20.31.125")
 
 ```
 
@@ -33,19 +33,19 @@ The new IP-address must be attached to a server and has a random address.
 ```python
 
 # params: server uuid or a Server object and family, for which default is IPv4
-manager.attach_IP(server_uuid)
-manager.attach_IP(server_uuid, "IPv4")
-manager.attach_IP(server_uuid, "IPv6")
-manager.attach_IP(Server)
-manager.attach_IP(Server, "IPv4")
-manager.attach_IP(Server, "IPv6")
+manager.attach_ip(server_uuid)
+manager.attach_ip(server_uuid, "IPv4")
+manager.attach_ip(server_uuid, "IPv6")
+manager.attach_ip(Server)
+manager.attach_ip(Server, "IPv4")
+manager.attach_ip(Server, "IPv6")
 
 
 # or use Server instance
 server = manager.get_server(uuid)
-server.add_IP() # default is IPv4
-server.add_IP("IPv4")
-server.add_IP("IPv6")
+server.add_ip() # default is IPv4
+server.add_ip("IPv4")
+server.add_ip("IPv6")
 
 ```
 
@@ -55,7 +55,7 @@ At the moment only the ptr_record (reverse DNS) of an IP can be changed.
 
 ```python
 
-ip = manager.get_IP("185.20.31.125")
+ip = manager.get_ip("185.20.31.125")
 ip.ptr_record = "the.new.ptr.record"
 ip.save()
 
@@ -65,7 +65,7 @@ ip.save()
 
 ```python
 
-ip = manager.get_IP("185.20.31.125")
+ip = manager.get_ip("185.20.31.125")
 ip.destroy()
 
 ```

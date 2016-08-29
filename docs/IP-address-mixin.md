@@ -19,38 +19,38 @@ manager.method()
 
 
 ```python
-def get_IP(self, address):
+def get_ip(self, address):
 	"""
-	Get an IP_address object with the IP address (string) from the API.
-	e.g manager.get_IP("80.69.175.210")
-	"""
-```
-
-```python
-def get_IPs(self):
-	"""
-	Get all IP_address objects from the API.
+	Get an IPAddress object with the IP address (string) from the API.
+	e.g manager.get_ip("80.69.175.210")
 	"""
 ```
 
 ```python
-def attach_IP(self, server, family="IPv4"):
+def get_ips(self):
 	"""
-	Attach a new (random) IP_address to the given server (object or UUID)
+	Get all IPAddress objects from the API.
+	"""
+```
+
+```python
+def attach_ip(self, server, family="IPv4"):
+	"""
+	Attach a new (random) IPAddress to the given server (object or UUID)
 	"""
 ```
 ```python
-def modify_IP(self, IP_addr, ptr_record):
+def modify_ip(self, ip_addr, ptr_record):
 	"""
 	Modify an IP address' ptr-record (Reverse DNS).
-	Accepts an IP_address instance (object) or its address (string).
+	Accepts an IPAddress instance (object) or its address (string).
 	"""
 ```
 
 ```python
-def release_IP(self, IP_addr):
+def release_ip(self, ip_addr):
 	"""
-	Destroy an IP_address. Returns an empty object.
-	Accepts an IP_address instance (object) or its address (string).
+	Destroy an IPAddress. Returns an empty object.
+	Accepts an IPAddress instance (object) or its address (string).
 	"""
 ```

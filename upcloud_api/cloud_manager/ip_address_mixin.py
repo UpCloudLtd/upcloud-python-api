@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 import six
 
-from upcloud_api import IP_address
+from upcloud_api import IPAddress
 
 
 class IPManager(object):
@@ -13,26 +13,26 @@ class IPManager(object):
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
     """
 
-    def get_IP(self, address):
+    def get_ip(self, address):
         """
-        Get an IP_address object with the IP address (string) from the API.
+        Get an IPAddress object with the IP address (string) from the API.
 
-        e.g manager.get_IP('80.69.175.210')
+        e.g manager.get_ip('80.69.175.210')
         """
         res = self.get_request('/ip_address/' + address)
-        return IP_address(cloud_manager=self, **res['ip_address'])
+        return IPAddress(cloud_manager=self, **res['ip_address'])
 
-    def get_IPs(self):
+    def get_ips(self):
         """
-        Get all IP_address objects from the API.
+        Get all IPAddress objects from the API.
         """
         res = self.get_request('/ip_address')
-        IPs = IP_address._create_ip_address_objs(res['ip_addresses'], cloud_manager=self)
+        IPs = IPAddress._create_ip_address_objs(res['ip_addresses'], cloud_manager=self)
         return IPs
 
-    def attach_IP(self, server, family='IPv4'):
+    def attach_ip(self, server, family='IPv4'):
         """
-        Attach a new (random) IP_address to the given server (object or UUID).
+        Attach a new (random) IPAddress to the given server (object or UUID).
         """
         if not isinstance(server, six.string_types):
             server = server.uuid
@@ -45,16 +45,16 @@ class IPManager(object):
         }
 
         res = self.request('POST', '/ip_address', body)
-        return IP_address(cloud_manager=self, **res['ip_address'])
+        return IPAddress(cloud_manager=self, **res['ip_address'])
 
-    def modify_IP(self, IP_addr, ptr_record):
+    def modify_ip(self, ip_addr, ptr_record):
         """
         Modify an IP address' ptr-record (Reverse DNS).
 
-        Accepts an IP_address instance (object) or its address (string).
+        Accepts an IPAddress instance (object) or its address (string).
         """
-        if not isinstance(IP_addr, six.string_types):
-            IP_addr = IP_addr.address
+        if not isinstance(ip_addr, six.string_types):
+            ip_addr = ip_addr.address
 
         body = {
             'ip_address': {
@@ -62,16 +62,16 @@ class IPManager(object):
             }
         }
 
-        res = self.request('PUT', '/ip_address/' + IP_addr, body)
-        return IP_address(cloud_manager=self, **res['ip_address'])
+        res = self.request('PUT', '/ip_address/' + ip_addr, body)
+        return IPAddress(cloud_manager=self, **res['ip_address'])
 
-    def release_IP(self, IP_addr):
+    def release_ip(self, ip_addr):
         """
-        Destroy an IP_address. Returns an empty object.
+        Destroy an IPAddress. Returns an empty object.
 
-        Accepts an IP_address instance (object) or its address (string).
+        Accepts an IPAddress instance (object) or its address (string).
         """
-        if not isinstance(IP_addr, six.string_types):
-            IP_addr = IP_addr.address
+        if not isinstance(ip_addr, six.string_types):
+            ip_addr = ip_addr.address
 
-        return self.request('DELETE', '/ip_address/' + IP_addr)
+        return self.request('DELETE', '/ip_address/' + ip_addr)

@@ -13,9 +13,10 @@ __author_email__ = 'elias.nygren@upcloud.com'
 __license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2015 Elias Nygren'
 
+from upcloud_api.upcloud_resource import UpCloudResource
 from upcloud_api.errors import UpCloudAPIError
 from upcloud_api.storage import Storage
-from upcloud_api.ip_address import IP_address
+from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server, login_user_block
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.tools import OperatingSystems, ZONE

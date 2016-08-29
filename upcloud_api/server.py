@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import itertools
 from time import sleep
 
-from upcloud_api import Storage, IP_address, UpCloudAPIError
+from upcloud_api import Storage, IPAddress, UpCloudAPIError
 from upcloud_api.utils import try_it_n_times
 
 
@@ -80,7 +80,7 @@ class Server(object):
         - kwargs: any meta fields such as cloud_manager and populated.
 
         Note: storage_devices and ip_addresses may be given in server as dicts or
-        in kwargs as lists containing Storage and IP_address objects.
+        in kwargs as lists containing Storage and IPAddress objects.
         """
         if server:
             # handle storage, ip_address dicts and tags if they exist
@@ -98,17 +98,17 @@ class Server(object):
 
         Note: syncs ip_addresses and storage_devices too (/server/uuid endpoint)
         """
-        server, IP_addresses, storages = self.cloud_manager.get_server_data(self.uuid)
+        server, IPAddresses, storages = self.cloud_manager.get_server_data(self.uuid)
         self._reset(
             server,
-            ip_addresses=IP_addresses,
+            ip_addresses=IPAddresses,
             storage_devices=storages,
             populated=True
         )
         return self
 
-        def __str__(self):
-            return self.uuid
+    def __str__(self):
+        return self.uuid
 
     #
     # Main functionality, 1:1 with UpCloud's API
@@ -118,8 +118,8 @@ class Server(object):
         """
         Sync local changes in server's attributes to the API.
 
-        Note: DOES NOT sync IP_addresses and storage_devices,
-        use add_IP, add_storage, remove_IP, remove_storage instead.
+        Note: DOES NOT sync IPAddresses and storage_devices,
+        use add_ip, add_storage, remove_ip, remove_storage instead.
         """
         # dict comprehension that also works with 2.6
         # http://stackoverflow.com/questions/21069668/alternative-to-dict-comprehension-prior-to-python-2-7
@@ -193,20 +193,20 @@ class Server(object):
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
-    def add_IP(self, family='IPv4'):
+    def add_ip(self, family='IPv4'):
         """
         Allocate a new (random) IP-address to the Server.
         """
-        IP = self.cloud_manager.attach_IP(self.uuid, family)
+        IP = self.cloud_manager.attach_ip(self.uuid, family)
         self.ip_addresses.append(IP)
         return IP
 
-    def remove_IP(self, IP_address):
+    def remove_ip(self, IPAddress):
         """
         Release the specified IP-address from the server.
         """
-        self.cloud_manager.release_IP(IP_address.address)
-        self.ip_addresses.remove(IP_address)
+        self.cloud_manager.release_ip(IPAddress.address)
+        self.ip_addresses.remove(IPAddress)
 
     def add_storage(self, Storage=None, type='disk', address=None):
         """
@@ -249,10 +249,7 @@ class Server(object):
         Instantly calls the API, no need to call .save(). This is because firewall can not
         be configured with the same request as the rest of the Server.
         """
-        firewall_rule_body = FirewallRule.prepare_post_body()
-        firewall_rule = self.cloud_manager.create_firewall_rule(self.uuid, firewall_rule_body)
-        firewall_rule._associate_with_server(self)
-        return firewall_rule
+        return self.cloud_manager.create_firewall_rule(self, FirewallRule.to_dict())
 
     def remove_firewall_rule(self, FirewallRule):  # noqa
         return FirewallRule.destroy()
@@ -261,10 +258,7 @@ class Server(object):
         """
         Return all FirewallRule instances that are associated with this server instance.
         """
-        firewall_rules = self.cloud_manager.get_firewall_rules(self.uuid)
-        for firewall_rule in firewall_rules:
-            firewall_rule._associate_with_server(self)
-        return firewall_rules
+        return self.cloud_manager.get_firewall_rules(self)
 
     def add_tags(self, tags):
         """
@@ -278,7 +272,7 @@ class Server(object):
         """
         Add tags to a server. Accepts tags as strings or Tag objects.
         """
-        if self.cloud_manager.remove_tags(self.uuid, tags):
+        if self.cloud_manager.remove_tags(self, tags):
             new_tags = [tag for tag in self.tags if tag not in tags]
             object.__setattr__(self, 'tags', new_tags)
 
@@ -291,14 +285,11 @@ class Server(object):
         """
         Helper function for automatically adding several FirewallRules in series.
         """
-        firewall_rule_bodies = []
-        for FirewallRule in FirewallRules:
-            firewall_rule_bodies.append(FirewallRule.prepare_post_body())
-
-        firewall_rules = self.cloud_manager.configure_firewall(self.uuid, firewall_rule_bodies)
-        for firewall_rule in firewall_rules:
-            firewall_rule._associate_with_server(self)
-        return firewall_rules
+        firewall_rule_bodies = [
+            FirewallRule.to_dict()
+            for FirewallRule in FirewallRules
+        ]
+        return self.cloud_manager.configure_firewall(self, firewall_rule_bodies)
 
     def prepare_post_body(self):
         """
@@ -500,7 +491,7 @@ class Server(object):
         tags = server.pop('tags', None)
 
         if ip_data:
-            ip_addresses = IP_address._create_ip_address_objs(ip_data, cloud_manager=cloud_manager)
+            ip_addresses = IPAddress._create_ip_address_objs(ip_data, cloud_manager=cloud_manager)
             server['ip_addresses'] = ip_addresses
 
         if storage_data:

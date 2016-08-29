@@ -71,17 +71,17 @@ class TestServer(object):
     assert server.state == 'maintenance'
 
   @responses.activate
-  def test_attach_and_detach_IP(self, manager):
+  def test_attach_and_detach_ip(self, manager):
     data = Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
     server = manager.get_server('00798b85-efdc-41ca-8021-f6ef457b8531')
     assert len(server.ip_addresses) == 2
 
     data = Mock.mock_post('ip_address')
-    server.add_IP()
+    server.add_ip()
     assert len(server.ip_addresses) == 3
 
     Mock.mock_delete('ip_address/'+server.ip_addresses[2].address)
-    server.remove_IP(server.ip_addresses[2])
+    server.remove_ip(server.ip_addresses[2])
     assert len(server.ip_addresses) == 2
 
   @responses.activate

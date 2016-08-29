@@ -50,7 +50,7 @@ def server_test(manager, server):
     server.memory_amount = '1024'
     server.save()
 
-    server.add_IP()
+    server.add_ip()
 
     storage = manager.create_storage(size=10, tier='maxiops', zone=ZONE.London)
     server.add_storage(storage)
