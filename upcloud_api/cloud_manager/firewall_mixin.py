@@ -7,8 +7,7 @@ def uuid_and_instance(server):
     """server => uuid, instance"""
     if isinstance(server, Server):
         return server.uuid, server
-    else:
-        return server, None
+    return server, None
 
 class FirewallManager(object):
     """

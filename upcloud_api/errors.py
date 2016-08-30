@@ -1,5 +1,8 @@
 
-class UpCloudAPIError(Exception):
+class UpCloudClientError(Exception):
+    pass
+
+class UpCloudAPIError(UpCloudClientError):
     """Custom Error class for UpCloud API error responses.
 
     Each API call returns an `error_code` and `error_message` that

@@ -3,7 +3,7 @@ from upcloud_api import UpCloudResource
 
 class FirewallRule(UpCloudResource):
     """
-    Object representation of the FirewallRule in UpCloud's API.
+    Class representation of the API's firewall rule. Extends UpCloudResource.
     """
 
     ATTRIBUTES = {

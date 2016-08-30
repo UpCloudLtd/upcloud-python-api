@@ -34,12 +34,9 @@ class IPManager(object):
         """
         Attach a new (random) IPAddress to the given server (object or UUID).
         """
-        if not isinstance(server, six.string_types):
-            server = server.uuid
-
         body = {
             'ip_address': {
-                'server': server,
+                'server': str(server),
                 'family': family
             }
         }
@@ -53,16 +50,13 @@ class IPManager(object):
 
         Accepts an IPAddress instance (object) or its address (string).
         """
-        if not isinstance(ip_addr, six.string_types):
-            ip_addr = ip_addr.address
-
         body = {
             'ip_address': {
                 'ptr_record': ptr_record
             }
         }
 
-        res = self.request('PUT', '/ip_address/' + ip_addr, body)
+        res = self.request('PUT', '/ip_address/' + str(ip_addr), body)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def release_ip(self, ip_addr):
@@ -71,7 +65,4 @@ class IPManager(object):
 
         Accepts an IPAddress instance (object) or its address (string).
         """
-        if not isinstance(ip_addr, six.string_types):
-            ip_addr = ip_addr.address
-
-        return self.request('DELETE', '/ip_address/' + ip_addr)
+        return self.request('DELETE', '/ip_address/' + str(ip_addr))

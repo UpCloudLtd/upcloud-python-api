@@ -8,13 +8,13 @@ from upcloud_api import Server, UpCloudResource
 
 class Tag(UpCloudResource):
     """
-    Class representation of UpCloud Tag.
+    Class representation of the API's tags. Extends UpCloudResource.
 
-    - name: unique name for the tag.
-    - description: optional description
-    - servers:
-        list of Server objects (with only uuid populated).
-        Can be instantiated with UUID strings or Server objects.
+    Attributes:
+    name -- unique name for the tag
+    description -- optional description
+    servers -- list of Server objects (with only uuid populated)
+               can be instantiated with UUID strings or Server objects
     """
 
     ATTRIBUTES = {
@@ -46,6 +46,14 @@ class Tag(UpCloudResource):
         if self.servers and isinstance(self.servers[0], six.string_types):
             self.servers = [Server(uuid=server, populated=False) for server in self.servers]
 
+    @property
+    def server_uuids(self):
+        """
+        Return the tag's servers as UUIDs.
+        Useful for forming API requests.
+        """
+        return [server.uuid for server in self.servers]
+
     def save(self):
         tag_dict = self.cloud_manager._modify_tag(self._api_name,
                                                   self.description,
@@ -54,27 +62,26 @@ class Tag(UpCloudResource):
         self._reset(**tag_dict)
 
     def destroy(self):
+        """
+        Destroy the tag at the API.
+        """
         self.cloud_manager.delete_tag(self.name)
 
-    @property
-    def server_uuids(self):
-        """return the tag's servers as UUIDs."""
-        return [server.uuid for server in self.servers]
+    def to_dict(self):
+        """
+        Return a dict that can be serialised to JSON and sent to UpCloud's API.
+        """
+        return {
+            'name': self.name,
+            'description': self.description or '',
+            'servers': {
+                'server': self.server_uuids
+            }
+        }
 
     def __str__(self):
+        """
+        String representation of Tag.
+        Can be used to add tags into API requests: str(tag).
+        """
         return self.name
-
-    def to_dict(self):
-        body = dict()
-        body['tag'] = dict()
-
-        if self.name:
-            body['tag']['name'] = self.name
-
-        if self.description:
-            body['tag']['description'] = self.description
-
-        if self.servers:
-            body['tag']['servers'] = dict()
-            body['tag']['servers']['server'] = [str(server) for server in self.servers]
-        return body

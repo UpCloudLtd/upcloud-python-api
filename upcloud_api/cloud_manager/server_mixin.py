@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 from upcloud_api import IPAddress, Server, Storage
-from upcloud_api.tools import assignIfExists
+from upcloud_api.utils import assignIfExists
 
 
 class ServerManager(object):

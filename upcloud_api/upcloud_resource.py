@@ -1,5 +1,18 @@
 
 class UpCloudResource(object):
+    """
+    Base class for all API resources.
+
+    ATTRIBUTES is used to define serialization (see: to_dict)
+    and defaults (see: __init__ and _reset).
+
+    All UpCloudResources:
+    - must define ATTRIBUTES accordingly with https://www.upcloud.com/api/ (doc)
+    - must have `to_dict` for JSON serialization
+    - must have `_reset` for initializing and refreshing the instance with updated data
+    - must call `UpCloudResource.__init__` (that uses `_reset`)
+    - optionally implement `sync` for refreshing the instance with new data from API
+    """
 
     ATTRIBUTES = {}  # subclass should define this
 
@@ -23,9 +36,8 @@ class UpCloudResource(object):
         for attr in self.ATTRIBUTES:
             if not hasattr(self, attr) and self.ATTRIBUTES[attr] is not None:
                 setattr(self, attr, self.ATTRIBUTES[attr])
-        print('muh', self.__dict__)
 
-    def sync_from_api(self):
+    def sync(self):
         """
         Sync the object from the API and use the internal resource._reset to
         update fields.

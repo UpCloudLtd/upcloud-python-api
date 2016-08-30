@@ -3,7 +3,8 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api.tools import assignIfExists, OperatingSystems
+from upcloud_api import OperatingSystems
+from upcloud_api.utils import assignIfExists
 
 
 class Storage(object):
