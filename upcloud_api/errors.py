@@ -1,5 +1,11 @@
 
 class UpCloudClientError(Exception):
+    """
+    Base exception for UpCloud API client.
+
+    All exceptions thrown by the client should be of the type UpCloudClientError
+    or at least one of its subclasses.
+    """
     pass
 
 class UpCloudAPIError(UpCloudClientError):

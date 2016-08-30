@@ -114,7 +114,6 @@ class TestServer(object):
       status = 200,
       content_type='application/json'
     )
-
     server.remove_storage(server.storage_devices[1])
 
     assert len(server.storage_devices) == 1

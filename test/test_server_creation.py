@@ -15,32 +15,22 @@ class TestCreateServer(object):
 
     def test_storage_prepare_post_body(self, manager):
         s1 = Storage(os='Ubuntu 14.04', size=10)
-        body1 = s1.prepare_post_body('my.example.com', 1)
-
-        assert body1['title'] == 'my.example.com OS disk'
+        body1 = s1.to_dict()
         assert body1['tier'] == 'maxiops'
         assert body1['size'] == 10
-        assert body1['storage'] == '01000000-0000-4000-8000-000030040200'
-        assert body1['action'] == 'clone'
 
         s2 = Storage(size=100)
-        body2 = s2.prepare_post_body('my.example.com', 1)
-
-        assert body2['title'] == 'my.example.com storage disk 1'
+        body2 = s2.to_dict()
         assert body2['tier'] == 'maxiops'
-        assert body2['action'] == 'create'
         assert body2['size'] == 100
 
     def test_storage_prepare_post_body_optional_attributes(self, manager):
-        s2 = Storage(size=100, address='virtio:0', type='disk')
-        body2 = s2.prepare_post_body('my.example.com', 1)
+        s2 = Storage(size=100, address='virtio:0')
+        body2 = s2.to_dict()
 
-        assert body2['title'] == 'my.example.com storage disk 1'
         assert body2['tier'] == 'maxiops'
-        assert body2['action'] == 'create'
         assert body2['size'] == 100
         assert body2['address'] == 'virtio:0'
-        assert body2['type'] == 'disk'
 
     def test_server_init(self, manager):
         server1 = Server(

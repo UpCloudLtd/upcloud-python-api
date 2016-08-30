@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import itertools
 from time import sleep
 
-from upcloud_api import Storage, IPAddress, UpCloudAPIError
+from upcloud_api import Storage, IPAddress, UpCloudAPIError, OperatingSystems
 from upcloud_api.utils import try_it_n_times
 
 
@@ -208,19 +208,21 @@ class Server(object):
         self.cloud_manager.release_ip(IPAddress.address)
         self.ip_addresses.remove(IPAddress)
 
-    def add_storage(self, Storage=None, type='disk', address=None):
+    def add_storage(self, storage=None, type='disk', address=None):
         """
-        Attach the given Storage to the Server.
+        Attach the given storage to the Server.
 
-        Default address is next available. To add a CDROM slot: add_storage('cdrom').
+        Default address is next available.
         """
-        self.cloud_manager.attach_storage(server_uuid=self.uuid,
-                                          storage_uuid=Storage.uuid,
+        self.cloud_manager.attach_storage(server=self.uuid,
+                                          storage=storage.uuid,
                                           storage_type=type,
                                           address=address)
-        self.storage_devices.append(Storage)
+        storage.address = address
+        storage.type = type
+        self.storage_devices.append(storage)
 
-    def remove_storage(self, Storage):
+    def remove_storage(self, storage):
         """
         Remove Storage from a Server.
 
@@ -229,7 +231,7 @@ class Server(object):
 
         A Storage from get_storage(uuid) will not work as it is missing the 'address' property.
         """
-        if not hasattr(Storage, 'address'):
+        if not hasattr(storage, 'address'):
             raise Exception(
                 ('Storage does not have an address. '
                  'Access the Storage via Server.storage_devices '
@@ -237,8 +239,8 @@ class Server(object):
                  '(This is due how the API handles Storages)')
             )
 
-        self.cloud_manager.detach_storage(server_uuid=self.uuid, address=Storage.address)
-        self.storage_devices.remove(Storage)
+        self.cloud_manager.detach_storage(server=self.uuid, address=storage.address)
+        self.storage_devices.remove(storage)
 
     def add_firewall_rule(self, FirewallRule):
         """
@@ -326,9 +328,26 @@ class Server(object):
 
         storage_title_id = 0  # running number for unique storage titles
         for storage in self.storage_devices:
-            if storage.os is None:
+            if not hasattr(storage, 'os') or storage.os is None:
                 storage_title_id += 1
-            storage_body = storage.prepare_post_body(self.hostname, storage_title_id)
+            storage_body = storage.to_dict()
+
+            # setup default titles for storages unless use has specified them
+            # at storage.title
+            if not hasattr(storage, 'title') or not storage.title:
+                if hasattr(storage, 'os') and storage.os:
+                    storage_body['title'] = self.hostname + ' OS disk'
+                else:
+                    storage_body['title'] = self.hostname + ' storage disk ' + str(storage_title_id)
+
+
+            # clone from public template OR create empty storage
+            if hasattr(storage, 'os') and storage.os:
+                storage_body['action'] = 'clone'
+                storage_body['storage'] = OperatingSystems.get_OS_UUID(storage.os)
+            else:
+                storage_body['action'] = 'create'
+
             body['server']['storage_devices']['storage_device'].append(storage_body)
 
         return body

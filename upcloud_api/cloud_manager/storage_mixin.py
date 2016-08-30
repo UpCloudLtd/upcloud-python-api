@@ -20,34 +20,42 @@ class StorageManager(object):
         res = self.get_request('/storage/' + storage_type)
         return Storage._create_storage_objs(res['storages'], cloud_manager=self)
 
-    def get_storage(self, UUID):
+    def get_storage(self, storage):
         """
         Return a Storage object from the API.
         """
-        res = self.get_request('/storage/' + UUID)
-        return Storage._create_storage_obj(res['storage'], cloud_manager=self)
+        res = self.get_request('/storage/' + str(storage))
+        return Storage(cloud_manager=self, **res['storage'])
 
     def create_storage(self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1'):
         """
         Create a Storage object. Returns an object based on the API's response.
         """
-        body = dict()
-        body['storage'] = {
-            'size': size,
-            'tier': tier,
-            'title': title,
-            'zone': zone
+        body = {
+            'storage': {
+                'size': size,
+                'tier': tier,
+                'title': title,
+                'zone': zone
+            }
         }
         res = self.post_request('/storage', body)
-        return Storage._create_storage_obj(res['storage'], cloud_manager=self)
+        return Storage(cloud_manager=self, **res['storage'])
 
-    def modify_storage(self, UUID, size, title):
+    def _modify_storage(self, storage, size, title):
+        body = {'storage': {}}
+        if size:
+            body['storage']['size'] = size
+        if title:
+            body['storage']['title'] = title
+        return self.request('PUT', '/storage/' + str(storage), body)
+
+    def modify_storage(self, storage, size, title):
         """
         Modify a Storage object. Returns an object based on the API's response.
         """
-        body = Storage.prepare_put_body(size, title)
-        res = self.request('PUT', '/storage/' + UUID, body)
-        return Storage._create_storage_obj(res['storage'], cloud_manager=self)
+        res = self._modify_storage(str(storage), size, title)
+        return Storage(cloud_manager=self, **res['storage'])
 
     def delete_storage(self, UUID):
         """
@@ -55,13 +63,13 @@ class StorageManager(object):
         """
         return self.request('DELETE', '/storage/' + UUID)
 
-    def attach_storage(self, server_uuid, storage_uuid, storage_type, address):
+    def attach_storage(self, server, storage, storage_type, address):
         """
         Attach a Storage object to a Server. Return a list of the server's storages.
         """
         body = {'storage_device': {}}
-        if storage_uuid:
-            body['storage_device']['storage'] = storage_uuid
+        if storage:
+            body['storage_device']['storage'] = str(storage)
 
         if storage_type:
             body['storage_device']['type'] = storage_type
@@ -69,15 +77,15 @@ class StorageManager(object):
         if address:
             body['storage_device']['address'] = address
 
-        url = '/server/{0}/storage/attach'.format(server_uuid)
+        url = '/server/{0}/storage/attach'.format(server)
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
-    def detach_storage(self, server_uuid, address):
+    def detach_storage(self, server, address):
         """
         Detach a Storage object to a Server. Return a list of the server's storages.
         """
         body = {'storage_device': {'address': address}}
-        url = '/server/{0}/storage/detach'.format(server_uuid)
+        url = '/server/{0}/storage/detach'.format(server)
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)

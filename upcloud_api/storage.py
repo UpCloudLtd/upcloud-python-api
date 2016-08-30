@@ -3,113 +3,104 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import OperatingSystems
+from upcloud_api import UpCloudResource
 from upcloud_api.utils import assignIfExists
 
 
-class Storage(object):
+class Storage(UpCloudResource):
     """
     Class representation of UpCloud Storage instance.
     """
 
-    def __init__(self, **kwargs):  # noqa
-        self.__reset(**kwargs)
+    ATTRIBUTES = {
+        'uuid': None,
+        'tier': 'maxiops',
+        'size': 10,
+        'access': None,
+        'license': None,
+        'state': None,
+        'title': '',
+        'type': None,
+        'address': None,
+        'zone': None,
+    }
 
-    def __reset(self, **kwargs):
+
+    def _reset(self, **kwargs):
         """
         Reset after repopulating from API.
         """
-        # When creating locally (optional)
-        self.os = assignIfExists(['os'], **kwargs)
 
-        # When not creating locally (always injected when populating object from API response)
-        self.cloud_manager = assignIfExists(['cloud_manager'], **kwargs)
+        # there are some inconsistenciens in the API regarding these
+        # note: this could be written in fancier ways, but this way is simpler
 
-        # Always present in responses
-        self.type = assignIfExists(['type'], **kwargs)
+        if 'uuid' in kwargs:
+            self.uuid = kwargs['uuid']
+        elif 'storage' in kwargs:
+            self.uuid = kwargs['storage']
 
-        # self.uuid either 'uuid' or 'storage'
-        self.uuid = assignIfExists(['uuid', 'storage'], **kwargs)
+        if 'title' in kwargs:
+            self.title = kwargs['title']
+        elif 'storage_title' in kwargs:
+            self.title = kwargs['storage_title']
 
-        # self.title either 'title' or 'storage_title'
-        self.title = assignIfExists(['title', 'storage_title'], **kwargs)
+        if 'size' in kwargs:
+            self.size = kwargs['size']
+        elif 'storage_size' in kwargs:
+            self.size = kwargs['storage_size']
 
-        # self.size either 'size' or 'storage_size'
-        self.size = assignIfExists(['size', 'storage_size'], 10, **kwargs)
+        # send the rest to super._reset
 
-        # Present if populated via /storage/ or /storage/uuid
-        self.access = assignIfExists(['access'], **kwargs)
-        self.license = assignIfExists(['license'], **kwargs)
-        self.state = assignIfExists(['state'], **kwargs)
-
-        # Only present when populated via /server/uuid
-        self.address = assignIfExists(['address'], **kwargs)
-
-        # Only present when populated via /storage/uuid
-        self.tier = assignIfExists(['tier'], **kwargs)
-        self.zone = assignIfExists(['zone'], **kwargs)
+        filtered_kwargs = dict(
+            (key, val)
+            for key, val in kwargs.items()
+            if key not in ['uuid', 'storage', 'title', 'storage_title', 'size', 'storage_size']
+        )
+        super(Storage, self)._reset(**filtered_kwargs)
 
     def destroy(self):
+        """
+        Destroy the storage via the API.
+        """
         self.cloud_manager.delete_storage(self.uuid)
 
-    def update(self, size, title):
-        body = Storage.prepare_put_body(size, title)
-        data = self.cloud_manager.request('PUT', '/storage/' + self.uuid, body)
-        self.__reset(**data['storage'])
+    def save(self):
+        """
+        Save (modify) the storage to the API.
+        Note: only size and title are updateable fields.
+        """
+        res = self.cloud_manager._modify_storage(self, self.size, self.title)
+        self._reset(**res['storage'])
 
-    def __str__(self):  # noqa
-        return '{0} , size {1} ({2})'.format(self.title, self.size, self.tier)
+    def __str__(self):
+        """
+        String representation of Storage.
+        Can be used to add tags into API requests: str(storage).
+        """
+        return self.uuid
 
-    @staticmethod
-    def prepare_put_body(size, title):
-        body = {'storage': {}}
-        if(size):
-            body['storage']['size'] = size
-        if(title):
-            body['storage']['title'] = title
+    def to_dict(self):
+        """
+        Return a dict that can be serialised to JSON and sent to UpCloud's API.
+
+        Uses the convenience attribute `os` for determining `action` and `storage`
+        fields.
+        """
+        body = {
+            'tier': self.tier,
+            'title': self.title,
+            'size': self.size,
+        }
+
+        # optionals
+
+        if hasattr(self, 'address') and self.address:
+            body['address'] = self.address
+
+        if hasattr(self, 'zone') and self.zone:
+            body['zone'] = self.zone
+
         return body
-
-    def prepare_post_body(self, storage_title=None, storage_title_id=None):
-            body = dict()
-
-            # clone from public template OR create empty storage
-            if self.os:
-                body['action'] = 'clone'
-            else:
-                body['action'] = 'create'
-
-            # default tier is maxiops
-            if self.tier:
-                body['tier'] = self.tier
-            else:
-                body['tier'] = 'maxiops'
-
-            # reasonable default title
-            if self.title:
-                body['title'] = self.title
-            else:
-                if self.os:
-                    body['title'] = storage_title + ' OS disk'
-                else:
-                    body['title'] = storage_title + ' storage disk ' + str(storage_title_id)
-
-            # don't specify size if attaching CDROM (CDROMS not yet supported)
-            if body['action'] == 'create' or body['action'] == 'clone':
-                body['size'] = self.size
-
-            # figure out public template (CDROMS not yet supported)
-            if body['action'] == 'attach' or body['action'] == 'clone':
-                body['storage'] = OperatingSystems.get_OS_UUID(self.os)
-
-            # optionals
-            if self.type:
-                body['type'] = self.type
-            if self.address:
-                body['address'] = self.address
-            if self.zone:
-                body['zone'] = self.zone
-
-            return body
 
     @staticmethod
     def _create_storage_objs(storages, cloud_manager):
@@ -119,7 +110,6 @@ class Storage(object):
 
         if 'storage_devices' in storages:
             storages = storages['storage_devices']
-
         if 'storage_device' in storages:
             storages = storages['storage_device']
 
@@ -127,15 +117,10 @@ class Storage(object):
 
         if 'storages' in storages:
             storages = storages['storages']
-
         if 'storage' in storages:
             storages = storages['storage']
 
-        storage_objs = list()
-        for storage in storages:
-            storage_objs.append(Storage(cloud_manager=cloud_manager, **storage))
-        return storage_objs
-
-    @staticmethod
-    def _create_storage_obj(storage, cloud_manager):
-        return Storage(cloud_manager=cloud_manager, **storage)
+        return [
+            Storage(cloud_manager=cloud_manager, **storage)
+            for storage in storages
+        ]
