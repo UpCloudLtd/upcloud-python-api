@@ -7,7 +7,7 @@ Python Interface to UpCloud's API.
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-__version__ = '0.4.0'
+__version__ = '0.3.9'
 __author__ = 'Elias Nygren'
 __author_email__ = 'elias.nygren@upcloud.com'
 __license__ = 'MIT'
