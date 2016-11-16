@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 import base64
 
-from upcloud_api.base import BaseAPI
 from upcloud_api.cloud_manager import (
+    BaseAPI,
     ServerManager,
     IPManager,
     StorageManager,

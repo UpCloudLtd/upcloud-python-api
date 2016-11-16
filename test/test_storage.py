@@ -49,7 +49,9 @@ class TestStorage(object):
         storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
 
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
-        storage.update(title="my bigger data collection", size=15)
+        storage.title = "my bigger data collection"
+        storage.size = 15
+        storage.save()
         assert storage.title == "my bigger data collection"
         assert storage.size == 15
 

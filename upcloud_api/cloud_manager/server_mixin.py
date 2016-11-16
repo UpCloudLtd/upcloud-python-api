@@ -3,8 +3,8 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import IP_address, Server, Storage
-from upcloud_api.tools import assignIfExists
+from upcloud_api import IPAddress, Server, Storage
+from upcloud_api.utils import assignIfExists
 
 
 class ServerManager(object):
@@ -57,11 +57,11 @@ class ServerManager(object):
         """
         Return a (populated) Server instance.
         """
-        server, IP_addresses, storages = self.get_server_data(UUID)
+        server, IPAddresses, storages = self.get_server_data(UUID)
 
         return Server(
             server,
-            ip_addresses=IP_addresses,
+            ip_addresses=IPAddresses,
             storage_devices=storages,
             populated=True,
             cloud_manager=self
@@ -133,7 +133,7 @@ class ServerManager(object):
         server = res['server']
 
         # Populate subobjects
-        IP_addresses = IP_address._create_ip_address_objs(server.pop('ip_addresses'),
+        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
                                                           cloud_manager=self)
 
         storages = Storage._create_storage_objs(server.pop('storage_devices'),
@@ -141,7 +141,7 @@ class ServerManager(object):
 
         return Server(
             server,
-            ip_addresses=IP_addresses,
+            ip_addresses=IPAddresses,
             storage_devices=storages,
             populated=True,
             cloud_manager=self
@@ -167,10 +167,10 @@ class ServerManager(object):
         server = data['server']
 
         # Populate subobjects
-        IP_addresses = IP_address._create_ip_address_objs(server.pop('ip_addresses'),
+        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
                                                           cloud_manager=self)
 
         storages = Storage._create_storage_objs(server.pop('storage_devices'),
                                                 cloud_manager=self)
 
-        return server, IP_addresses, storages
+        return server, IPAddresses, storages

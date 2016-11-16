@@ -22,7 +22,8 @@ def tag_post_callback(request):
     if 'servers' in request_body['tag']:
         assert isinstance(request_body['tag']['servers'], dict)
         assert isinstance(request_body['tag']['servers']['server'], list)
-        assert isinstance(request_body['tag']['servers']['server'][0], six.string_types)
+        if len(request_body['tag']['servers']['server']) > 0:
+            assert isinstance(request_body['tag']['servers']['server'][0], six.string_types)
 
     if 'description' in request_body['tag']:
         assert isinstance(request_body['tag']['description'], six.string_types)

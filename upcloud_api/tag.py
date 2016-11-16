@@ -3,81 +3,85 @@ from __future__ import absolute_import
 
 import six
 
-from upcloud_api import Server
+from upcloud_api import Server, UpCloudResource
 
 
-class Tag(object):
+class Tag(UpCloudResource):
     """
-    Class representation of UpCloud Tag.
+    Class representation of the API's tags. Extends UpCloudResource.
 
-    - name: unique name for the tag.
-    - description: optional description
-    - servers:
-        list of Server objects (with only uuid populated).
-        Can be instantiated with UUID strings or Server objects.
+    Attributes:
+    name -- unique name for the tag
+    description -- optional description
+    servers -- list of Server objects (with only uuid populated)
+               can be instantiated with UUID strings or Server objects
     """
 
-    def __init__(self, name, description=None, servers=None, cloud_manager=None, **kwargs):
-        self.cloud_manager = cloud_manager
-        self.__reset(name=name, description=description, servers=servers)
+    ATTRIBUTES = {
+        'name': None,
+        'description': None,
+        'servers': []
+    }
 
-    def __str__(self):
-        return self.name
+    def __init__(self, name, description=None, servers=[], **kwargs):
+        """Init with Tag('tagname', 'description', [servers]) syntax."""
+        super(Tag, self).__init__(name=name, description=description, servers=servers, **kwargs)
 
-    def __reset(self, **kwargs):
+    def _reset(self, **kwargs):
         """
         Reset the objects attributes.
 
         Accepts servers as either unflattened or flattened UUID strings or Server objects.
         """
-        # name is required and should be stored in a hidden attribute for .save()
-        if 'name' in kwargs:
-            self._api_name = kwargs['name']
-        else:
-            raise Exception('`name` is requred')
+        super(Tag, self)._reset(**kwargs)
+
+        # backup name for changing it (look: Tag.save)
+        self._api_name = self.name
 
         # flatten { servers: { server: [] } }
-        if 'servers' in kwargs and kwargs['servers'] and 'server' in kwargs['servers']:
-            servers = kwargs['servers']['server']
-        else:
-            servers = kwargs['servers']
+        if 'server' in self.servers:
+            self.servers = kwargs['servers']['server']
 
         # convert UUIDs into server objects
-        if servers and isinstance(servers[0], six.string_types):
-            kwargs['servers'] = [Server(uuid=server, populated=False) for server in servers]
-        else:
-            kwargs['servers'] = servers
+        if self.servers and isinstance(self.servers[0], six.string_types):
+            self.servers = [Server(uuid=server, populated=False) for server in self.servers]
 
-        for key, val in kwargs.items():
-            setattr(self, key, val)
+    @property
+    def server_uuids(self):
+        """
+        Return the tag's servers as UUIDs.
+        Useful for forming API requests.
+        """
+        return [server.uuid for server in self.servers]
 
     def save(self):
         tag_dict = self.cloud_manager._modify_tag(self._api_name,
                                                   self.description,
                                                   self.server_uuids,
                                                   self.name)
-        self.__reset(**tag_dict)
+        self._reset(**tag_dict)
 
     def destroy(self):
+        """
+        Destroy the tag at the API.
+        """
         self.cloud_manager.delete_tag(self.name)
 
-    @property
-    def server_uuids(self):
-        """return the tag's servers as UUIDs."""
-        return [server.uuid for server in self.servers]
+    def to_dict(self):
+        """
+        Return a dict that can be serialised to JSON and sent to UpCloud's API.
+        """
+        return {
+            'name': self.name,
+            'description': self.description or '',
+            'servers': {
+                'server': self.server_uuids
+            }
+        }
 
-    @classmethod
-    def _prepare_tag_body(cls, name, description, servers):
-        body = dict()
-        body['tag'] = dict()
-
-        if name:
-            body['tag']['name'] = name
-
-        if description:
-            body['tag']['description'] = description
-
-        if servers:
-            body['tag']['servers'] = dict()
-            body['tag']['servers']['server'] = servers
-        return body
+    def __str__(self):
+        """
+        String representation of Tag.
+        Can be used to add tags into API requests: str(tag).
+        """
+        return self.name

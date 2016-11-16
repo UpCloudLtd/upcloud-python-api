@@ -121,15 +121,15 @@ server.remove_storage(storage)
 
 ### IP-addresses
 
-A Server's Storages can be attached and detached with `.add_IP()` and `.remove_IP()`. Both requests issue an API request instantly. Note that the attached IP is allocated randomly as UpCloud's does not (yet) support floating IPs.
+A Server's Storages can be attached and detached with `.add_ip()` and `.remove_ip()`. Both requests issue an API request instantly. Note that the attached IP is allocated randomly as UpCloud's does not (yet) support floating IPs.
 
 ```python
 
 # attach
-IP = server.add_IP()
+IP = server.add_ip()
 
 # detach
-server.remove_IP(IP)
+server.remove_ip(IP)
 
 ```
 

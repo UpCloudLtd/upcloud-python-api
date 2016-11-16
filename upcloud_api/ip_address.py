@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
+from upcloud_api import UpCloudResource
 
-
-class IP_address(object):
+class IPAddress(UpCloudResource):
     """
-    Object representation of the IP-address.
+    Class representation of the API's IP address. Extends UpCloudResource.
 
     Attributes:
     access -- "public" or "private"
-    address -- the actual IP_address (string)
+    address -- the actual IPAddress (string)
     ptr_record -- the reverse DNS name (string)
     server -- the UUID of the server this IP is attached to (string)
 
@@ -15,66 +15,40 @@ class IP_address(object):
     ptr_record and server are present only if /server/uuid endpoint was used.
     """
 
-    def __init__(self, access, cloud_manager, address=None, family='IPv4',
-                 ptr_record=None, server=None, *args, **kwargs):
-        """
-        Initialize IP address with at least access and address.
-
-        ptr_record and server not returned by the API in every case (e.g. when IP is nested).
-        Only ptr_record is editable due to restrictions of the API.
-        """
-        self._cloud_manager = cloud_manager
-        self.__reset(access, address, family, ptr_record, server)
-
-    def __reset(self, access, address, family='IPv4', ptr_record=None, server=None):
-        """
-        Reset after repopulating from API.
-        """
-        # Always present
-        self._access = access
-        self._address = address
-        self._family = family
-
-        # Present when not populated from /server/uuid endpoint
-        self._server_uuid = server
-        self.ptr = ptr_record
+    ATTRIBUTES = {
+        'family': 'IPv4',
+        'access': None,
+        'address': None,
+        'ptr_record': None
+    }
 
     def save(self):
         """
-        IP_address can only change its PTR record. Saves the current state, PUT /ip_address/uuid.
+        IPAddress can only change its PTR record. Saves the current state, PUT /ip_address/uuid.
         """
-        body = {'ip_address': {'ptr_record': self.ptr}}
-        data = self._cloud_manager.request('PUT', '/ip_address/' + self.address, body)
-        self.__reset(**data['ip_address'])
+        body = {'ip_address': {'ptr_record': self.ptr_record}}
+        data = self.cloud_manager.request('PUT', '/ip_address/' + self.address, body)
+        self._reset(**data['ip_address'])
 
     def destroy(self):
         """
-        Release the IP_address. DELETE /ip_address/uuid.
+        Release the IPAddress. DELETE /ip_address/uuid.
         """
-        self._cloud_manager.release_IP(self.address)
+        self.cloud_manager.release_ip(self.address)
 
-    def __str__(self):  # noqa
-        return 'IP-address: ' + self.address
-
-    @property
-    def address(self):  # noqa
-        return self._address
-
-    @property
-    def access(self):  # noqa
-        return self._access
-
-    @property
-    def server_uuid(self):  # noqa
-        return self._server_uuid
-
-    @property
-    def family(self):  # noqa
-        return self._family
+    def __str__(self):
+        """
+        String representation of IPAddress.
+        Can be used to add tags into API requests: str(ip_addr).
+        """
+        return self.address
 
     @staticmethod
     def _create_ip_address_objs(ip_addresses, cloud_manager):
-
+        """
+        Create IPAddress objects from API response data.
+        Also associates CloudManager with the objects.
+        """
         # ip-addresses might be provided as a flat array or as a following dict:
         # {'ip_addresses': {'ip_address': [...]}} || {'ip_address': [...]}
 
@@ -84,7 +58,7 @@ class IP_address(object):
         if 'ip_address' in ip_addresses:
             ip_addresses = ip_addresses['ip_address']
 
-        ip_address_objs = list()
-        for ip_addr in ip_addresses:
-            ip_address_objs.append(IP_address(cloud_manager=cloud_manager, **ip_addr))
-        return ip_address_objs
+        return [
+            IPAddress(cloud_manager=cloud_manager, **ip_addr)
+            for ip_addr in ip_addresses
+        ]
