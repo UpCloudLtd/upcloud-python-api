@@ -192,3 +192,37 @@ class TestCreateServer(object):
         assert server1.video_model == 'cirrus'
         assert server1.vnc == 'off'
         assert server1.vnc_password == 'aabbccdd'
+
+
+    @responses.activate
+    def test_create_server_from_template(self, manager):
+
+        UUID = '01215a5a-c330-4565-81ca-0e0e22eac672'
+
+        def _from_template_callback(request):
+            request_body = json.loads(request.body)
+            storage = request_body['server']['storage_devices']['storage_device'][0]
+
+            # https://www.upcloud.com/api/8-servers/#creating-from-a-template
+            assert storage['action'] == 'clone'
+            assert storage['storage'] == UUID
+            return (201, {}, Mock.read_from_file('server_create.json'))
+
+        responses.add_callback(
+            responses.POST,
+            Mock.base_url + '/server',
+            content_type='application/json',
+            callback=_from_template_callback
+        )
+
+        manager.create_server(
+            Server(
+                core_number=2,
+                memory_amount=1024,
+                hostname='my.example.com',
+                zone=ZONE.Chicago,
+                storage_devices=[
+                    Storage(storage=UUID, size=10),
+                ]
+            )
+        )

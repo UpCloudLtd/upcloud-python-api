@@ -36,7 +36,7 @@ class Storage(UpCloudResource):
 
         if 'uuid' in kwargs:
             self.uuid = kwargs['uuid']
-        elif 'storage' in kwargs:
+        elif 'storage' in kwargs:  # let's never use storage.storage internally
             self.uuid = kwargs['storage']
 
         if 'title' in kwargs:
