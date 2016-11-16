@@ -73,57 +73,68 @@ You must take this into account in your automations.
 ```python
 
 import upcloud_api
-from upcloud_api import Server, Storage, ZONE
+from upcloud_api import Server, Storage, ZONE, login_user_block
 
 manager = upcloud_api.CloudManager('api_user', 'password')
-manager.authenticate() # test credentials
+manager.authenticate()
+
+
+login_user = login_user_block(
+    username='theuser',
+    ssh_keys=['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'],
+    create_password=False
+)
 
 cluster = {
     'web1': Server(
-        core_number = 1, # CPU cores
-        memory_amount = 512, # RAM in MB
-        hostname = 'web1.example.com',
-        zone = ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
-        storage_devices = [
+        core_number=1, # CPU cores
+        memory_amount=512, # RAM in MB
+        hostname='web1.example.com',
+        zone=ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
+        storage_devices=[
             # OS: Ubuntu 14.04 from template
             # default tier: maxIOPS, the 100k IOPS storage backend
-            Storage(os = 'Ubuntu 14.04', size = 10),
+            Storage(os='Ubuntu 14.04', size=10),
             # secondary storage, hdd for reduced cost
-            Storage(size = 100, tier = 'hdd')
-        ]
+            Storage(size=100, tier='hdd')
+        ],
+        login_user=login_user  # user and ssh-keys
     ),
     'web2': Server(
-        core_number = 1,
-        memory_amount = 512,
-        hostname = 'web2.example.com',
-        zone = ZONE.London,
-        storage_devices = [
-            Storage(os = 'Ubuntu 14.04', size = 10),
-            Storage(size = 100, tier = 'hdd'),
-        ]
+        core_number=1,
+        memory_amount=512,
+        hostname='web2.example.com',
+        zone=ZONE.London,
+        storage_devices=[
+            Storage(os='Ubuntu 14.04', size=10),
+            Storage(size=100, tier='hdd'),
+        ],
+        login_user=login_user
     ),
     'db': Server(
-        plan = '2xCPU-2GB' # use a preconfigured plan, instead of custom
-        hostname = 'db.example.com',
-        zone = ZONE.London,
-        storage_devices = [
-            Storage(os = 'Ubuntu 14.04', size = 10),
-            Storage(size = 100),
-        ]
+        plan='2xCPU-2GB', # use a preconfigured plan, instead of custom
+        hostname='db.example.com',
+        zone=ZONE.London,
+        storage_devices=[
+            Storage(os='Ubuntu 14.04', size=10),
+            Storage(size=100),
+        ],
+        login_user=login_user
     ),
     'lb': Server(
-        core_number = 2,
-        memory_amount = 1024,
-        hostname = 'balancer.example.com',
-        zone = ZONE.London,
-        storage_devices = [
-            Storage(os = 'Ubuntu 14.04', size = 10)
-        ]
+        core_number=2,
+        memory_amount=1024,
+        hostname='balancer.example.com',
+        zone=ZONE.London,
+        storage_devices=[
+            Storage(os='Ubuntu 14.04', size=10)
+        ],
+        login_user=login_user
     )
 }
 
 for server in cluster:
-  manager.create_server(cluster[server]) # automatically populates the Server objects with data from API
+    manager.create_server(cluster[server]) # automatically populates the Server objects with data from API
 
 ```
 
@@ -161,7 +172,7 @@ server.ensure_started()
 ### Upgrade a Server
 ```python
 
-server = cluster["web1"]
+server = cluster['web1']
 server.shutdown()
 server.core_number = 4
 server.memory_amount = 4096
