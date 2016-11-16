@@ -332,8 +332,8 @@ class Server(object):
                 storage_title_id += 1
             storage_body = storage.to_dict()
 
-            # setup default titles for storages unless use has specified them
-            # at storage.title
+            # setup default titles for storages unless the user has specified
+            # them at storage.title
             if not hasattr(storage, 'title') or not storage.title:
                 if hasattr(storage, 'os') and storage.os:
                     storage_body['title'] = self.hostname + ' OS disk'
@@ -341,10 +341,18 @@ class Server(object):
                     storage_body['title'] = self.hostname + ' storage disk ' + str(storage_title_id)
 
 
-            # clone from public template OR create empty storage
+            # figure out the storage `action` parameter
+            # public template
             if hasattr(storage, 'os') and storage.os:
                 storage_body['action'] = 'clone'
                 storage_body['storage'] = OperatingSystems.get_OS_UUID(storage.os)
+
+            # private template
+            elif hasattr(storage, 'uuid'):
+                storage_body['action'] = 'clone'
+                storage_body['storage'] = storage.uuid
+
+            # create a new storage
             else:
                 storage_body['action'] = 'create'
 
