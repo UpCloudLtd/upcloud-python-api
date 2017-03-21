@@ -90,6 +90,14 @@ def test_infra_ops():
         if not found:
             raise Exception('server {} not found in all_servers'.format(cs.uuid))
 
+    # assert servers' states
+    # TODO(elnygren): add more assertions here
+
+    # web2 non default IP configuration
+    web2 = CLUSTER['web2']
+    assert len(web2.ip_addresses) == 1
+    assert web2.ip_addresses[0].family == 'IPv6'
+
 
 
     test_server = CLUSTER['web1']

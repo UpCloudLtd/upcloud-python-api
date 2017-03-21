@@ -357,6 +357,14 @@ class Server(object):
 
             body['server']['storage_devices']['storage_device'].append(storage_body)
 
+        if hasattr(self, 'ip_addresses') and self.ip_addresses:
+            body['server']['ip_addresses'] = {
+                'ip_address': [
+                    ip.to_dict() for ip in self.ip_addresses
+                ]
+            }
+
+
         return body
 
     def to_dict(self):
