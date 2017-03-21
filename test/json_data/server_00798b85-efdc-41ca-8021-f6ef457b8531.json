@@ -8,11 +8,13 @@
 			"ip_address" : [
 				{
 					"access" : "private",
-					"address" : "10.0.0.0"
+					"address" : "10.0.0.0",
+					"family": "IPv4"
 				},
 				{
 					"access" : "public",
-					"address" : "0.0.0.0"
+					"address" : "0.0.0.0",
+					"family": "IPv4"
 				}
 			]
 		},
