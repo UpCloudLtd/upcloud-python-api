@@ -6,6 +6,8 @@ from __future__ import absolute_import
 from upcloud_api import IPAddress, Server, Storage
 from upcloud_api.utils import assignIfExists
 
+import pprint
+
 
 class ServerManager(object):
     """
@@ -52,7 +54,19 @@ class ServerManager(object):
                 server_instance.populate()
 
         return server_list
+    def get_server_by_ip(self, ip_address):
+        """
+        Return a (populated) Server instance.
+        """
+        server, IPAddresses, storages = self.get_server_data_by_ip(ip_address)
 
+        return Server(
+            server,
+            ip_addresses=IPAddresses,
+            storage_devices=storages,
+            populated=True,
+            cloud_manager=self
+        )
     def get_server(self, UUID):
         """
         Return a (populated) Server instance.
@@ -156,6 +170,15 @@ class ServerManager(object):
         Returns an empty object.
         """
         return self.request('DELETE', '/server/{0}'.format(UUID))
+
+    def get_server_data_by_ip(self, ip_address):
+        """
+        GET '/ip_address/x.x.x.x'. First Retrieves uuid and then gets server data
+        """
+        data = self.get_request('/ip_address/{0}'.format(ip_address))
+        
+        # Do another request which retrieves the machine data
+        return self.get_server_data(data['ip_address']['server'])
 
     def get_server_data(self, UUID):
         """
