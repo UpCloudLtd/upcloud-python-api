@@ -6,9 +6,6 @@ from __future__ import absolute_import
 from upcloud_api import IPAddress, Server, Storage
 from upcloud_api.utils import assignIfExists
 
-import pprint
-
-
 class ServerManager(object):
     """
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
