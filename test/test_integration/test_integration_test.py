@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 import os
 import pytest
+import multiprocessing
 
 from upcloud_api import CloudManager
 
@@ -30,17 +31,25 @@ integration_test = pytest.mark.skipif(
 CREATED_SERVERS = []
 CREATED_TAGS = []
 
+
+def destroy_server(server):
+    """Destroy a server and it's storages."""
+    server.stop_and_destroy()
+
+def delete_tag(tag):
+    """Destroy a tag (only works if the tag is not in use)."""
+    tag.destroy()
+
+
 @integration_test
 def teardown_module(module):
     manager = CloudManager(USERNAME, PASSWORD, timeout=120)
 
     # if we are at CIRCLECI, clean up everything
     if os.environ.get('CIRCLECI', False):
-        for server in manager.get_servers():
-            server.stop_and_destroy()
-
-        for tag in manager.get_tags():
-            tag.destroy()
+        pool = multiprocessing.Pool()
+        pool.map(destroy_server, manager.get_servers())
+        pool.map(delete_tag, manager.get_tags())
     else:
         print('removing {}'.format(CREATED_SERVERS))
         for server in CREATED_SERVERS:
