@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import CloudManager, Storage, FirewallRule, ZONE, Tag
+from upcloud_api import CloudManager, Storage, FirewallRule, ZONE, Tag, IPAddress
 from upcloud_api.server import Server, login_user_block
 
 
@@ -28,6 +28,9 @@ CLUSTER = {
         storage_devices=[
             Storage(os='Ubuntu 14.04', size=10),
             Storage(size=10, tier='maxiops'),
+        ],
+        ip_addresses=[
+            IPAddress(family='IPv6', access='public')
         ]),
 
     'db': Server(

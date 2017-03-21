@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from upcloud_api import UpCloudResource
 
+
 class IPAddress(UpCloudResource):
     """
     Class representation of the API's IP address. Extends UpCloudResource.
@@ -8,18 +9,24 @@ class IPAddress(UpCloudResource):
     Attributes:
     access -- "public" or "private"
     address -- the actual IPAddress (string)
+    family -- IPv4 or IPv6
+    part_of_plan -- yes/no string indicating whether this belongs to a preconfigured plan or not
     ptr_record -- the reverse DNS name (string)
     server -- the UUID of the server this IP is attached to (string)
 
     The only updateable field is the ptr_record.
-    ptr_record and server are present only if /server/uuid endpoint was used.
+
+    Note that all of the fields are not always available depending on the API call, 
+    consult the official API docs for details.
     """
 
     ATTRIBUTES = {
-        'family': 'IPv4',
         'access': None,
         'address': None,
-        'ptr_record': None
+        'family': 'IPv4',
+        'part_of_plan': None,
+        'ptr_record': None,
+        'server': None,
     }
 
     def save(self):

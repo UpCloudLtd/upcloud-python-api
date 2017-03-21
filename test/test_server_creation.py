@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import ZONE, Server, Storage, login_user_block
+from upcloud_api import ZONE, Server, Storage, IPAddress, login_user_block
 
 from conftest import Mock
 import json
@@ -82,7 +82,7 @@ class TestCreateServer(object):
         assert body['server']['zone'] == 'us-chi1'
 
     def test_server_prepare_post_body_optional_attributes(self):
-        server = Server(
+        server1 = Server(
             core_number=2,
             memory_amount=1024,
             hostname='my.example.com',
@@ -97,26 +97,62 @@ class TestCreateServer(object):
             password_delivery='email',
             login_user=login_user_block('upclouduser', ['this-is-a-SSH-key']),
             avoid_host='12345678',
-            user_data='https://my.script.com/some_script.py'
+            user_data='https://my.script.com/some_script.py',
+            ip_addresses = [
+                IPAddress(family='IPv4', access='public'),
+                IPAddress(family='IPv6', access='public')
+            ]
         )
 
-        body = server.prepare_post_body()
-        assert body['server']['title'] == 'my.example.com'
-        assert body['server']['core_number'] == 2
-        assert body['server']['memory_amount'] == 1024
-        assert body['server']['hostname'] == server.title
-        assert body['server']['zone'] == 'us-chi1'
-        assert body['server']['vnc_password'] == 'my-passwd'
-        assert body['server']['password_delivery'] == 'email'
-        assert body['server']['login_user'] == {
-            'username': 'upclouduser',
-            'create_password': 'yes',
-            'ssh_keys': {
-                'ssh_key': ['this-is-a-SSH-key']
-            }
+
+        server2_dict = {
+            'core_number':2,
+            'memory_amount':1024,
+            'hostname':'my.example.com',
+            'zone': ZONE.Chicago,
+            'storage_devices':[
+                {'os': 'Ubuntu 14.04', 'size': 10}
+            ],
+            'vnc_password': 'my-passwd',
+            'password_delivery': 'email',
+            'login_user': login_user_block('upclouduser', ['this-is-a-SSH-key']),
+            'avoid_host': '12345678',
+            'user_data': 'https://my.script.com/some_script.py',
+            'ip_addresses': [
+                {'family':'IPv4', 'access':'public'},
+                {'family':'IPv6', 'access':'public'}
+            ]
         }
-        assert body['server']['avoid_host'] == '12345678'
-        assert body['server']['user_data'] == 'https://my.script.com/some_script.py'
+        server2 = Server._create_server_obj(server2_dict, cloud_manager=self)
+
+        body1 = server1.prepare_post_body()
+        body2 = server2.prepare_post_body()
+
+
+        for body in [body1, body2]:
+            assert body['server']['title'] == 'my.example.com'
+            assert body['server']['core_number'] == 2
+            assert body['server']['memory_amount'] == 1024
+            assert body['server']['hostname'] == server1.title
+            assert body['server']['zone'] == 'us-chi1'
+            assert body['server']['vnc_password'] == 'my-passwd'
+            assert body['server']['password_delivery'] == 'email'
+            assert body['server']['login_user'] == {
+                'username': 'upclouduser',
+                'create_password': 'yes',
+                'ssh_keys': {
+                    'ssh_key': ['this-is-a-SSH-key']
+                }
+            }
+            assert body['server']['avoid_host'] == '12345678'
+            assert body['server']['user_data'] == 'https://my.script.com/some_script.py'
+            assert body['server']['ip_addresses'] == {
+                'ip_address': [
+                    {'family': 'IPv4', 'access': 'public'},
+                    {'family': 'IPv6', 'access': 'public'}
+                ]
+            }
+
 
     @responses.activate
     def test_create_server(self, manager):

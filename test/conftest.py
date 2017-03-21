@@ -24,17 +24,19 @@ def manager():
     return upcloud_api.CloudManager("testuser", "mock-api-password")
 
 
+def read_from_file(filename):
+    filename = filename.replace("/", "_")
+    cwd = os.path.dirname(__file__)
+    f = open(cwd + '/json_data/'+filename, 'r')
+    return f.read()
+
+
 class Mock(object):
     base_url = 'https://api.upcloud.com/1.2'
 
     @staticmethod
     def read_from_file(filename):
-
-        filename = filename.replace("/", "_")
-
-        cwd = os.path.dirname(__file__)
-        f = open(cwd + '/json_data/'+filename, 'r')
-        return f.read()
+        return read_from_file(filename)
 
     @staticmethod
     def mock_get(target, response_file=None):
