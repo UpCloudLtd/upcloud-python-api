@@ -6,7 +6,6 @@ from __future__ import absolute_import
 from upcloud_api import IPAddress, Server, Storage
 from upcloud_api.utils import assignIfExists
 
-
 class ServerManager(object):
     """
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
@@ -52,6 +51,17 @@ class ServerManager(object):
                 server_instance.populate()
 
         return server_list
+    def get_server_by_ip(self, ip_address):
+        """
+        GET '/ip_address/x.x.x.x'. Retrieves machine UUID using IP-address
+
+        Return a (populated) Server instance.
+        """
+
+        data = self.get_request('/ip_address/{0}'.format(ip_address))
+        UUID = data['ip_address']['server']
+
+        return self.get_server(UUID)
 
     def get_server(self, UUID):
         """
