@@ -27,7 +27,7 @@ class StorageManager(object):
         res = self.get_request('/storage/' + str(storage))
         return Storage(cloud_manager=self, **res['storage'])
 
-    def create_storage(self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1'):
+    def create_storage(self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1', backup_rule={}):
         """
         Create a Storage object. Returns an object based on the API's response.
         """
@@ -37,24 +37,27 @@ class StorageManager(object):
                 'tier': tier,
                 'title': title,
                 'zone': zone
+                'backup_rule': backup_rule
             }
         }
         res = self.post_request('/storage', body)
         return Storage(cloud_manager=self, **res['storage'])
 
-    def _modify_storage(self, storage, size, title):
+    def _modify_storage(self, storage, size, title, backup_rule={}):
         body = {'storage': {}}
         if size:
             body['storage']['size'] = size
         if title:
             body['storage']['title'] = title
+        if backup_rule:
+            body['storage']['backup_rule'] = backup_rule
         return self.request('PUT', '/storage/' + str(storage), body)
 
-    def modify_storage(self, storage, size, title):
+    def modify_storage(self, storage, size, title, backup_rule={}):
         """
         Modify a Storage object. Returns an object based on the API's response.
         """
-        res = self._modify_storage(str(storage), size, title)
+        res = self._modify_storage(str(storage), size, title, backup_rule)
         return Storage(cloud_manager=self, **res['storage'])
 
     def delete_storage(self, UUID):
