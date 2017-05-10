@@ -36,7 +36,7 @@ class StorageManager(object):
                 'size': size,
                 'tier': tier,
                 'title': title,
-                'zone': zone
+                'zone': zone,
                 'backup_rule': backup_rule
             }
         }
