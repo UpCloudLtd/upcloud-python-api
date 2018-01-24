@@ -13,3 +13,6 @@ install:
 script:
   - tox
   - tox -e py27 -- -x --integration-tests
+matrix:
+  allow_failures:
+  - python: "nightly"
