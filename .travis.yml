@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "nightly"
+install:
+  - pip install tox tox-pyenv
+  - pip install -r requirements.txt
+script:
+  - tox
+  - tox -e py27 -- -x --integration-tests
