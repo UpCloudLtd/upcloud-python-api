@@ -18,7 +18,7 @@ class BaseAPI(object):
         self.token = token
         self.timeout = timeout
 
-    def request(self, method, endpoint, body=None):
+    def request(self, method, endpoint, body=None, timeout=-1):
         """
         Perform a request with a given body to a given endpoint in UpCloud's API.
 
@@ -38,11 +38,13 @@ class BaseAPI(object):
         else:
             json_body_or_None = None
 
+        call_timeout = timeout if timeout != -1 else self.timeout
+
         APIcall = getattr(requests, method.lower())
         res = APIcall('https://api.upcloud.com' + url,
                       data=json_body_or_None,
                       headers=headers,
-                      timeout=self.timeout)
+                      timeout=call_timeout)
 
         if res.text:
             res_json = res.json()
@@ -51,17 +53,17 @@ class BaseAPI(object):
 
         return self.__error_middleware(res, res_json)
 
-    def get_request(self, endpoint):
+    def get_request(self, endpoint, timeout=-1):
         """
         Perform a GET request to a given endpoint in UpCloud's API.
         """
-        return self.request('GET', endpoint)
+        return self.request('GET', endpoint, timeout=timeout)
 
-    def post_request(self, endpoint, body=None):
+    def post_request(self, endpoint, body=None, timeout=-1):
         """
         Perform a POST request to a given endpoint in UpCloud's API.
         """
-        return self.request('POST', endpoint, body)
+        return self.request('POST', endpoint, body, timeout)
 
     def __error_middleware(self, res, res_json):
         """
