@@ -110,6 +110,9 @@ def test_infra_ops():
 
 
     test_server = CLUSTER['web1']
+
+    test_server.populate()
+    test_server._wait_for_state_change(['started'])
     test_server.stop()
     test_server._wait_for_state_change(['stopped'])
 
