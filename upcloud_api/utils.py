@@ -1,7 +1,7 @@
 import itertools
 from time import sleep
 
-from upcloud_api import UpCloudClientError
+from upcloud_api import UpCloudClientError, UpCloudAPIError
 
 
 def assignIfExists(opts, default=None, **kwargs):
@@ -14,7 +14,7 @@ def assignIfExists(opts, default=None, **kwargs):
     return default
 
 
-def try_it_n_times(operation, expected_error_codes, custom_error='operation failed', n=5):
+def try_it_n_times(operation, expected_error_codes, custom_error='operation failed', n=10):
     """
     Try a given operation (API call) n times.
 
