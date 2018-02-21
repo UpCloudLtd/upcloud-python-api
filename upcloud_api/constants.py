@@ -3,15 +3,19 @@ from __future__ import absolute_import
 
 import re
 
+
 class ZONE(object):
     """
     Enums for UpCloud's Zones.
     """
 
     Helsinki = 'fi-hel1'
+    Helsinki2 = 'fi-hel2'
     London = 'uk-lon1'
     Chicago = 'us-chi1'
     Frankfurt = 'de-fra1'
+    Amsterdam = 'nl-ams1'
+    Singapore = 'sg-sin1'
 
 
 class OperatingSystems(object):
@@ -24,11 +28,13 @@ class OperatingSystems(object):
         'CentOS 7.0': '01000000-0000-4000-8000-000050010300',
         'Debian 7.8': '01000000-0000-4000-8000-000020020100',
         'Debian 8.0': '01000000-0000-4000-8000-000020030100',
+        'Debian 9.0': '01000000-0000-4000-8000-000020040100',
         'Ubuntu 12.04': '01000000-0000-4000-8000-000030030200',
         'Ubuntu 14.04': '01000000-0000-4000-8000-000030040200',
         'Ubuntu 16.04': '01000000-0000-4000-8000-000030060200',
-        'Windows 2008': '01000000-0000-4000-8000-000010030200',
-        'Windows 2012': '01000000-0000-4000-8000-000010050200'
+        'CoreOS Stable 1068.8.0': '01000000-0000-4000-8000-000080010200',
+        'Windows 2012': '01000000-0000-4000-8000-000010050200',
+        'Windows 2016': '01000000-0000-4000-8000-000010060200',
     }
 
     @classmethod
