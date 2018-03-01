@@ -114,7 +114,7 @@ cluster = {
         login_user=login_user
     ),
     'db': Server(
-        plan='2xCPU-2GB', # use a preconfigured plan, instead of custom
+        plan='2xCPU-4GB', # use a preconfigured plan, instead of custom
         hostname='db.example.com',
         zone=ZONE.London,
         storage_devices=[
