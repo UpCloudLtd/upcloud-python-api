@@ -183,6 +183,29 @@ server.start()
 
 ```
 
+
+### Clone a server
+
+Cloning is done by giving existing storage uuid to storage_devices. Note that size of the storage
+must be defined and must be at least same size than storage being cloned.
+
+```python
+clone = Server(
+    core_number=1,
+    memory_amount=512,
+    hostname='cloned.server',
+    zone=ZONE.Helsinki,
+    storage_devices=[
+        Storage(
+            uuid='012bea57-0f70-4194-82d0-b3d25f4a018b',
+            size=50  # size must be defined and it has to be at least same size than storage being cloned
+        ),
+    ]
+)
+
+manager.create_server(clone)
+```
+
 ### Easy access to servers and their information:
 
 New in 0.3.0.
