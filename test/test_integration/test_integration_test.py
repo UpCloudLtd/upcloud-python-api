@@ -36,6 +36,7 @@ def destroy_server(server):
     """Destroy a server and it's storages."""
     server.stop_and_destroy()
 
+
 def delete_tag(tag):
     """Destroy a tag (only works if the tag is not in use)."""
     tag.destroy()
@@ -43,7 +44,7 @@ def delete_tag(tag):
 
 @integration_test
 def teardown_module(module):
-    manager = CloudManager(USERNAME, PASSWORD, timeout=120)
+    manager = CloudManager(USERNAME, PASSWORD, timeout=160)
 
     # if we are at CIRCLECI, clean up everything
     if os.environ.get('CIRCLECI', False):
@@ -84,7 +85,6 @@ def test_infra_ops():
         server.populate()
         cluster_servers.append(server)
 
-
     CREATED_SERVERS = cluster_servers
 
     # assert all_servers contain cluster_servers
@@ -106,8 +106,6 @@ def test_infra_ops():
     web2 = CLUSTER['web2']
     assert len(web2.ip_addresses) == 1
     assert web2.ip_addresses[0].family == 'IPv6'
-
-
 
     test_server = CLUSTER['web1']
 
