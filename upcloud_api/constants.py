@@ -16,6 +16,7 @@ class ZONE(object):
     Frankfurt = 'de-fra1'
     Amsterdam = 'nl-ams1'
     Singapore = 'sg-sin1'
+    SanJose = 'us-sjo1'
 
 
 class OperatingSystems(object):
