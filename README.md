@@ -90,7 +90,7 @@ login_user = login_user_block(
 cluster = {
     'web1': Server(
         core_number=1, # CPU cores
-        memory_amount=512, # RAM in MB
+        memory_amount=1024, # RAM in MB
         hostname='web1.example.com',
         zone=ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
         storage_devices=[
@@ -104,7 +104,7 @@ cluster = {
     ),
     'web2': Server(
         core_number=1,
-        memory_amount=512,
+        memory_amount=1024,
         hostname='web2.example.com',
         zone=ZONE.London,
         storage_devices=[
@@ -192,7 +192,7 @@ must be defined and must be at least same size than storage being cloned.
 ```python
 clone = Server(
     core_number=1,
-    memory_amount=512,
+    memory_amount=1024,
     hostname='cloned.server',
     zone=ZONE.Helsinki,
     storage_devices=[

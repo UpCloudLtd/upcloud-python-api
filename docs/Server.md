@@ -51,7 +51,7 @@ Creation of servers in the API is handled by the CloudManager. It accepts a Serv
 
 server = Server(
 			core_number = 1,
-			memory_amount = 512,
+			memory_amount = 1024,
 			hostname = "web1.example.com",
 			zone = ZONE.London,
 			storage_devices = [

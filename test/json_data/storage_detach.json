@@ -17,7 +17,7 @@
 			]
 		},
 		"license" : 0,
-		"memory_amount" : "512",
+		"memory_amount" : "1024",
 		"nic_model" : "e1000",
 		"state" : "started",
 		"storage_devices" : {

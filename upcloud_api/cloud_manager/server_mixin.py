@@ -88,7 +88,7 @@ class ServerManager(object):
 
         Example:
         server1 = Server( core_number = 1,
-              memory_amount = 512,
+              memory_amount = 1024,
               hostname = "my.example.1",
               zone = ZONE.London,
               storage_devices = [

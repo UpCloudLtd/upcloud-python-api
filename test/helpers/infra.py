@@ -10,7 +10,7 @@ from upcloud_api.server import Server, login_user_block
 CLUSTER = {
     'web1': Server(
         core_number=1,
-        memory_amount=512,
+        memory_amount=1024,
         hostname='web1.example.com',
         zone=ZONE.London,
         password_delivery='none',
@@ -21,7 +21,7 @@ CLUSTER = {
 
     'web2': Server(
         core_number=1,
-        memory_amount=512,
+        memory_amount=1024,
         hostname='web2.example.com',
         zone=ZONE.London,
         password_delivery='none',
@@ -35,7 +35,7 @@ CLUSTER = {
 
     'db': Server(
         core_number=1,
-        memory_amount=512,
+        memory_amount=1024,
         hostname='db.example.com',
         zone=ZONE.London,
         password_delivery='none',
