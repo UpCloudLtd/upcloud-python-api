@@ -105,10 +105,9 @@ class ServerManager(object):
           (id is a running starting from 1)
         - tier defaults to maxiops
         - valid operating systems are:
-          "CentOS 6.5", "CentOS 7.0"
-          "Debian 7.8"
+          "CentOS 6.10", "CentOS 7.6"
           "Ubuntu 12.04", "Ubuntu 14.04"
-          "Windows 2003","Windows 2008" ,"Windows 2012"
+          "Windows 2012", "Windows 2016"
         """
         if isinstance(server, Server):
             body = server.prepare_post_body()
