@@ -22,7 +22,7 @@ PASSWORD = os.environ.get('UPCLOUD_API_PASSWD')
 
 
 integration_test = pytest.mark.skipif(
-    not pytest.config.getoption('--integration-tests'),
+    not getattr(pytest, "--integration-tests", None),
     reason='need --integration-tests option to run'
 )
 
