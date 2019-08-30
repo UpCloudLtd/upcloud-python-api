@@ -27,7 +27,8 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallMa
         `None` means that there is no timeout.
         """
         if not username or not password:
-            raise Exception('Invalid credentials, please provide a username and password.')
+            raise Exception(
+                'Invalid credentials, please provide a username and password. user:{} - pass:{}'.format(username, password))
 
         credentials = '{0}:{1}'.format(username, password).encode()
         encoded_credentials = base64.b64encode(credentials).decode()
