@@ -21,24 +21,10 @@ USERNAME = os.environ.get('UPCLOUD_API_USER')
 PASSWORD = os.environ.get('UPCLOUD_API_PASSWD')
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--integration-tests", action="store_true", default=False, help="run integration tests"
-    )
-
-
-def pytest_configure(config):
-    config.addinivalue_line("markers", "interagtion: mark test as integration")
-
-
-def pytest_collection_modifyitems(config, items):
-    if config.getoption("--integration-tests"):
-        # --integration-tests given in cli: do not skip integration tests
-        return
-    integration_tests = pytest.mark.skip(reason="need --integration-tests option to run")
-    for item in items:
-        if "integration_test" in item.keywords:
-            item.add_marker(integration_tests)
+integration_test = pytest.mark.skipif(
+    not pytest.config.getoption('--integration-tests'),
+    reason='need --integration-tests option to run'
+)
 
 
 # globals to store created resources so we can cleanup after tests
@@ -56,7 +42,7 @@ def delete_tag(tag):
     tag.destroy()
 
 
-@pytest.mark.integration_test
+@integration_test
 def teardown_module(module):
     manager = CloudManager(USERNAME, PASSWORD, timeout=160)
 
@@ -75,7 +61,7 @@ def teardown_module(module):
             manager.delete_tag(tag)
 
 
-@pytest.mark.integration_test
+@integration_test
 def test_infra_ops():
     global CREATED_SERVERS
     global CREATED_TAGS
