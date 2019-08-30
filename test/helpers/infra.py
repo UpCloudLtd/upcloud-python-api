@@ -40,7 +40,7 @@ CLUSTER = {
         zone=ZONE.London,
         password_delivery='none',
         storage_devices=[
-            Storage(os='CentOS 7.0', size=10),
+            Storage(os='CentOS 7.6', size=10),
             Storage(size=10),
         ],
         login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
@@ -53,7 +53,7 @@ CLUSTER = {
         zone=ZONE.London,
         password_delivery='none',
         storage_devices=[
-            Storage(os='Debian 7.8', size=30)
+            Storage(os='Debian 10.0', size=30)
         ],
         login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
         )
