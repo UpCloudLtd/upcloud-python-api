@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='upcloud-api',
-    version='0.4.4',
+    version='0.4.5',
     description='UpCloud API Client',
     author='Elias Nygren',
     maintainer='Mika Lackman',
