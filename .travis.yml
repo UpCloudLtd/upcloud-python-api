@@ -21,3 +21,14 @@ matrix:
       dist: xenial
 
 dist: bionic
+
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: __token__
+  password:
+    secure: HXttn5g7g7NU4dHFGAfRwxYWCfqhEd6r/y2pPQfWvnRp2OTPn8hvrdO6Cheke4lJ3HU6rhfojmjK5b+5iwfSTO7vKKC27Nxi1dZWjDiCgDGwtWxA1q0KiRVU+fB1aZFinMOxgeWijXPyjaFxJHLceoDnTQ5pQeS59v3vwJwUKU3VfUDN5rpCh+AB0rsSkFd9e3VTE8w82I0/v7InMD6oGhv9MfegzpHXqU+X2/FwaQNTrvwv7BoAmiDYyiPHfhlY3kVrl0I6dJSsaG62pvgvX1T+7KSfeut1OdZc8lmdhasU2SHkUDSPiZ8ybY4cvtEViNBmfTWuEI7Nz8pWn34cWcqKzrEEQ8XcODMmFOcpGgF1DZnOxk3MKa4aNVB1C4bGPX/2n2CPNs3iXURBqRJ7Z789VlzQ2XVwZyX9HCjkRfhz7fAUoihH5jbQvbPpWrw87OW7E4oKc2xDqPXQpqyvGOIjqr4YU+RMETMvyqc8Ka0PdpuP2VXvtTk58CLXso8LhBql6TaUkI8m/vM59keCAWL5vSDH44uV9sP6KNnJ8yO/m3jLX5ldPThLLTXgK/e6qDMgqvgZtv9HuDc4AAeYyAl0ByPbB8sNCz8t0RGFm6Qzil4eilSwYXfgAX9POYH/cCio1e85gs6KRuT0I3GdaIQT9VFaDYdAJckyqjxiYxQ=
+  on:
+    repo: UpCloudLtd/upcloud-python-api
+    tags: true
+    python: "3.8"
