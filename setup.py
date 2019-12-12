@@ -4,11 +4,15 @@ from setuptools import setup
 
 
 version = '0.4.5'
+with open('README.md') as f:
+    long_description = f.read()
 
 setup(
     name='upcloud-api',
     version=version,
     description='UpCloud API Client',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Elias Nygren',
     maintainer='Mika Lackman',
     maintainer_email='mika.lackman@upcloud.com',
