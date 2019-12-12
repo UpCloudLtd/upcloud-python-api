@@ -34,7 +34,7 @@ python setup.py install
 * python 2.6
 * python 2.7
 * <del>python 3.2</del> removed due to python2/3 support
-* <del>python 3.3</del> removed due to deprication
+* <del>python 3.3</del> removed due to deprecation
 * python 3.4
 * python 3.5
 * pypi3  2.4.0
