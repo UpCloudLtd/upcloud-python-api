@@ -1,4 +1,5 @@
 pytest>=2.9.2,<4.1
+attrs<19.2
 py>=1.4.26
 mock>=1.0.1
 responses==0.3.0
