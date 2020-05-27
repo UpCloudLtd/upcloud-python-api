@@ -14,7 +14,7 @@ import responses
 class TestCreateServer(object):
 
     def test_storage_prepare_post_body(self, manager):
-        s1 = Storage(os='Ubuntu 14.04', size=10)
+        s1 = Storage(os='Ubuntu 20.04', size=10)
         body1 = s1.to_dict()
         assert body1['tier'] == 'maxiops'
         assert body1['size'] == 10
@@ -39,7 +39,7 @@ class TestCreateServer(object):
             hostname='my.example.com',
             zone=ZONE.Chicago,
             storage_devices=[
-                Storage(os='Ubuntu 14.04', size=10),
+                Storage(os='Ubuntu 20.04', size=10),
                 Storage(size=100, title='storage disk 1')
             ])
 
@@ -57,7 +57,7 @@ class TestCreateServer(object):
             hostname='my.example.com',
             zone=ZONE.Chicago,
             storage_devices=[
-                Storage(os='Ubuntu 14.04', size=10),
+                Storage(os='Ubuntu 20.04', size=10),
                 Storage()
             ]
         )
@@ -67,7 +67,7 @@ class TestCreateServer(object):
         assert s1['title'] == 'my.example.com OS disk'
         assert s1['tier'] == 'maxiops'
         assert s1['size'] == 10
-        assert s1['storage'] == '01000000-0000-4000-8000-000030040200'
+        assert s1['storage'] == '01000000-0000-4000-8000-000030200200'
         assert s1['action'] == 'clone'
         s2 = body['server']['storage_devices']['storage_device'][1]
         assert s2['title'] == 'my.example.com storage disk 1'
@@ -89,7 +89,7 @@ class TestCreateServer(object):
             zone=ZONE.Chicago,
             storage_devices=[
                 Storage(
-                    os='Ubuntu 14.04',
+                    os='Ubuntu 20.04',
                     size=10
                 )
             ],
@@ -111,7 +111,7 @@ class TestCreateServer(object):
             'hostname':'my.example.com',
             'zone': ZONE.Chicago,
             'storage_devices':[
-                {'os': 'Ubuntu 14.04', 'size': 10}
+                {'os': 'Ubuntu 20.04', 'size': 10}
             ],
             'vnc_password': 'my-passwd',
             'password_delivery': 'email',
@@ -171,7 +171,7 @@ class TestCreateServer(object):
             hostname='my.example.com',
             zone=ZONE.Chicago,
             storage_devices=[
-                Storage(os='Ubuntu 14.04', size=10),
+                Storage(os='Ubuntu 20.04', size=10),
                 Storage(size=100, title='storage disk 1')
             ]
         )
@@ -208,7 +208,7 @@ class TestCreateServer(object):
             'hostname': 'my.example.com',
             'zone': ZONE.Chicago,
             'storage_devices': [
-                {'os': 'Ubuntu 14.04', 'size': 10},
+                {'os': 'Ubuntu 20.04', 'size': 10},
                 {'size': 100, 'title': 'storage disk 1'},
             ]
         }

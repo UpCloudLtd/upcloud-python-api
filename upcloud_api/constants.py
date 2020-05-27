@@ -31,11 +31,10 @@ class OperatingSystems(object):
         'Debian 8.11': '01000000-0000-4000-8000-000020030100',
         'Debian 9.9': '01000000-0000-4000-8000-000020040100',
         'Debian 10.0': '01000000-0000-4000-8000-000020050100',
-        'Ubuntu 14.04': '01000000-0000-4000-8000-000030040200',
         'Ubuntu 16.04': '01000000-0000-4000-8000-000030060200',
         'Ubuntu 18.04': '01000000-0000-4000-8000-000030080200',
+        'Ubuntu 20.04': '01000000-0000-4000-8000-000030200200',
         'CoreOS Stable 1068.8.0': '01000000-0000-4000-8000-000080010200',
-        'Windows 2012': '01000000-0000-4000-8000-000010050200',
         'Windows 2016': '01000000-0000-4000-8000-000010060200',
         'Windows 2019': '01000000-0000-4000-8000-000010070200',
     }
@@ -55,7 +54,9 @@ class OperatingSystems(object):
             return os
 
         raise Exception((
-            "Invalid OS -- valid options are: 'CentOS 6.5', 'CentOS 7.0', "
-            "'Debian 7.8', 'Debian 8.0' ,'Ubuntu 12.04', 'Ubuntu 14.04', 'Ubuntu 16.04', "
-            "'Windows 2008', 'Windows 2012'"
+            "Invalid OS -- valid options are: "
+            "'CentOS 6.10', 'CentOS 7', 'Centos 8', "
+            "'Debian 8.11', 'Debian 9.9', 'Debian 10.10', "
+            "'Ubuntu 12.04', 'Ubuntu 16.04', 'Ubuntu 18.04', 'Ubuntu 20.04', "
+            "'Windows 2016', 'Windows 2019'"
         ))
