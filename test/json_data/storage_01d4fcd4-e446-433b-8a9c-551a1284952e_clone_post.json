@@ -1,0 +1,22 @@
+{
+	"storage" : {
+		"access" : "private",
+		"backup_rule": "",
+		"backups" : {
+			"backup" : []
+			},
+		"license" : 0,
+		"servers" : {
+			"server" : [
+				"00798b85-efdc-41ca-8021-f6ef457b8531"
+			]
+		},
+		"size" : 666,
+		"state" : "online",
+		"tier" : "maxiops",
+		"title" : "cloned-storage-test",
+		"type" : "normal",
+		"uuid" : "01d3e9ad-8ff5-4a52-9fa2-48938e488e78",
+		"zone" : "fi-hel1"
+	}
+}

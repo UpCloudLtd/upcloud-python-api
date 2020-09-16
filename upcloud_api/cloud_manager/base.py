@@ -12,7 +12,7 @@ class BaseAPI(object):
     """
 
     api = 'api.upcloud.com'
-    api_v = '1.2'
+    api_v = '1.3'
 
     def __init__(self, token, timeout=None):  # noqa
         self.token = token

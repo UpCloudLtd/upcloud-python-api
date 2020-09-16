@@ -66,6 +66,22 @@ class StorageManager(object):
         """
         return self.request('DELETE', '/storage/' + UUID)
 
+    def clone_storage(self, storage, title, zone, tier=None):
+        """
+        Clones a Storage object. Returns an object based on the API's response.
+        """
+        body = {'storage': {'title': title, 'zone': zone}}
+        if tier:
+            body['storage']['tier'] = tier
+        res = self.request('POST', '/storage/{0}/clone'.format(str(storage)), body)
+        return Storage(cloud_manager=self, **res['storage'])
+
+    def cancel_clone_storage(self, storage):
+        """
+        Cancels a running cloning operation and deletes the incomplete copy.
+        """
+        return self.request('POST', '/storage/{0}/cancel'.format(str(storage)))
+
     def attach_storage(self, server, storage, storage_type, address):
         """
         Attach a Storage object to a Server. Return a list of the server's storages.
