@@ -68,19 +68,19 @@ class StorageManager(object):
 
     def clone_storage(self, storage, title, zone, tier=None):
         """
-        Clones a Storage object. Returns an object based on the API's response,
+        Clones a Storage object. Returns an object based on the API's response.
         """
         body = {'storage': {'title': title, 'zone': zone}}
         if tier:
             body['storage']['tier'] = tier
-        res = self.request('POST', '/storage/{}/clone'.format(str(storage)), body)
+        res = self.request('POST', '/storage/{0}/clone'.format(str(storage)), body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def cancel_clone_storage(self, storage):
         """
         Cancels a running cloning operation and deletes the incomplete copy.
         """
-        return self.request('POST', '/storage/{}/cancel'.format(str(storage)))
+        return self.request('POST', '/storage/{0}/cancel'.format(str(storage)))
 
     def attach_storage(self, server, storage, storage_type, address):
         """
