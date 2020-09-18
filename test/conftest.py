@@ -32,7 +32,7 @@ def read_from_file(filename):
 
 
 class Mock(object):
-    base_url = 'https://api.upcloud.com/1.2'
+    base_url = 'https://api.upcloud.com/1.3'
 
     @staticmethod
     def read_from_file(filename):
@@ -61,11 +61,14 @@ class Mock(object):
         return(200, {}, json.dumps(data))
 
     @staticmethod
-    def mock_post(target):
-        data = json.loads(Mock.read_from_file(target + '_post.json'))
+    def mock_post(target, empty_content=False):
 
         def callback(request):
-            return Mock.__put_post_callback(request, target, data)
+            if not empty_content:
+                data = json.loads(Mock.read_from_file(target + '_post.json'))
+                return Mock.__put_post_callback(request, target, data)
+            else:
+                return(200, {}, '{}')
 
         responses.add_callback(responses.POST, Mock.base_url + '/' + target,
                                callback=callback,

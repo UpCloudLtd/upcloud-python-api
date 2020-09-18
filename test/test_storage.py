@@ -35,6 +35,31 @@ class TestStorage(object):
         assert storage.zone == "fi-hel1"
 
     @responses.activate
+    def test_clone_storage(self, manager):
+        data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
+        storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
+
+        Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/clone")
+        cloned_storage = manager.clone_storage(storage, 'cloned-storage-test', 'fi-hel1')
+        assert type(cloned_storage).__name__ == "Storage"
+        assert cloned_storage.size == 666
+        assert cloned_storage.tier == "maxiops"
+        assert cloned_storage.title == "cloned-storage-test"
+        assert cloned_storage.zone == "fi-hel1"
+
+    @responses.activate
+    def test_cancel_clone_storage(self, manager):
+        data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
+        storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
+
+        Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/clone")
+        cloned_storage = manager.clone_storage(storage, 'cloned-storage-test', 'fi-hel1')
+
+        Mock.mock_post("storage/01d3e9ad-8ff5-4a52-9fa2-48938e488e78/cancel", empty_content=True)
+        res = manager.cancel_clone_storage(cloned_storage)
+        assert res == {}
+
+    @responses.activate
     def test_storage_update(self, manager):
 
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
@@ -60,7 +85,6 @@ class TestStorage(object):
         Mock.mock_delete("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
         res = manager.delete_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
         assert res == {}
-
 
     @responses.activate
     def test_storage_delete_oop(self, manager):
