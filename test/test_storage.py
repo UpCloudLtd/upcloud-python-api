@@ -60,6 +60,32 @@ class TestStorage(object):
         assert res == {}
 
     @responses.activate
+    def test_load_cd_rom(self, manager):
+        data = Mock.mock_post("server/00798b85-efdc-41ca-8021-f6ef457b8531/cdrom/load", ignore_data_field=True)
+        storage_devices = manager.load_cd_rom("00798b85-efdc-41ca-8021-f6ef457b8531", "01ec5c26-a25d-4752-94e4-27bd88b62816")
+        assert len(storage_devices) == 2
+
+    @responses.activate
+    def test_eject_cd_rom(self, manager):
+        data = Mock.mock_post("server/00798b85-efdc-41ca-8021-f6ef457b8531/cdrom/eject", ignore_data_field=True, empty_payload=True)
+        storage_devices = manager.eject_cd_rom("00798b85-efdc-41ca-8021-f6ef457b8531")
+        assert len(storage_devices) == 1
+
+    @responses.activate
+    def test_create_storage_backup(self, manager):
+        data = Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/backup")
+        storage = manager.create_storage_backup("01d4fcd4-e446-433b-8a9c-551a1284952e", "test-backup")
+        assert storage.title == "test-backup"
+        assert storage.size == 666
+        assert storage.zone == "fi-hel1"
+
+    @responses.activate
+    def test_restore_storage_backup(self, manager):
+        data = Mock.mock_post("storage/01350eec-6ebf-4418-abe4-e8bb1d5c9643/restore", empty_content=True)
+        res = manager.restore_storage_backup("01350eec-6ebf-4418-abe4-e8bb1d5c9643")
+        assert res == {}
+
+    @responses.activate
     def test_storage_update(self, manager):
 
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")

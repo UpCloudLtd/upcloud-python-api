@@ -1,0 +1,16 @@
+{"storage":
+  {
+  "access": "private",
+  "created": "2020-09-21T17:36:50Z",
+  "license": 0,
+  "origin": "01ec5c26-a25d-4752-94e4-27bd88b62816",
+  "progress": "0",
+  "servers": {"server": []},
+  "size": 666,
+  "state": "maintenance",
+  "title": "test-backup",
+  "type": "backup",
+  "uuid": "01350eec-6ebf-4418-abe4-e8bb1d5c9643",
+  "zone": "fi-hel1"
+  }
+}
