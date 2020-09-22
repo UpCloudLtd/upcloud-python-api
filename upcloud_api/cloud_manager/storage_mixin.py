@@ -108,3 +108,36 @@ class StorageManager(object):
         url = '/server/{0}/storage/detach'.format(server)
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
+
+    def load_cd_rom(self, server, address):
+        """
+        Loads a storage as a CD-ROM in the CD-ROM device of a server.
+        """
+        body = {'storage_device': {'storage': address}}
+        url = '/server/{0}/cdrom/load'.format(server)
+        res = self.post_request(url, body)
+        return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
+
+    def eject_cd_rom(self, server):
+        """
+        Ejects the storage from the CD-ROM device of a server.
+        """
+        url = '/server/{0}/cdrom/eject'.format(server)
+        res = self.post_request(url)
+        return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
+
+    def create_storage_backup(self, storage, title):
+        """
+        Creates a point-in-time backup of a storage resource.
+        """
+        url = '/storage/{0}/backup'.format(storage)
+        body = {'storage': {'title': title}}
+        res = self.post_request(url, body)
+        return Storage(cloud_manager=self, **res['storage'])
+
+    def restore_storage_backup(self, storage):
+        """
+        Restores the origin storage with data from the specified backup storage.
+        """
+        url = '/storage/{0}/restore'.format(storage)
+        return self.post_request(url)
