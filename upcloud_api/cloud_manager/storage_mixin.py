@@ -141,3 +141,12 @@ class StorageManager(object):
         """
         url = '/storage/{0}/restore'.format(storage)
         return self.post_request(url)
+
+    def templatize_storage(self, storage, title):
+        """
+        Creates an exact copy of an existing storage resource which can be used as a template for creating new servers.
+        """
+        url = '/storage/{0}/templatize'.format(storage)
+        body = {'storage': {'title': title}}
+        res = self.post_request(url, body)
+        return Storage(cloud_manager=self, **res['storage'])
