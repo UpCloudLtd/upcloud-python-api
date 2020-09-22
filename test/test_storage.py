@@ -93,6 +93,18 @@ class TestStorage(object):
         assert storage.type == "template"
 
     @responses.activate
+    def test_add_storage_to_favorites(self, manager):
+        data = Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/favorite", empty_content=True)
+        res = manager.add_storage_to_favorites("01d4fcd4-e446-433b-8a9c-551a1284952e")
+        assert res == {}
+
+    @responses.activate
+    def test_remove_storage_from_favorites(self, manager):
+        data = Mock.mock_delete("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/favorite")
+        res = manager.remove_storage_from_favorites("01d4fcd4-e446-433b-8a9c-551a1284952e")
+        assert res == {}
+
+    @responses.activate
     def test_storage_update(self, manager):
 
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
