@@ -150,17 +150,3 @@ class StorageManager(object):
         body = {'storage': {'title': title}}
         res = self.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
-
-    def add_storage_to_favorites(self, storage):
-        """
-        Adds a storage to the list of favorite storages.
-        """
-        url = '/storage/{0}/favorite'.format(storage)
-        return self.post_request(url)
-
-    def remove_storage_from_favorites(self, storage):
-        """
-        Removes a storage from the list of favorite storages.
-        """
-        url = '/storage/{0}/favorite'.format(storage)
-        return self.request('DELETE', url)
