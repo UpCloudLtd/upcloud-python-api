@@ -86,6 +86,13 @@ class TestStorage(object):
         assert res == {}
 
     @responses.activate
+    def test_templatize_storage(self, manager):
+        data = Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/templatize")
+        storage = manager.templatize_storage("01d4fcd4-e446-433b-8a9c-551a1284952e", "my server template")
+        assert storage.title == "my server template"
+        assert storage.type == "template"
+
+    @responses.activate
     def test_storage_update(self, manager):
 
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")

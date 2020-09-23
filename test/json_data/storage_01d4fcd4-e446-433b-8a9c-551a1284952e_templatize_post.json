@@ -1,0 +1,14 @@
+{
+  "storage": {
+    "access": "private",
+    "license": 0,
+    "servers": {"server": []},
+    "size": 666,
+    "state": "maintenance",
+    "tier": "maxiops",
+    "title": "my server template",
+    "type": "template",
+    "uuid": "013721b5-07ca-4d7b-b4ff-e21262223e5b",
+    "zone": "fi-hel1"
+  }
+}
