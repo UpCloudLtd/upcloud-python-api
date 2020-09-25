@@ -78,13 +78,14 @@ class Mock(object):
                                content_type='application/json')
 
     @staticmethod
-    def mock_put(target):
+    def mock_put(target, ignore_data_field=False, empty_payload=False, call_api=True):
         data = json.loads(Mock.read_from_file(target + '.json'))
 
         def callback(request):
-            return Mock.__put_post_callback(request, target, data)
+            return Mock.__put_post_callback(request, target, data, ignore_data_field, empty_payload)
 
-        responses.add_callback(responses.PUT, Mock.base_url + '/' + target,
+        url = Mock.base_url + '/' + target if call_api else target
+        responses.add_callback(responses.PUT, url,
                                callback=callback,
                                content_type='application/json')
 

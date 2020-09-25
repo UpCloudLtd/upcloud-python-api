@@ -32,3 +32,13 @@ def try_it_n_times(operation, expected_error_codes, custom_error='operation fail
             sleep(3)
         if i >= n - 1:
             raise UpCloudClientError(custom_error)
+
+
+def get_raw_data_from_file(file):
+    """
+    Helper function to get raw file data for uploading.
+    """
+    with open(file, 'rb') as file:
+        data = file.read()
+    file.close()
+    return data
