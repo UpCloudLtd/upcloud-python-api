@@ -67,14 +67,14 @@ def detach_storage(self, server_uuid, address):
 ```python
 def load_cd_rom(self, server, address):
 	"""
-	Loads a storage as a CD-ROM in the CD-ROM device of a server. Return a list of the server's storages.
+	Loads a storage as a CD-ROM in the CD-ROM device of a server. Returns a list of the server's storages.
 	"""
 ```
 
 ```python
 def eject_cd_rom(self, server):
 	"""
-Ejects the storage from the CD-ROM device of a server. Return a list of the server's storages.
+Ejects the storage from the CD-ROM device of a server. Returns a list of the server's storages.
 	"""
 ```
 
