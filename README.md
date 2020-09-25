@@ -50,13 +50,6 @@ python setup.py install
 * Manage firewall (on/off and individual rules)
 	* since 0.2: full management of firewall rules
 
-**TODO:**
-* Cloning of storages
-* Full management of special storage types:
-  * CDROMs, custom OS templates
-  * (custom templates can already be cloned to a disk via UUID)
-* Full management of backups (instant and scheduled)
-
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 

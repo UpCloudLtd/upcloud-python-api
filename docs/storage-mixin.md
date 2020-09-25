@@ -63,3 +63,67 @@ def detach_storage(self, server_uuid, address):
 	Detach a Storage object to a Server. Return a list of the server's storages.
 	"""
 ```
+
+```python
+def load_cd_rom(self, server, address):
+	"""
+	Loads a storage as a CD-ROM in the CD-ROM device of a server. Return a list of the server's storages.
+	"""
+```
+
+```python
+def eject_cd_rom(self, server):
+	"""
+Ejects the storage from the CD-ROM device of a server. Return a list of the server's storages.
+	"""
+```
+
+```python
+def create_storage_backup(self, storage, title):
+	"""
+Creates a point-in-time backup of a storage resource. Returns a storage object.
+	"""
+```
+
+```python
+def restore_storage_backup(self, storage):
+	"""
+Restores the origin storage with data from the specified backup storage. Returns a storage object.
+	"""
+```
+
+```python
+def templatize_storage(self, storage, title):
+	"""
+Creates an exact copy of an existing storage resource which can be used as a template for creating new servers. Returns a storage object.
+	"""
+```
+
+```python
+def create_storage_import(self, storage, source, source_location=None):
+	"""
+	Creates an import task to import data into an existing storage and returns a storage import object.
+	Source types: http_import or direct_upload.
+	"""
+```
+
+```python
+def upload_file_for_storage_import(self, storage_import, file):
+	"""
+	Uploads a file directly to UpCloud's uploader session. Returns written bytes, md5sum and sha256sum.
+	"""
+```
+
+```python
+def get_storage_import_details(self, storage):
+	"""
+	Returns detailed information of an ongoing or finished import task within a storage import object.
+	"""
+```
+
+```python
+def cancel_storage_import(self, storage):
+	"""
+	Cancels an ongoing import task. Returns a storage import object.
+	"""
+```
