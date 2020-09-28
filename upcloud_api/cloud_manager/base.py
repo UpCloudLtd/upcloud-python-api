@@ -18,31 +18,34 @@ class BaseAPI(object):
         self.token = token
         self.timeout = timeout
 
-    def request(self, method, endpoint, body=None, timeout=-1):
+    def request(self, method, endpoint, body=None, timeout=-1, request_to_api=True):
         """
-        Perform a request with a given body to a given endpoint in UpCloud's API.
+        Perform a request with a given body to a given endpoint in UpCloud's API or UpCloud's uploader session.
 
         Handles errors with __error_middleware.
         """
         if method not in set(['GET', 'POST', 'PUT', 'DELETE']):
             raise Exception('Invalid/Forbidden HTTP method')
 
-        url = '/' + self.api_v + endpoint
+        url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
         headers = {
-            'Authorization': self.token,
-            'Content-Type': 'application/json'
+            'Authorization': self.token
         }
 
-        if body:
-            json_body_or_None = json.dumps(body)
+        headers['Content-Type'] = 'application/json' if request_to_api else 'application/octet-stream'
+
+        if body and request_to_api:
+            data = json.dumps(body)
+        elif body and not request_to_api:
+            data = body
         else:
-            json_body_or_None = None
+            data = None
 
         call_timeout = timeout if timeout != -1 else self.timeout
 
         APIcall = getattr(requests, method.lower())
-        res = APIcall('https://api.upcloud.com' + url,
-                      data=json_body_or_None,
+        res = APIcall(url,
+                      data=data,
                       headers=headers,
                       timeout=call_timeout)
 
@@ -64,6 +67,12 @@ class BaseAPI(object):
         Perform a POST request to a given endpoint in UpCloud's API.
         """
         return self.request('POST', endpoint, body, timeout)
+
+    def put_request(self, endpoint, body=None, timeout=-1, request_to_api=True):
+        """
+        Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
+        """
+        return self.request('PUT', endpoint, body, timeout, request_to_api=request_to_api)
 
     def __error_middleware(self, res, res_json):
         """

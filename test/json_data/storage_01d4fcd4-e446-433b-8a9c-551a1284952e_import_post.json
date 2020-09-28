@@ -1,0 +1,18 @@
+{
+  "storage_import": {
+    "client_content_length": 0,
+    "client_content_type": "",
+    "completed": "",
+    "created": "2020-06-26T08:51:07Z",
+    "direct_upload_url": "https://fi-hel1.img.upcloud.com/uploader/session/07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+    "error_code": "",
+    "error_message": "",
+    "md5sum": "",
+    "read_bytes": 0,
+    "sha256sum": "",
+    "source": "direct_upload",
+    "state": "prepared",
+    "uuid": "07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+    "written_bytes": 0
+  }
+}

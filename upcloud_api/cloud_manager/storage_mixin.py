@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import Storage
+from upcloud_api import Storage, StorageImport
+from upcloud_api.utils import get_raw_data_from_file
 
 
 class StorageManager(object):
@@ -150,3 +151,40 @@ class StorageManager(object):
         body = {'storage': {'title': title}}
         res = self.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
+
+    def create_storage_import(self, storage, source, source_location=None):
+        """
+        Creates an import task to import data into an existing storage.
+        Source types: http_import or direct_upload.
+        """
+        url = '/storage/{0}/import'.format(storage)
+        body = {'storage_import': {'source': source}}
+        if source_location:
+            body['storage_import']['source_location'] = source_location
+        res = self.post_request(url, body)
+        return StorageImport(**res['storage_import'])
+
+    def upload_file_for_storage_import(self, storage_import, file):
+        """
+        Uploads a file directly to UpCloud's uploader session.
+        """
+        url = storage_import.direct_upload_url
+        data = get_raw_data_from_file(file)
+        body = {'data': data}
+        return self.put_request(url, body, timeout=600, request_to_api=False)
+
+    def get_storage_import_details(self, storage):
+        """
+        Returns detailed information of an ongoing or finished import task.
+        """
+        url = '/storage/{0}/import'.format(storage)
+        res = self.get_request(url)
+        return StorageImport(**res['storage_import'])
+
+    def cancel_storage_import(self, storage):
+        """
+        Cancels an ongoing import task.
+        """
+        url = '/storage/{0}/import/cancel'.format(storage)
+        res = self.post_request(url)
+        return StorageImport(**res['storage_import'])
