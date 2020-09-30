@@ -74,6 +74,12 @@ class BaseAPI(object):
         """
         return self.request('PUT', endpoint, body, timeout, request_to_api=request_to_api)
 
+    def delete_request(self, endpoint, body=None, timeout=-1):
+        """
+        Perform a DELETE request to a given endpoint in UpCloud's API.
+        """
+        return self.request('DELETE', endpoint, body, timeout)
+
     def __error_middleware(self, res, res_json):
         """
         Middleware that raises an exception when HTTP statuscode is an error code.

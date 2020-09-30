@@ -72,6 +72,14 @@ class Storage(UpCloudResource):
         res = self.cloud_manager._modify_storage(self, self.size, self.title)
         self._reset(**res['storage'])
 
+    def update(self, size, title):
+        """
+        Update the storage to the API.
+        """
+        self.size = size
+        self.title = title
+        self.save()
+
     def __str__(self):
         """
         String representation of Storage.
