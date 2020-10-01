@@ -52,7 +52,7 @@ class StorageManager(object):
             body['storage']['title'] = title
         if backup_rule:
             body['storage']['backup_rule'] = backup_rule
-        return self.request('PUT', '/storage/' + str(storage), body)
+        return self.put_request('/storage/' + str(storage), body)
 
     def modify_storage(self, storage, size, title, backup_rule={}):
         """
@@ -65,7 +65,7 @@ class StorageManager(object):
         """
         Destroy a Storage object.
         """
-        return self.request('DELETE', '/storage/' + UUID)
+        return self.delete_request('/storage/' + UUID)
 
     def clone_storage(self, storage, title, zone, tier=None):
         """
@@ -74,14 +74,14 @@ class StorageManager(object):
         body = {'storage': {'title': title, 'zone': zone}}
         if tier:
             body['storage']['tier'] = tier
-        res = self.request('POST', '/storage/{0}/clone'.format(str(storage)), body)
+        res = self.post_request('/storage/{0}/clone'.format(str(storage)), body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def cancel_clone_storage(self, storage):
         """
         Cancels a running cloning operation and deletes the incomplete copy.
         """
-        return self.request('POST', '/storage/{0}/cancel'.format(str(storage)))
+        return self.post_request('/storage/{0}/cancel'.format(str(storage)))
 
     def attach_storage(self, server, storage, storage_type, address):
         """

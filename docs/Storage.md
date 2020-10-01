@@ -81,3 +81,64 @@ Warning: data loss is permanent.
 storage.destroy()
 
 ```
+
+
+## Clone
+
+Clone the storage using StorageManager.
+Returns an object based on the API's response.
+Method requires title and zone to be passed while tier is optional.
+
+```python
+
+storage_clone = storage.clone(title='title of storage clone', zone=ZONE.Helsinki, tier=None)
+
+```
+
+
+## Cancel clone operation
+
+Cancels a running cloning operation and deletes the incomplete copy using StorageManager.
+Needs to be called from the cloned storage (object returned by clone operation) and not the storage that is being cloned.
+
+```python
+
+storage_clone.cancel_cloning()
+
+```
+
+
+## Create backup
+
+Creates a point-in-time backup of a storage resource using StorageManager.
+Method requires title to be passed.
+
+```python
+
+storage_backup = storage.create_backup('Backup title')
+
+```
+
+
+## Restore backup
+
+Restores the origin storage with data from the specified backup storage using StorageManager.
+Must be called from a storage object created by create_backup and not the original one.
+
+```python
+
+storage_backup.restore_backup()
+
+```
+
+
+## Templatize storage
+
+Creates an exact copy of an existing storage resource which can be used as a template for creating new servers using StorageManager.
+Method requires title to be passed.
+
+```python
+
+storage.templatize('Template title')
+
+```

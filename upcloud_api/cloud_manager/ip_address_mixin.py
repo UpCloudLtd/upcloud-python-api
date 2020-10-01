@@ -41,7 +41,7 @@ class IPManager(object):
             }
         }
 
-        res = self.request('POST', '/ip_address', body)
+        res = self.post_request('/ip_address', body)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def modify_ip(self, ip_addr, ptr_record):
@@ -56,7 +56,7 @@ class IPManager(object):
             }
         }
 
-        res = self.request('PUT', '/ip_address/' + str(ip_addr), body)
+        res = self.put_request('/ip_address/' + str(ip_addr), body)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def release_ip(self, ip_addr):
@@ -65,4 +65,4 @@ class IPManager(object):
 
         Accepts an IPAddress instance (object) or its address (string).
         """
-        return self.request('DELETE', '/ip_address/' + str(ip_addr))
+        return self.delete_request('/ip_address/' + str(ip_addr))

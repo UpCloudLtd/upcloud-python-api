@@ -33,7 +33,7 @@ class TagManager(object):
         """
         servers = [str(server) for server in servers]
         body = {'tag': Tag(name, description, servers).to_dict()}
-        res = self.request('POST', '/tag', body)
+        res = self.post_request('/tag', body)
 
         return Tag(cloud_manager=self, **res['tag'])
 
@@ -44,7 +44,7 @@ class TagManager(object):
         Private method used by the Tag class and TagManager.modify_tag.
         """
         body = {'tag': Tag(new_name, description, servers).to_dict()}
-        res = self.request('PUT', '/tag/' + name, body)
+        res = self.put_request('/tag/' + name, body)
         return res['tag']
 
     def modify_tag(self, name, description=None, servers=None, new_name=None):
@@ -82,4 +82,4 @@ class TagManager(object):
 
     def delete_tag(self, tag):
         """Delete the Tag. Returns and empty object."""
-        return self.request('DELETE', '/tag/' + str(tag))
+        return self.delete_request('/tag/' + str(tag))

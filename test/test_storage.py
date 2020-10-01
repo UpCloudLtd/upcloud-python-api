@@ -40,7 +40,7 @@ class TestStorage(object):
         storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
 
         Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/clone")
-        cloned_storage = manager.clone_storage(storage, 'cloned-storage-test', 'fi-hel1')
+        cloned_storage = storage.clone('cloned-storage-test', 'fi-hel1')
         assert type(cloned_storage).__name__ == "Storage"
         assert cloned_storage.size == 666
         assert cloned_storage.tier == "maxiops"
@@ -56,7 +56,7 @@ class TestStorage(object):
         cloned_storage = manager.clone_storage(storage, 'cloned-storage-test', 'fi-hel1')
 
         Mock.mock_post("storage/01d3e9ad-8ff5-4a52-9fa2-48938e488e78/cancel", empty_content=True)
-        res = manager.cancel_clone_storage(cloned_storage)
+        res = cloned_storage.cancel_cloning()
         assert res == {}
 
     @responses.activate
@@ -73,24 +73,33 @@ class TestStorage(object):
 
     @responses.activate
     def test_create_storage_backup(self, manager):
+        data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
+        storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
+
         data = Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/backup")
-        storage = manager.create_storage_backup("01d4fcd4-e446-433b-8a9c-551a1284952e", "test-backup")
-        assert storage.title == "test-backup"
-        assert storage.size == 666
-        assert storage.zone == "fi-hel1"
+        storage_backup = storage.create_backup("test-backup")
+        assert storage_backup.title == "test-backup"
+        assert storage_backup.size == 666
+        assert storage_backup.zone == "fi-hel1"
 
     @responses.activate
     def test_restore_storage_backup(self, manager):
+        data = Mock.mock_get("storage/01350eec-6ebf-4418-abe4-e8bb1d5c9643")
+        storage_backup = manager.get_storage("01350eec-6ebf-4418-abe4-e8bb1d5c9643")
+
         data = Mock.mock_post("storage/01350eec-6ebf-4418-abe4-e8bb1d5c9643/restore", empty_content=True)
-        res = manager.restore_storage_backup("01350eec-6ebf-4418-abe4-e8bb1d5c9643")
+        res = storage_backup.restore_backup()
         assert res == {}
 
     @responses.activate
     def test_templatize_storage(self, manager):
+        data = Mock.mock_get("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
+        storage = manager.get_storage("01d4fcd4-e446-433b-8a9c-551a1284952e")
+
         data = Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/templatize")
-        storage = manager.templatize_storage("01d4fcd4-e446-433b-8a9c-551a1284952e", "my server template")
-        assert storage.title == "my server template"
-        assert storage.type == "template"
+        storage_template = storage.templatize("my server template")
+        assert storage_template.title == "my server template"
+        assert storage_template.type == "template"
 
     @responses.activate
     def test_create_storage_import(self, manager):
