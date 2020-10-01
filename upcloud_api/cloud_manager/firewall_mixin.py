@@ -59,7 +59,7 @@ class FirewallManager(object):
         Delete a firewall rule based on a server uuid and rule position.
         """
         url = '/server/{0}/firewall_rule/{1}'.format(server_uuid, firewall_rule_position)
-        return self.request('DELETE', url)
+        return self.delete_request(url)
 
     def configure_firewall(self, server, firewall_rule_bodies):
         """

@@ -138,7 +138,7 @@ class ServerManager(object):
                 Exception('{0} is not an updateable field'.format(arg))
             body['server'][arg] = kwargs[arg]
 
-        res = self.request('PUT', '/server/{0}'.format(UUID), body)
+        res = self.put_request('/server/{0}'.format(UUID), body)
         server = res['server']
 
         # Populate subobjects
@@ -164,7 +164,7 @@ class ServerManager(object):
 
         Returns an empty object.
         """
-        return self.request('DELETE', '/server/{0}'.format(UUID))
+        return self.delete_request('/server/{0}'.format(UUID))
 
     def get_server_data(self, UUID):
         """
