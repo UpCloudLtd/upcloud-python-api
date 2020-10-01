@@ -233,21 +233,21 @@ Set up environment and install dependencies:
 # run at project root, python3 and virtualenv must be installed
 virtualenv ENV
 source ENV/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt or pip install -r requirements-dev.txt if changes to the api need to be made
 ```
 
 Install the package in editable mode, as mentioned in
-[https://pytest.org/latest/goodpractises.html](https://pytest.org/latest/goodpractises.html)
+[https://docs.pytest.org/en/stable/goodpractices.html](https://docs.pytest.org/en/stable/goodpractices.html)
 
 ```python
 # run at project root
 pip install -e .
 ```
 
-Tests located in `project_root/tests/` directory. Run with:
+Tests located in `project_root/test/` directory. Run with:
 
 ```python
-py.test tests/
+py.test test/
 ```
 
 To test against all supported python versions, run:
