@@ -20,7 +20,7 @@ manager.method()
 ```python
 def get_servers(self, populate=False):
 	"""
-	Returns a list of (populated or unpopulated) Server instances. 
+	Returns a list of (populated or unpopulated) Server instances.
 	Populate = False (default) => 1 API request, returns unpopulated Server instances.
 	Populate = True => Does 1 + n API requests (n = # of servers), returns populated Server instances.
 	"""
@@ -36,14 +36,14 @@ def get_server(self, UUID):
 ```python
 def create_server(self, server):
 	"""
-	Creates a server and its storages based on a (locally created) Server object. 
+	Creates a server and its storages based on a (locally created) Server object.
 	Populates the given Server instance with the API response.
 
 	Example:
 	server1 = Server( core_number = 1,
-				memory_amount = 1024, 
-				hostname = "my.example.1", 
-				zone = ZONE.London, 
+				memory_amount = 1024,
+				hostname = "my.example.1",
+				zone = ZONE.London,
 				storage_devices = [
 					Storage(os = "Ubuntu 14.04", size=10, tier=maxiops, title='The OS drive'),
 					Storage(size=10),
@@ -56,7 +56,7 @@ def create_server(self, server):
 	- size defaults to 10,
 	- title defaults to hostname + " OS disk" and hostname + " storage disk id" (id is a running starting from 1)
 	- tier defaults to maxiops
-	- valid operating systems are: 
+	- valid operating systems are:
 		"CentOS 6.5", "CentOS 7.0"
 		"Debian 7.8"
 		"Ubuntu 12.04", "Ubuntu 14.04"
@@ -76,7 +76,7 @@ def modify_server(self, UUID, **kwargs):
 ```python
 def delete_server(self, UUID):
 	"""
-	DELETE '/server/UUID'. Permanently destroys the virtual machine. 
+	DELETE '/server/UUID'. Permanently destroys the virtual machine.
 	DOES NOT remove the storage disks.
 
 	Returns an empty object.
@@ -84,9 +84,17 @@ def delete_server(self, UUID):
 ```
 
 ```python
+def get_server_by_ip(self, ip_address):
+		"""
+		Return a (populated) Server instance by its IP.
+		Uses GET '/ip_address/x.x.x.x' to retrieve machine UUID using IP-address.
+		"""
+```
+
+```python
 def get_server_data(self, UUID):
 	"""
-	Returns '/server/uuid' data in Python dict. 
+	Returns '/server/uuid' data in Python dict.
 	Creates object representations of any IP-address and Storage.
 	"""
 ```
