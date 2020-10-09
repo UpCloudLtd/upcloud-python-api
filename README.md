@@ -50,13 +50,6 @@ python setup.py install
 * Manage firewall (on/off and individual rules)
 	* since 0.2: full management of firewall rules
 
-**TODO:**
-* Cloning of storages
-* Full management of special storage types:
-  * CDROMs, custom OS templates
-  * (custom templates can already be cloned to a disk via UUID)
-* Full management of backups (instant and scheduled)
-
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 
@@ -240,21 +233,21 @@ Set up environment and install dependencies:
 # run at project root, python3 and virtualenv must be installed
 virtualenv ENV
 source ENV/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt or pip install -r requirements-dev.txt if changes to the api need to be made
 ```
 
 Install the package in editable mode, as mentioned in
-[https://pytest.org/latest/goodpractises.html](https://pytest.org/latest/goodpractises.html)
+[https://docs.pytest.org/en/stable/goodpractices.html](https://docs.pytest.org/en/stable/goodpractices.html)
 
 ```python
 # run at project root
 pip install -e .
 ```
 
-Tests located in `project_root/tests/` directory. Run with:
+Tests located in `project_root/test/` directory. Run with:
 
 ```python
-py.test tests/
+py.test test/
 ```
 
 To test against all supported python versions, run:

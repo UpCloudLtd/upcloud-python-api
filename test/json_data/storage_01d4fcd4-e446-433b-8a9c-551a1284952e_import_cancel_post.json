@@ -1,0 +1,18 @@
+{
+  "storage_import": {
+    "client_content_length": 0,
+    "client_content_type": "",
+    "completed": "",
+    "created": "2020-06-26T08:51:07Z",
+    "error_code": "",
+    "error_message": "",
+    "md5sum": "",
+    "read_bytes": 0,
+    "sha256sum": "",
+    "source": "http_import",
+    "source_location": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.4.0-amd64-netinst.iso",
+    "state": "cancelling",
+    "uuid": "07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+    "written_bytes": 0
+  }
+}

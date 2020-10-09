@@ -72,6 +72,47 @@ class Storage(UpCloudResource):
         res = self.cloud_manager._modify_storage(self, self.size, self.title)
         self._reset(**res['storage'])
 
+    def update(self, size, title):
+        """
+        Update the storage to the API.
+        """
+        self.size = size
+        self.title = title
+        self.save()
+
+    def clone(self, title, zone, tier=None):
+        """
+        Clone the storage using StorageManager.
+        Returns an object based on the API's response.
+        """
+        return self.cloud_manager.clone_storage(self.uuid, title, zone, tier)
+
+    def cancel_cloning(self):
+        """
+        Cancels a running cloning operation and deletes the incomplete copy using StorageManager.
+        Needs to be called from the cloned storage and not the storage that is being cloned.
+        """
+        return self.cloud_manager.cancel_clone_storage(self.uuid)
+
+    def create_backup(self, title):
+        """
+        Creates a point-in-time backup of a storage resource using StorageManager.
+        """
+        return self.cloud_manager.create_storage_backup(self.uuid, title)
+
+    def restore_backup(self):
+        """
+        Restores the origin storage with data from the specified backup storage using StorageManager.
+        Must be called from a storage object created by create_backup and not the original one.
+        """
+        return self.cloud_manager.restore_storage_backup(self.uuid)
+
+    def templatize(self, title):
+        """
+        Creates an exact copy of an existing storage resource which can be used as a template for creating new servers using StorageManager.
+        """
+        return self.cloud_manager.templatize_storage(self.uuid, title)
+
     def __str__(self):
         """
         String representation of Storage.

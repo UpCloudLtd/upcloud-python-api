@@ -17,6 +17,7 @@ from upcloud_api.upcloud_resource import UpCloudResource
 from upcloud_api.errors import UpCloudClientError, UpCloudAPIError
 from upcloud_api.constants import OperatingSystems, ZONE
 from upcloud_api.storage import Storage
+from upcloud_api.storage_import import StorageImport
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server, login_user_block
 from upcloud_api.firewall import FirewallRule

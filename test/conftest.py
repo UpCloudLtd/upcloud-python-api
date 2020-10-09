@@ -51,22 +51,25 @@ class Mock(object):
         return data
 
     @staticmethod
-    def __put_post_callback(request, target, data):
+    def __put_post_callback(request, target, data, ignore_data_field=False, empty_payload=False):
         data_field = target.split("/")[0]
-        payload = json.loads(request.body)
 
-        for field in data[data_field]:
-            if field in payload[data_field]:
-                data[data_field][field] = payload[data_field][field]
+        if not empty_payload:
+            payload = json.loads(request.body)
+
+        if not ignore_data_field:
+            for field in data[data_field]:
+                if field in payload[data_field]:
+                    data[data_field][field] = payload[data_field][field]
         return(200, {}, json.dumps(data))
 
     @staticmethod
-    def mock_post(target, empty_content=False):
+    def mock_post(target, empty_content=False, ignore_data_field=False, empty_payload=False):
 
         def callback(request):
             if not empty_content:
                 data = json.loads(Mock.read_from_file(target + '_post.json'))
-                return Mock.__put_post_callback(request, target, data)
+                return Mock.__put_post_callback(request, target, data, ignore_data_field, empty_payload)
             else:
                 return(200, {}, '{}')
 
@@ -75,13 +78,14 @@ class Mock(object):
                                content_type='application/json')
 
     @staticmethod
-    def mock_put(target):
+    def mock_put(target, ignore_data_field=False, empty_payload=False, call_api=True):
         data = json.loads(Mock.read_from_file(target + '.json'))
 
         def callback(request):
-            return Mock.__put_post_callback(request, target, data)
+            return Mock.__put_post_callback(request, target, data, ignore_data_field, empty_payload)
 
-        responses.add_callback(responses.PUT, Mock.base_url + '/' + target,
+        url = Mock.base_url + '/' + target if call_api else target
+        responses.add_callback(responses.PUT, url,
                                callback=callback,
                                content_type='application/json')
 
