@@ -8,11 +8,13 @@ from upcloud_api.cloud_manager import (
     IPManager,
     StorageManager,
     FirewallManager,
-    TagManager
+    TagManager,
+    NetworkManager,
+    HostManager
 )
 
 
-class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager, TagManager):
+class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager, TagManager, NetworkManager, HostManager):
     """
     CloudManager contains the core functionality of the upcloud API library.
 
