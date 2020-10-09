@@ -26,3 +26,12 @@ class HostManager(object):
         url = '/host/{0}'.format(id)
         res = self.get_request(url)
         return Host(**res['host'])
+
+    def modify_host(self, id, description):
+        """
+        Modifies description of a specific host.
+        """
+        url = '/host/{0}'.format(id)
+        body = {'host': {'description': description}}
+        res = self.patch_request(url, body)
+        return Host(**res['host'])

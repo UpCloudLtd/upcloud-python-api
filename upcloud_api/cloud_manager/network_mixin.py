@@ -18,6 +18,7 @@ class NetworkManager(object):
         """
         url = '/network/?zone={0}'.format(zone) if zone else '/network/'
         res = self.get_request(url)
+        print(res)
         return [Network(**network) for network in res['networks']['network']]
 
     def get_network(self, uuid):
@@ -26,6 +27,7 @@ class NetworkManager(object):
         """
         url = '/network/{0}'.format(uuid)
         res = self.get_request(url)
+        print(res)
         return Network(**res['network'])
 
     def create_network(self, name, zone, address, dhcp, family, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
@@ -176,7 +178,7 @@ class NetworkManager(object):
         """
         url = '/router/{0}'.format(uuid)
         body = {'router': {'name': name}}
-        res = self.put_request(url, body)
+        res = self.patch_request(url, body)
         return Router(**res['router'])
 
     def delete_router(self, uuid):

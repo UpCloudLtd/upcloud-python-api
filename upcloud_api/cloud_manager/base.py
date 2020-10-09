@@ -24,7 +24,7 @@ class BaseAPI(object):
 
         Handles errors with __error_middleware.
         """
-        if method not in set(['GET', 'POST', 'PUT', 'DELETE']):
+        if method not in set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']):
             raise Exception('Invalid/Forbidden HTTP method')
 
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
@@ -73,6 +73,12 @@ class BaseAPI(object):
         Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
         """
         return self.request('PUT', endpoint, body, timeout, request_to_api=request_to_api)
+
+    def patch_request(self, endpoint, body=None, timeout=-1):
+        """
+        Perform a PATCH request to a given endpoint in UpCloud's API.
+        """
+        return self.request('PATCH', endpoint, body, timeout)
 
     def delete_request(self, endpoint, body=None, timeout=-1):
         """

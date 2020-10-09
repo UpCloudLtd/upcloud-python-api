@@ -51,7 +51,7 @@ class Mock(object):
         return data
 
     @staticmethod
-    def __put_post_callback(request, target, data, ignore_data_field=False, empty_payload=False):
+    def __put_patch_post_callback(request, target, data, ignore_data_field=False, empty_payload=False):
         data_field = target.split("/")[0]
 
         if not empty_payload:
@@ -69,7 +69,7 @@ class Mock(object):
         def callback(request):
             if not empty_content:
                 data = json.loads(Mock.read_from_file(target + '_post.json'))
-                return Mock.__put_post_callback(request, target, data, ignore_data_field, empty_payload)
+                return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
             else:
                 return(200, {}, '{}')
 
@@ -82,10 +82,22 @@ class Mock(object):
         data = json.loads(Mock.read_from_file(target + '.json'))
 
         def callback(request):
-            return Mock.__put_post_callback(request, target, data, ignore_data_field, empty_payload)
+            return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
 
         url = Mock.base_url + '/' + target if call_api else target
         responses.add_callback(responses.PUT, url,
+                               callback=callback,
+                               content_type='application/json')
+
+    @staticmethod
+    def mock_patch(target, ignore_data_field=False, empty_payload=False, call_api=True):
+        data = json.loads(Mock.read_from_file(target + '.json'))
+
+        def callback(request):
+            return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
+
+        url = Mock.base_url + '/' + target if call_api else target
+        responses.add_callback(responses.PATCH, url,
                                callback=callback,
                                content_type='application/json')
 
