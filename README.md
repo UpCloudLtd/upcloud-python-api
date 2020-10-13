@@ -31,7 +31,7 @@ python setup.py install
 
 **Supported versions as of 0.3.3** (offline tests pass with tox):
 
-* python 2.6
+* <del>python 2.6</del> removed due to deprecation
 * python 2.7
 * <del>python 3.2</del> removed due to python2/3 support
 * <del>python 3.3</del> removed due to deprecation
