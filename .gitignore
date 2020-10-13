@@ -11,6 +11,7 @@ dist/
 docs/html/
 .tox
 .cache
+.vscode/
 
 # pyenv
 .python-version
