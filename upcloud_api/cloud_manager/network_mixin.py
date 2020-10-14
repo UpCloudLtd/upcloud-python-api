@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import Network, Interface, Router
+from upcloud_api import Network, Interface, Router, IpNetwork
 
 
 class NetworkManager(object):
@@ -16,10 +16,12 @@ class NetworkManager(object):
         Get a list of all networks.
         Zone can be passed to return networks in a specific zone
         """
-        url = '/network/?zone={0}'.format(zone) if zone else '/network/'
+        url = '/network/?zone={0}'.format(zone) if zone else '/network'
         res = self.get_request(url)
-        print(res)
-        return [Network(**network) for network in res['networks']['network']]
+        networks = [Network(**network) for network in res['networks']['network']]
+        for network in networks:
+            network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
+        return networks
 
     def get_network(self, uuid):
         """
@@ -27,14 +29,15 @@ class NetworkManager(object):
         """
         url = '/network/{0}'.format(uuid)
         res = self.get_request(url)
-        print(res)
-        return Network(**res['network'])
+        network = Network(**res['network'])
+        network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
+        return network
 
     def create_network(self, name, zone, address, dhcp, family, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
         """
         Creates a new SDN private network that cloud servers from the same zone can be attached to.
         """
-        url = '/network/'
+        url = '/network'
         body = {
             'network': {
                 'name': name,
@@ -52,13 +55,13 @@ class NetworkManager(object):
         if router:
             body['network']['router'] = router
         if dhcp_default_route:
-            body['network']['ip_networks']['network']['dhcp_default_route'] = dhcp_default_route
+            body['network']['ip_networks']['ip_network']['dhcp_default_route'] = dhcp_default_route
         if dhcp_dns:
-            body['network']['ip_networks']['network']['dhcp_dns'] = dhcp_dns
+            body['network']['ip_networks']['ip_network']['dhcp_dns'] = dhcp_dns
         if dhcp_bootfile_url:
-            body['network']['ip_networks']['network']['dhcp_bootfile_url'] = dhcp_bootfile_url
+            body['network']['ip_networks']['ip_network']['dhcp_bootfile_url'] = dhcp_bootfile_url
         if gateway:
-            body['network']['ip_networks']['network']['gateway'] = gateway
+            body['network']['ip_networks']['ip_network']['gateway'] = gateway
         res = self.post_request(url, body)
         return Network(**res['network'])
 
@@ -89,7 +92,9 @@ class NetworkManager(object):
         if gateway:
             body['network']['ip_networks']['ip_network']['gateway'] = gateway
         res = self.put_request(url, body)
-        return Network(**res['network'])
+        network = Network(**res['network'])
+        network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
+        return network
 
     def delete_network(self, uuid):
         """

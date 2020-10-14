@@ -13,6 +13,9 @@ class TestNetwork(object):
         data = Mock.mock_get('network')
         networks = manager.get_networks()
 
+        for network in networks:
+            assert type(network).__name__ == "Network"
+
     @responses.activate
     def test_get_network(self, manager):
         data = Mock.mock_get('network/03000000-0000-4000-8001-000000000000')
@@ -22,6 +25,54 @@ class TestNetwork(object):
         assert network.uuid == '03000000-0000-4000-8001-000000000000'
         assert network.type == 'public'
         assert network.zone == 'fi-hel1'
+
+    @responses.activate
+    def test_create_network(self, manager):
+        data = Mock.mock_post('network')
+        network = manager.create_network(
+            name='test network',
+            zone='fi-hel1',
+            address='172.16.0.0/22',
+            dhcp='yes',
+            family='IPv4',
+            router='04b65749-61e2-4f08-a259-c75afbe81abf',
+            dhcp_default_route='no',
+            dhcp_dns=["172.16.0.10", "172.16.1.10"],
+            dhcp_bootfile_url='tftp://172.16.0.253/pxelinux.0',
+            gateway='172.16.0.1'
+        )
+
+        assert type(network).__name__ == "Network"
+        assert network.uuid == '036df3d0-8629-4549-984e-dc86fc3fa1b0'
+        assert network.type == 'private'
+        assert network.zone == 'fi-hel1'
+
+    @responses.activate
+    def test_modify_network(self, manager):
+        data = Mock.mock_put('network/036df3d0-8629-4549-984e-dc86fc3fa1b0')
+        network = manager.modify_network(
+            uuid='036df3d0-8629-4549-984e-dc86fc3fa1b0',
+            dhcp='yes',
+            family='IPv4',
+            router='04b65749-61e2-4f08-a259-c75afbe81abf',
+            name='test network modify',
+            dhcp_default_route='no',
+            dhcp_dns=["172.16.0.10", "172.16.1.10"],
+            dhcp_bootfile_url='tftp://172.16.0.253/pxelinux.0',
+            gateway='172.16.0.1'
+        )
+
+        assert type(network).__name__ == "test network modify"
+        assert network.uuid == '036df3d0-8629-4549-984e-dc86fc3fa1b0'
+        assert network.type == 'private'
+        assert network.zone == 'fi-hel1'
+
+    @responses.activate
+    def test_delete_network(sekf, manager):
+        data = Mock.mock_delete('network/03000000-0000-4000-8001-000000000000')
+        res = manager.delete_network('03000000-0000-4000-8001-000000000000')
+
+        assert res == {}
 
     @responses.activate
     def test_get_routers(self, manager):
