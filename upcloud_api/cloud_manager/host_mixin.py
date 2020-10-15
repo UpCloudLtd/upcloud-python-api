@@ -21,17 +21,17 @@ class HostManager(object):
 
     def get_host(self, id):
         """
-        Returns a list of available hosts, along with basic statistics of them when available.
+        Returns detailed information about a specific host.
         """
         url = '/host/{0}'.format(id)
         res = self.get_request(url)
         return Host(**res['host'])
 
-    def modify_host(self, id, description):
+    def modify_host(self, host, description):
         """
         Modifies description of a specific host.
         """
-        url = '/host/{0}'.format(id)
+        url = '/host/{0}'.format(host)
         body = {'host': {'description': description}}
         res = self.patch_request(url, body)
         return Host(**res['host'])

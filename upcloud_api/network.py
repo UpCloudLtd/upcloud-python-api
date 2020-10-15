@@ -20,3 +20,9 @@ class Network(UpCloudResource):
         'ip_networks': None,
         'servers': None
     }
+
+    def __str__(self):
+        """
+        String representation of Network.
+        """
+        return self.uuid

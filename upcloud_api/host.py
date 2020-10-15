@@ -19,3 +19,9 @@ class Host(UpCloudResource):
         'windows_enabled': None,
         'stats': None
     }
+
+    def __str__(self):
+        """
+        String representation of Network.
+        """
+        return self.id

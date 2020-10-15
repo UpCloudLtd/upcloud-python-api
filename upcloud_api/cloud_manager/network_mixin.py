@@ -63,13 +63,15 @@ class NetworkManager(object):
         if gateway:
             body['network']['ip_networks']['ip_network']['gateway'] = gateway
         res = self.post_request(url, body)
-        return Network(**res['network'])
+        network = Network(**res['network'])
+        network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
+        return network
 
-    def modify_network(self, uuid, dhcp, family, name=None, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
+    def modify_network(self, network, dhcp, family, name=None, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
         """
         Modifies the details of a specific SDN private network. The Utility and public networks cannot be modified.
         """
-        url = '/network/{}'.format(uuid)
+        url = '/network/{}'.format(network)
         body = {
             'network': {
                 'ip_networks': {
@@ -96,11 +98,11 @@ class NetworkManager(object):
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
 
-    def delete_network(self, uuid):
+    def delete_network(self, network):
         """
         Deletes an SDN private network. All attached cloud servers must first be detached before SDN private networks can be deleted.
         """
-        url = '/network/{0}'.format(uuid)
+        url = '/network/{0}'.format(network)
         res = self.delete_request(url)
         return res
 
@@ -131,8 +133,8 @@ class NetworkManager(object):
         """
         Modifies the network interface at the selected index on the specific cloud server.
         """
-        url = '/server/{0}/networking/interface/{0}'.format(server, index_in_path)
-        body = {'interface': {}}
+        url = '/server/{0}/networking/interface/{1}'.format(server, str(index_in_path))
+        body = {'interface': {'ip_addresses': {'ip_address': None}}}
         if index_in_body:
             body['interface']['index'] = index_in_body
         if ip_addresses:
@@ -141,14 +143,14 @@ class NetworkManager(object):
             body['interface']['source_ip_filtering'] = source_ip_filtering
         if bootable:
             body['interface']['bootable'] = bootable
-        res = self.post_request(url, body)
+        res = self.put_request(url, body)
         return Interface(**res['interface'])
 
     def delete_network_interface(self, server, index):
         """
         Detaches an SDN private network from a cloud server by deleting the network interface at the selected index on the specific cloud server.
         """
-        url = '/server/{0}/networking/interface/{0}'.format(server, index_in_path)
+        url = '/server/{0}/networking/interface/{1}'.format(server, str(index))
         res = self.delete_request(url)
         return res
 
@@ -177,19 +179,19 @@ class NetworkManager(object):
         res = self.post_request(url, body)
         return Router(**res['router'])
 
-    def modify_router(self, uuid, name):
+    def modify_router(self, router, name):
         """
         Modify an existing router.
         """
-        url = '/router/{0}'.format(uuid)
+        url = '/router/{0}'.format(router)
         body = {'router': {'name': name}}
         res = self.patch_request(url, body)
         return Router(**res['router'])
 
-    def delete_router(self, uuid):
+    def delete_router(self, router):
         """
         Delete an existing router.
         """
-        url = '/router/{0}'.format(uuid)
+        url = '/router/{0}'.format(router)
         res = self.delete_request(url)
         return res

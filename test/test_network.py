@@ -28,7 +28,7 @@ class TestNetwork(object):
 
     @responses.activate
     def test_create_network(self, manager):
-        data = Mock.mock_post('network')
+        data = Mock.mock_post('network', ignore_data_field=True)
         network = manager.create_network(
             name='test network',
             zone='fi-hel1',
@@ -49,9 +49,9 @@ class TestNetwork(object):
 
     @responses.activate
     def test_modify_network(self, manager):
-        data = Mock.mock_put('network/036df3d0-8629-4549-984e-dc86fc3fa1b0')
+        data = Mock.mock_put('network/036df3d0-8629-4549-984e-dc86fc3fa1b0', ignore_data_field=True)
         network = manager.modify_network(
-            uuid='036df3d0-8629-4549-984e-dc86fc3fa1b0',
+            network='036df3d0-8629-4549-984e-dc86fc3fa1b0',
             dhcp='yes',
             family='IPv4',
             router='04b65749-61e2-4f08-a259-c75afbe81abf',
@@ -62,10 +62,53 @@ class TestNetwork(object):
             gateway='172.16.0.1'
         )
 
-        assert type(network).__name__ == "test network modify"
+        assert type(network).__name__ == "Network"
+        assert network.name == 'test network modify'
         assert network.uuid == '036df3d0-8629-4549-984e-dc86fc3fa1b0'
         assert network.type == 'private'
         assert network.zone == 'fi-hel1'
+
+    @responses.activate
+    def test_get_server_networks(self, manager):
+        data = Mock.mock_get('server/0082c083-9847-4f9f-ae04-811251309b35/networking')
+        networks = manager.get_server_networks('0082c083-9847-4f9f-ae04-811251309b35')
+
+        for network in networks:
+            assert type(network).__name__ == "Interface"
+
+    @responses.activate
+    def test_create_network_interface(self, manager):
+        data = Mock.mock_post('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface', ignore_data_field=True)
+        network_interface = manager.create_network_interface(
+            server='0082c083-9847-4f9f-ae04-811251309b35',
+            network='036df3d0-8629-4549-984e-dc86fc3fa1b0',
+            type='private',
+            ip_addresses=[{'family': 'IPv4', 'address': '172.16.1.10'}],
+            index=7,
+            source_ip_filtering='yes',
+            bootable='yes'
+        )
+        assert type(network_interface).__name__=="Interface"
+
+    @responses.activate
+    def test_modify_network_interface(self, manager):
+        data = Mock.mock_put('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/7', ignore_data_field=True)
+        network_interface = manager.modify_network_interface(
+            server='0082c083-9847-4f9f-ae04-811251309b35',
+            index_in_path=7,
+            index_in_body=8,
+            ip_addresses=[{'family': 'IPv4', 'address': '172.16.1.10'}],
+            source_ip_filtering='no',
+            bootable='no'
+        )
+        assert type(network_interface).__name__=="Interface"
+
+    @responses.activate
+    def test_delete_network_interface(self, manager):
+        data = Mock.mock_delete('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/8')
+        res = manager.delete_network_interface('0082c083-9847-4f9f-ae04-811251309b35', 8)
+
+        assert res == {}
 
     @responses.activate
     def test_delete_network(sekf, manager):

@@ -18,3 +18,9 @@ class Router(UpCloudResource):
         'uuid': None,
         'attached_networks': None
     }
+
+    def __str__(self):
+        """
+        String representation of Router.
+        """
+        return self.uuid
