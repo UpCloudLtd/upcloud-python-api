@@ -1,0 +1,24 @@
+{
+  "routers": {
+    "router": [
+      {
+        "attached_networks": {
+          "network": [
+            {
+              "uuid": "03b34bc2-5adf-4fc4-8c44-83f869058f5a"}]},
+              "name": "Utility network router for zone fi-hel1",
+              "type": "service",
+              "uuid": "04b65b2e-7c4b-465c-a24c-e1b47987f09b"
+      },
+      {
+        "attached_networks": {
+          "network": [
+            {
+              "uuid": "03a0020f-896b-4453-913c-e236b8e639d6"}]},
+              "name": "Utility network router for zone fi-hel2",
+              "type": "service",
+              "uuid": "04cad61f-baae-4019-8740-a840acd68319"
+        }
+      ]
+    }
+  }

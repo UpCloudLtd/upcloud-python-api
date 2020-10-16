@@ -1,0 +1,47 @@
+{
+  "networking":
+  {
+    "interfaces":
+    {
+      "interface":
+      [
+        {
+          "bootable": "no",
+          "index": 1,
+          "ip_addresses": {"ip_address": [{"address": "185.20.136.92", "family": "IPv4", "floating": "no"}]},
+          "mac": "da:4e:74:bd:2b:29",
+          "network": "03000000-0000-4000-8002-000000000000",
+          "source_ip_filtering": "yes",
+          "type": "public"
+        },
+        {
+          "bootable": "no",
+          "index": 2,
+          "ip_addresses": {"ip_address": [{"address": "10.1.6.245", "family": "IPv4", "floating": "no"}]},
+          "mac": "da:4e:74:bd:90:93",
+          "network": "03b34bc2-5adf-4fc4-8c44-83f869058f5a",
+          "source_ip_filtering": "yes",
+          "type": "utility"
+        },
+        {
+          "bootable": "no",
+          "index": 3,
+          "ip_addresses": {"ip_address": [{"address": "2a04:3540:1000:310:d84e:74ff:febd:0760", "family": "IPv6", "floating": "no"}]},
+          "mac": "da:4e:74:bd:07:60",
+          "network": "03000000-0000-4000-8015-000000000000",
+          "source_ip_filtering": "yes",
+          "type": "public"
+        },
+        {
+          "bootable": "yes",
+          "index": 7,
+          "ip_addresses": {"ip_address": [{"address": "172.16.1.10", "family": "IPv4", "floating": "no"}]},
+          "mac": "da:4e:74:bd:ce:18",
+          "network": "036df3d0-8629-4549-984e-dc86fc3fa1b0",
+          "source_ip_filtering": "yes",
+          "type": "private"
+        }
+      ]
+    }
+  }
+}

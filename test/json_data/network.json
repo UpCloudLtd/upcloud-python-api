@@ -1,0 +1,148 @@
+{
+  "networks":
+  {
+    "network":
+    [
+      {
+        "ip_networks":
+        {
+          "ip_network":
+          [
+            {
+              "address": "94.237.8.0/22",
+              "dhcp": "yes",
+              "dhcp_default_route": "yes",
+              "dhcp_dns": ["94.237.127.9", "94.237.40.9"],
+              "family": "IPv4",
+              "gateway": "94.237.8.1"}]},
+              "name": "Public 94.237.8.0/22",
+              "type": "public",
+              "uuid": "03000000-0000-4000-8044-000000000000",
+              "zone": "fi-hel2"
+        },
+        {
+          "ip_networks":
+          {
+            "ip_network":
+            [
+              {
+                "address": "10.6.0.0/22",
+                "dhcp": "yes",
+                "dhcp_default_route": "no",
+                "dhcp_routes": ["10.0.0.0/8"],
+                "family": "IPv4",
+                "gateway": "10.6.0.1"}]},
+                "name": "Private 10.6.0.0/22",
+                "type": "utility",
+                "uuid": "03000000-0000-4000-8045-000000000000",
+                "zone": "fi-hel2"
+          },
+          {
+            "ip_networks":
+            {
+              "ip_network":
+              [
+                {
+                  "address": "2a04:3545:1000:720::/64",
+                  "dhcp": "yes",
+                  "dhcp_default_route": "yes",
+                  "dhcp_dns": ["2a04:3540:53::1", "2a04:3544:53::1"],
+                  "family": "IPv6",
+                  "gateway": "2a04:3545:1000:720::1"}]},
+                  "name": "Public 2a04:3545:1000:720::/64",
+                  "servers":
+                  {
+                    "server":
+                    [
+                      {
+                        "title": "centos-1cpu-1gb-fi-hel2",
+                        "uuid": "00c0ee31-de2f-4c89-87b6-0d7d69c749a7"}]},
+                        "type": "public",
+                        "uuid": "03000000-0000-4000-8046-000000000000",
+                        "zone": "fi-hel2"
+              },
+              {
+              "ip_networks":
+              {
+                "ip_network":
+                [
+                  {
+                    "address": "94.237.12.0/22",
+                    "dhcp": "yes",
+                    "dhcp_default_route": "yes",
+                    "dhcp_dns": ["94.237.127.9", "94.237.40.9"],
+                    "family": "IPv4", "gateway": "94.237.12.1"}]},
+                    "name": "Public 94.237.12.0/22",
+                    "type": "public",
+                    "uuid": "03000000-0000-4000-8095-000000000000",
+                    "zone": "fi-hel2"
+              },
+              {
+              "ip_networks":
+              {
+                "ip_network":
+                [
+                  {
+                    "address": "10.6.4.0/22",
+                    "dhcp": "yes",
+                    "dhcp_default_route": "no",
+                    "dhcp_routes": ["10.0.0.0/8"],
+                    "family": "IPv4",
+                    "gateway": "10.6.4.1"}]},
+                    "name": "Private 10.6.4.0/22",
+                    "type": "utility",
+                    "uuid": "03000000-0000-4000-8096-000000000000",
+                    "zone": "fi-hel2"
+              },
+              {
+              "ip_networks":
+              {
+                "ip_network":
+                [
+                  {
+                    "address": "94.237.104.0/22",
+                    "dhcp": "yes",
+                    "dhcp_default_route": "yes",
+                    "dhcp_dns": ["94.237.127.9", "94.237.40.9"],
+                    "family": "IPv4",
+                    "gateway": "94.237.104.1"}]},
+                    "name": "Public fi-hel2 94.237.104.0/22",
+                    "servers":
+                    {
+                      "server":
+                      [
+                        {
+                          "title": "centos-1cpu-1gb-fi-hel2",
+                          "uuid": "00c0ee31-de2f-4c89-87b6-0d7d69c749a7"}]},
+                          "type": "public",
+                          "uuid":
+                          "031457f4-0f8c-483c-96f2-eccede02909c",
+                          "zone": "fi-hel2"
+                },
+                {
+                "ip_networks":
+                {
+                  "ip_network":
+                  [
+                    {
+                      "address": "10.6.0.0/22",
+                      "dhcp": "yes",
+                      "dhcp_default_route": "no",
+                      "dhcp_routes": ["10.0.0.0/8"],
+                      "family": "IPv4",
+                      "gateway": "10.6.0.1"}]},
+                      "name": "Private 10.6.0.0/22",
+                      "router": "04cad61f-baae-4019-8740-a840acd68319",
+                      "servers":
+                      {
+                        "server":
+                        [
+                          {
+                            "title": "centos-1cpu-1gb-fi-hel2",
+                            "uuid": "00c0ee31-de2f-4c89-87b6-0d7d69c749a7"
+                          }
+                        ]
+                      },
+                      "type": "utility",
+                      "uuid": "03a0020f-896b-4453-913c-e236b8e639d6", 
+                      "zone": "fi-hel2"}]}}
