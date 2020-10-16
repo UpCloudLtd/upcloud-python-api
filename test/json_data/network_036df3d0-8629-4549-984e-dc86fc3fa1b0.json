@@ -1,0 +1,21 @@
+{
+  "network":
+  {
+    "ip_networks":
+    {
+      "ip_network":
+      [
+        {
+          "address": "172.16.0.0/22",
+          "dhcp": "yes",
+          "dhcp_bootfile_url":
+          "tftp://172.16.0.253/pxelinux.0",
+          "dhcp_default_route": "no",
+          "dhcp_dns": ["172.16.0.10", "172.16.1.10"],
+          "family": "IPv4", "gateway": "172.16.0.1"}]},
+          "name": "test network modify",
+          "router": "04b65749-61e2-4f08-a259-c75afbe81abf",
+          "type": "private",
+          "uuid": "036df3d0-8629-4549-984e-dc86fc3fa1b0",
+          "zone": "fi-hel1"}
+  }

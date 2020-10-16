@@ -1,0 +1,9 @@
+{
+  "router":
+  {
+    "attached_networks": {"network": []},
+    "name": "test router",
+    "type": "normal",
+    "uuid": "04da7f97-dc03-4df0-868f-239f304ba72f"
+  }
+}

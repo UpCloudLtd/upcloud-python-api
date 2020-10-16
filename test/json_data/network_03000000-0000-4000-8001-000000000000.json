@@ -1,0 +1,19 @@
+{
+  "network":
+  {
+    "ip_networks":
+    {
+      "ip_network":
+      [
+        {
+          "address": "80.69.172.0/22",
+          "dhcp": "yes",
+          "dhcp_default_route": "yes",
+          "dhcp_dns": ["94.237.127.9", "94.237.40.9"],
+          "family": "IPv4", "gateway": "80.69.172.1"}]},
+          "name": "Public 80.69.172.0/22",
+          "type": "public",
+          "uuid": "03000000-0000-4000-8001-000000000000",
+          "zone": "fi-hel1"
+    }
+  }

@@ -9,3 +9,5 @@ from upcloud_api.cloud_manager.ip_address_mixin import IPManager
 from upcloud_api.cloud_manager.server_mixin import ServerManager
 from upcloud_api.cloud_manager.storage_mixin import StorageManager
 from upcloud_api.cloud_manager.tag_mixin import TagManager
+from upcloud_api.cloud_manager.network_mixin import NetworkManager
+from upcloud_api.cloud_manager.host_mixin import HostManager

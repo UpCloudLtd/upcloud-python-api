@@ -1,0 +1,46 @@
+{
+  "hosts": {
+    "host": [
+      {
+        "id": 7653311107,
+        "description": "My Host #1",
+        "zone": "private-zone-id",
+        "windows_enabled": "no",
+        "stats": {
+          "stat": [
+            {
+              "name": "cpu_idle",
+              "timestamp": "2019-08-09T12:46:57Z",
+              "value": 95.2
+            },
+            {
+              "name": "memory_free",
+              "timestamp": "2019-08-09T12:46:57Z",
+              "value": 102
+            }
+          ]
+        }
+      },
+      {
+        "id": 8055964291,
+        "description": "My Host #2",
+        "zone": "private-zone-id",
+        "windows_enabled": "no",
+        "stats": {
+          "stat": [
+            {
+              "name": "cpu_idle",
+              "timestamp": "2019-08-09T12:46:57Z",
+              "value": 80.1
+            },
+            {
+              "name": "memory_free",
+              "timestamp": "2019-08-09T12:46:57Z",
+              "value": 61
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
