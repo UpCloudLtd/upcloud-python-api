@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import json
 import requests
 
-from upcloud_api import UpCloudAPIError
+from upcloud_api import UpCloudAPIError, __version__
 
 
 class BaseAPI(object):
@@ -29,7 +29,8 @@ class BaseAPI(object):
 
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
         headers = {
-            'Authorization': self.token
+            'Authorization': self.token,
+            'User-Agent': 'upcloud-python-api/{}'.format(__version__)
         }
 
         headers['Content-Type'] = 'application/json' if request_to_api else 'application/octet-stream'
