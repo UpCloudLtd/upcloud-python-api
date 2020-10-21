@@ -1,0 +1,19 @@
+{
+  "interface":
+  {
+    "bootable": "yes",
+    "index": 7,
+    "ip_addresses":
+    {
+      "ip_address":
+      [
+        {
+          "address": "172.16.1.10",
+          "family": "IPv4",
+          "floating": "no"}]},
+          "mac": "da:4e:74:bd:ce:18",
+          "network": "036df3d0-8629-4549-984e-dc86fc3fa1b0",
+          "source_ip_filtering": "yes",
+          "type": "private"
+    }
+  }

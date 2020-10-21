@@ -25,4 +25,9 @@ from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server, login_user_block
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.tag import Tag
+from upcloud_api.network import Network
+from upcloud_api.interface import Interface
+from upcloud_api.router import Router
+from upcloud_api.host import Host
+from upcloud_api.ip_network import IpNetwork
 from upcloud_api.cloud_manager.cloud_manager import CloudManager
