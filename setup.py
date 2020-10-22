@@ -39,7 +39,7 @@ setup(
     license='MIT',
     python_requires='>3.5',
     install_requires=[
-        'requests>=2.6.0',
-        'six>=1.9.0'
+        'requests>=2.24.0',
+        'six==1.15.0'
     ]
 )

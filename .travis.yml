@@ -25,4 +25,4 @@ deploy:
   on:
     repo: UpCloudLtd/upcloud-python-api
     tags: true
-    python: "3.8"
+    python: "3.9"
