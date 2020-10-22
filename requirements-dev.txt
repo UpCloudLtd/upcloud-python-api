@@ -1,10 +1,11 @@
-pytest>=2.9.2,<4.1
-attrs<19.2
-py>=1.4.26
-mock>=1.0.1
+pytest==4.0.2
+attrs==19.1.0
+py==1.9.0
+mock==4.0.2
 responses==0.3.0
+safety==1.9.0
 
 # flake8
-flake8>=2.6.2
-flake8-docstrings>=0.2.8
-hacking>=0.11.0
+flake8==3.8.4
+flake8-docstrings==1.5.0
+hacking==3.2.0

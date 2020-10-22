@@ -1,10 +1,9 @@
 language: python
 python:
-  - "2.7"
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
   - "pypy3"
   - "nightly"
 install:
@@ -14,11 +13,6 @@ script:
 matrix:
   allow_failures:
   - python: "nightly"
-  include:
-    - python: "2.7"
-      dist: trusty
-    - python: "3.4"
-      dist: xenial
 
 dist: bionic
 

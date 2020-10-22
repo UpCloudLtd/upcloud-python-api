@@ -37,7 +37,7 @@ setup(
     packages=['upcloud_api', 'upcloud_api.cloud_manager'],
     download_url='https://github.com/UpCloudLtd/upcloud-python-api/archive/%s.tar.gz' % version,
     license='MIT',
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+    python_requires='>3.5',
     install_requires=[
         'requests>=2.6.0',
         'six>=1.9.0'
