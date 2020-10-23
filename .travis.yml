@@ -13,7 +13,7 @@ matrix:
   allow_failures:
   - python: "nightly"
   include:
-    - python: "3.9"
+    - python: "3.9-dev"
       dist: focal
 
 dist: bionic
