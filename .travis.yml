@@ -3,7 +3,6 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-  - "3.9"
   - "pypy3"
   - "nightly"
 install:
@@ -13,6 +12,9 @@ script:
 matrix:
   allow_failures:
   - python: "nightly"
+include:
+  - python: "3.9"
+    dist: xenial
 
 dist: bionic
 
