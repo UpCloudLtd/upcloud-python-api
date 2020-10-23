@@ -14,7 +14,7 @@ matrix:
   - python: "nightly"
   include:
     - python: "3.9"
-      dist: xenial
+      dist: focal
 
 dist: bionic
 
