@@ -25,6 +25,14 @@ class TestStorage(object):
             assert type(storage).__name__ == "Storage"
 
     @responses.activate
+    def test_get_templates(self, manager):
+        data = Mock.mock_get("storage/template")
+        templates = manager.get_templates()
+
+        for template in templates:
+            assert type(template) is dict
+
+    @responses.activate
     def test_storage_create(self, manager):
         Mock.mock_post("storage")
         storage = manager.create_storage(666, "maxiops", "My data collection", "fi-hel1")

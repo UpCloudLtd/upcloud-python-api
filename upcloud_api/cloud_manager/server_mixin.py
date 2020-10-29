@@ -90,9 +90,9 @@ class ServerManager(object):
         server1 = Server( core_number = 1,
               memory_amount = 1024,
               hostname = "my.example.1",
-              zone = ZONE.London,
+              zone = "uk-lon1",
               storage_devices = [
-                Storage(os = "Ubuntu 14.04", size=10, tier=maxiops, title='The OS drive'),
+                Storage(os = "01000000-0000-4000-8000-000030060200", size=10, tier=maxiops, title='The OS drive'),
                 Storage(size=10),
                 Storage()
               title = "My Example Server"
@@ -106,7 +106,7 @@ class ServerManager(object):
         - tier defaults to maxiops
         - valid operating systems are:
           "CentOS 6.10", "CentOS 7.6"
-          "Ubuntu 12.04", "Ubuntu 14.04"
+          "Ubuntu 12.04", "01000000-0000-4000-8000-000030060200"
           "Windows 2012", "Windows 2016"
         """
         if isinstance(server, Server):

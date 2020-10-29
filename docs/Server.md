@@ -3,7 +3,6 @@ The examples use the following:
 import upcloud_api
 from upcloud_api import Server
 from upcloud_api import Storage
-from upcloud_api import ZONE
 
 manager = upcloud_api.CloudManager("username", "password")
 ```
@@ -53,9 +52,9 @@ server = Server(
 			core_number = 1,
 			memory_amount = 1024,
 			hostname = "web1.example.com",
-			zone = ZONE.London,
+			zone = 'uk-lon1',
 			storage_devices = [
-				Storage(os = "Ubuntu 14.04", size=10),
+				Storage(os = "01000000-0000-4000-8000-000030060200", size=10),
 				Storage(size=10, tier="hdd")
 			])
 
@@ -68,11 +67,7 @@ Currently available Storage operating systems are the following UpCloud public t
 ```python
 # upcloud_api/tools.py
 
-Operating Systems:
-	"CentOS 6.5", "CentOS 7.0",
-	"Debian 7.8", "Ubuntu 12.04", "Ubuntu 14.04",
-	"Windows 2003", "Windows 2008", "Windows 2012"
-
+Valid Operating Systems cam be retrieved with 'manager.get_templates()'. More information on this method can be found in storage_mixin documentation.
 ```
 
 
@@ -110,7 +105,7 @@ A Server's Storages can be attached and detached with `.add_storage()` and `.rem
 ```python
 
 # attach
-storage = manager.create_storage( size=100, zone=ZONE.Helsinki )
+storage = manager.create_storage( size=100, zone='fi-hel1' )
 server.add_storage(storage)
 
 # detach

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 from time import sleep
 
-from upcloud_api import Storage, IPAddress, OperatingSystems
+from upcloud_api import Storage, IPAddress
 from upcloud_api.utils import try_it_n_times
 
 

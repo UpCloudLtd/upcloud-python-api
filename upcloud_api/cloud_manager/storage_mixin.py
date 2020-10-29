@@ -24,7 +24,7 @@ class StorageManager(object):
 
     def get_templates(self):
         """
-        Return a list of Storages that are templates in a dict with key as title and uuid as value.
+        Return a list of Storages that are templates in a dict with title as key and uuid as value.
         """
         templates = []
         res = self.get_request('/storage/template')

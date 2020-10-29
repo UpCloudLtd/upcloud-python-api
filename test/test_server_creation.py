@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import ZONE, Server, Storage, IPAddress, login_user_block
+from upcloud_api import Server, Storage, IPAddress, login_user_block
 
 from conftest import Mock
 import json
@@ -14,7 +14,7 @@ import responses
 class TestCreateServer(object):
 
     def test_storage_prepare_post_body(self, manager):
-        s1 = Storage(os='Ubuntu 20.04', size=10)
+        s1 = Storage(os='01000000-0000-4000-8000-000030200200', size=10)
         body1 = s1.to_dict()
         assert body1['tier'] == 'maxiops'
         assert body1['size'] == 10
@@ -37,9 +37,9 @@ class TestCreateServer(object):
             core_number=2,
             memory_amount=1024,
             hostname='my.example.com',
-            zone=ZONE.Chicago,
+            zone='us-chi1',
             storage_devices=[
-                Storage(os='Ubuntu 20.04', size=10),
+                Storage(os='01000000-0000-4000-8000-000030200200', size=10),
                 Storage(size=100, title='storage disk 1')
             ])
 
@@ -55,9 +55,9 @@ class TestCreateServer(object):
             core_number=2,
             memory_amount=1024,
             hostname='my.example.com',
-            zone=ZONE.Chicago,
+            zone='us-chi1',
             storage_devices=[
-                Storage(os='Ubuntu 20.04', size=10),
+                Storage(os='01000000-0000-4000-8000-000030200200', size=10),
                 Storage()
             ]
         )
@@ -86,10 +86,10 @@ class TestCreateServer(object):
             core_number=2,
             memory_amount=1024,
             hostname='my.example.com',
-            zone=ZONE.Chicago,
+            zone='us-chi1',
             storage_devices=[
                 Storage(
-                    os='Ubuntu 20.04',
+                    os='01000000-0000-4000-8000-000030200200',
                     size=10
                 )
             ],
@@ -109,9 +109,9 @@ class TestCreateServer(object):
             'core_number':2,
             'memory_amount':1024,
             'hostname':'my.example.com',
-            'zone': ZONE.Chicago,
+            'zone': 'us-chi1',
             'storage_devices':[
-                {'os': 'Ubuntu 20.04', 'size': 10}
+                {'os': '01000000-0000-4000-8000-000030200200', 'size': 10}
             ],
             'vnc_password': 'my-passwd',
             'password_delivery': 'email',
@@ -169,9 +169,9 @@ class TestCreateServer(object):
             core_number=2,
             memory_amount=1024,
             hostname='my.example.com',
-            zone=ZONE.Chicago,
+            zone='us-chi1',
             storage_devices=[
-                Storage(os='Ubuntu 20.04', size=10),
+                Storage(os='01000000-0000-4000-8000-000030200200', size=10),
                 Storage(size=100, title='storage disk 1')
             ]
         )
@@ -206,9 +206,9 @@ class TestCreateServer(object):
             'core_number': 2,
             'memory_amount': 1024,
             'hostname': 'my.example.com',
-            'zone': ZONE.Chicago,
+            'zone': 'us-chi1',
             'storage_devices': [
-                {'os': 'Ubuntu 20.04', 'size': 10},
+                {'os': '01000000-0000-4000-8000-000030200200', 'size': 10},
                 {'size': 100, 'title': 'storage disk 1'},
             ]
         }
@@ -256,7 +256,7 @@ class TestCreateServer(object):
                 core_number=2,
                 memory_amount=1024,
                 hostname='my.example.com',
-                zone=ZONE.Chicago,
+                zone='us-chi1',
                 storage_devices=[
                     Storage(storage=UUID, size=10),
                 ]

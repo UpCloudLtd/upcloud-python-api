@@ -43,9 +43,9 @@ def create_server(self, server):
 	server1 = Server( core_number = 1,
 				memory_amount = 1024,
 				hostname = "my.example.1",
-				zone = ZONE.London,
+				zone = "uk-lon1",
 				storage_devices = [
-					Storage(os = "Ubuntu 14.04", size=10, tier=maxiops, title='The OS drive'),
+					Storage(os="01000000-0000-4000-8000-000030060200", size=10, tier=maxiops, title='The OS drive'),
 					Storage(size=10),
 					Storage()
 				title = "My Example Server"
@@ -56,11 +56,8 @@ def create_server(self, server):
 	- size defaults to 10,
 	- title defaults to hostname + " OS disk" and hostname + " storage disk id" (id is a running starting from 1)
 	- tier defaults to maxiops
-	- valid operating systems are:
-		"CentOS 6.5", "CentOS 7.0"
-		"Debian 7.8"
-		"Ubuntu 12.04", "Ubuntu 14.04"
-		"Windows 2003","Windows 2008" ,"Windows 2012"
+	- valid operating systems with names and ids can be retrieved by calling manager.get_templates():
+		More detailed documentation of this method can be found in storage_mixin documentation.
 
 	"""
 ```

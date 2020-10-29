@@ -68,7 +68,7 @@ You must take this into account in your automations.
 ```python
 
 import upcloud_api
-from upcloud_api import Server, Storage, ZONE, login_user_block
+from upcloud_api import Server, Storage, login_user_block
 
 manager = upcloud_api.CloudManager('api_user', 'password')
 manager.authenticate()
@@ -85,11 +85,11 @@ cluster = {
         core_number=1, # CPU cores
         memory_amount=1024, # RAM in MB
         hostname='web1.example.com',
-        zone=ZONE.London, # ZONE.Helsinki and ZONE.Chicago available also
+        zone='uk-lon1', # All available zones with ids can be retrieved by using manager.get_zones()
         storage_devices=[
-            # OS: Ubuntu 14.04 from template
+            # OS: 01000000-0000-4000-8000-000030060200, all available os templates can be retrieved by calling manager.get_templates()
             # default tier: maxIOPS, the 100k IOPS storage backend
-            Storage(os='Ubuntu 14.04', size=10),
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             # secondary storage, hdd for reduced cost
             Storage(size=100, tier='hdd')
         ],
@@ -99,9 +99,9 @@ cluster = {
         core_number=1,
         memory_amount=1024,
         hostname='web2.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         storage_devices=[
-            Storage(os='Ubuntu 14.04', size=10),
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=100, tier='hdd'),
         ],
         login_user=login_user
@@ -109,9 +109,9 @@ cluster = {
     'db': Server(
         plan='2xCPU-4GB', # use a preconfigured plan, instead of custom
         hostname='db.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         storage_devices=[
-            Storage(os='Ubuntu 14.04', size=10),
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=100),
         ],
         login_user=login_user
@@ -120,9 +120,9 @@ cluster = {
         core_number=2,
         memory_amount=1024,
         hostname='balancer.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         storage_devices=[
-            Storage(os='Ubuntu 14.04', size=10)
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10)
         ],
         login_user=login_user
     )
@@ -187,7 +187,7 @@ clone = Server(
     core_number=1,
     memory_amount=1024,
     hostname='cloned.server',
-    zone=ZONE.Helsinki,
+    zone='fi-hel1',
     storage_devices=[
         Storage(
             uuid='012bea57-0f70-4194-82d0-b3d25f4a018b',

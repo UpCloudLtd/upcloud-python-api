@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import CloudManager, Storage, FirewallRule, ZONE, Tag, IPAddress
+from upcloud_api import CloudManager, Storage, FirewallRule, Tag, IPAddress
 from upcloud_api.server import Server, login_user_block
 
 
@@ -12,10 +12,10 @@ CLUSTER = {
         core_number=1,
         memory_amount=1024,
         hostname='web1.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='Ubuntu 14.04', size=10),
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=10, tier='maxiops')
         ]),
 
@@ -23,10 +23,10 @@ CLUSTER = {
         core_number=1,
         memory_amount=1024,
         hostname='web2.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='Ubuntu 14.04', size=10),
+            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=10, tier='maxiops'),
         ],
         ip_addresses=[
@@ -37,10 +37,10 @@ CLUSTER = {
         core_number=1,
         memory_amount=1024,
         hostname='db.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='CentOS 7.6', size=10),
+            Storage(os='01000000-0000-4000-8000-000050010300', size=10),
             Storage(size=10),
         ],
         login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
@@ -50,7 +50,7 @@ CLUSTER = {
     'lb': Server(
         plan= '1xCPU-1GB',
         hostname='balancer.example.com',
-        zone=ZONE.London,
+        zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
             Storage(os='Debian 10.0', size=30)

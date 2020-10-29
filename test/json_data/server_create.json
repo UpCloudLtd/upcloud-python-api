@@ -26,7 +26,7 @@
 					"address" : "virtio:0",
 					"storage" : "01215a5a-c330-4565-81ca-0e0e22eac672",
 					"storage_size" : 20,
-					"storage_title" : "Ubuntu 14.04 from template",
+					"storage_title" : "01000000-0000-4000-8000-000030060200 from template",
 					"type" : "disk"
 				},
 				{
