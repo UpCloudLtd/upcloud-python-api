@@ -22,6 +22,16 @@ class StorageManager(object):
         print(res)
         return Storage._create_storage_objs(res['storages'], cloud_manager=self)
 
+    def get_templates(self):
+        """
+        Return a list of Storages that are templates in a dict with key as title and uuid as value.
+        """
+        templates = []
+        res = self.get_request('/storage/template')
+        for item in res.get('storages').get('storage'):
+            templates.append({item.get('title'): item.get('uuid')})
+        return templates
+
     def get_storage(self, storage):
         """
         Return a Storage object from the API.

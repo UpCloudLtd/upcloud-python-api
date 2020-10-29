@@ -5,4 +5,5 @@ manager = upcloud_api.CloudManager('techconsult', 'LetMeTest123')
 manager.authenticate()
 
 
-storages = manager.get_storages(storage_type='template')
+storages = manager.get_templates()
+print(storages)
