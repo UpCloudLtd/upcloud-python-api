@@ -256,6 +256,12 @@ To test against all supported python versions, run:
 tox
 ```
 
+To check for possible vulnerabilities in python packages, run:
+
+```python
+safety check
+```
+
 The project also supplies a small test suite to test against the live API at `test/live_test.py`. This suite is NOT run with `py.test` as it will permanently remove all resources related to an account. It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with PyPI releases. See source code on how to run the live tests.
 
 ## Bugs, Issues, Problems, Ideas

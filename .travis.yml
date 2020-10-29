@@ -1,7 +1,5 @@
 language: python
 python:
-  - "2.7"
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
@@ -17,8 +15,8 @@ matrix:
   include:
     - python: "2.7"
       dist: trusty
-    - python: "3.4"
-      dist: xenial
+    - python: "3.9-dev"
+      dist: focal
 
 dist: bionic
 
@@ -31,4 +29,4 @@ deploy:
   on:
     repo: UpCloudLtd/upcloud-python-api
     tags: true
-    python: "3.8"
+    python: "3.9"
