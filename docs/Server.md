@@ -63,13 +63,7 @@ manager.create_server( server )
 ```
 
 Currently available Storage operating systems are the following UpCloud public templates:
-
-```python
-# upcloud_api/tools.py
-
 Valid Operating Systems cam be retrieved with 'manager.get_templates()'. More information on this method can be found in storage_mixin documentation.
-```
-
 
 Please refer to the [API documentation](https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf) for the allowed Server attributes.
 
