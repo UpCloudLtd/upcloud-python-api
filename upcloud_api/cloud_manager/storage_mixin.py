@@ -19,6 +19,7 @@ class StorageManager(object):
         Storage types: public, private, normal, backup, cdrom, template, favorite
         """
         res = self.get_request('/storage/' + storage_type)
+        print(res)
         return Storage._create_storage_objs(res['storages'], cloud_manager=self)
 
     def get_storage(self, storage):
