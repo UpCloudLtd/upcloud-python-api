@@ -267,7 +267,3 @@ The project also supplies a small test suite to test against the live API at `te
 ## Bugs, Issues, Problems, Ideas
 
 Feel free to open a new issue : )
-
-## Documentation
-
-Documentation available [here](http://upcloudltd.github.io/upcloud-python-api/)
