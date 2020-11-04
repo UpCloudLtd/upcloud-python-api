@@ -1,0 +1,158 @@
+{
+  "storages":
+  {
+    "storage":
+    [
+      {
+        "access": "public",
+        "license": 3.36,
+        "size": 28,
+        "state": "online",
+        "title": "Windows Server 2016 Datacenter",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000010060200"
+      },
+      {
+        "access": "public",
+        "license": 0.694,
+        "size": 29,
+        "state": "online",
+        "title": "Windows Server 2016 Standard",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000010060300"
+      },
+      {
+        "access": "public",
+        "license": 3.36,
+        "size": 25,
+        "state": "online",
+        "title": "Windows Server 2019 Datacenter",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000010070200"
+      },
+      {
+        "access": "public",
+        "license": 0.694,
+        "size": 25,
+        "state": "online",
+        "title": "Windows Server 2019 Standard",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000010070300"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "Debian GNU/Linux 9 (Stretch)",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000020040100"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "Debian GNU/Linux 10 (Buster)",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000020050100"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "Ubuntu Server 16.04 LTS (Xenial Xerus)",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000030060200"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 4,
+        "state": "online",
+        "title": "Ubuntu Server 18.04 LTS (Bionic Beaver)",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000030080200"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 4,
+        "state": "online",
+        "title": "Ubuntu Server 20.04 LTS (Focal Fossa)",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000030200200"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "CentOS 6.10",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000050010200"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "CentOS 7",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000050010300"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 3,
+        "state": "online",
+        "title": "CentOS 8",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000050010400"
+      },
+      {
+        "access": "public",
+        "license": 0,
+        "size": 5,
+        "state": "online",
+        "title": "Plesk Obsidian",
+        "type": "template",
+        "uuid": "01000000-0000-4000-8000-000130010100"
+      },
+      {
+        "access": "private",
+        "license": 0,
+        "size": 10,
+        "state": "online",
+        "tier": "maxiops",
+        "title": "import test",
+        "type": "template",
+        "uuid": "0124fdf2-e3ae-408b-8711-db8a3dddc85b",
+        "zone": "fi-hel1"
+      },
+      {
+        "access": "private",
+        "license": 0,
+        "size": 30,
+        "state": "online",
+        "tier": "maxiops",
+        "title": "class method test 3",
+        "type": "template",
+        "uuid": "0134df64-f6be-408e-b960-6511503471af",
+        "zone": "fi-hel1"
+      },
+      {
+        "access": "private",
+        "license": 0,
+        "size": 10,
+        "state": "online",
+        "tier": "maxiops",
+        "title": "my server template",
+        "type": "template",
+        "uuid": "013721b5-07ca-4d7b-b4ff-e21262223e5b",
+        "zone": "fi-hel2"
+      }
+    ]
+  }
+}

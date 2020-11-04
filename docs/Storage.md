@@ -3,7 +3,6 @@ The code examples use the following:
 ```python
 import upcloud_api
 from upcloud_api import Storage
-from upcloud_api import ZONE
 
 manager = upcloud_api.CloudManager("username", "password")
 ```
@@ -24,7 +23,7 @@ Tiers:
 
 ### Templates
 
-Public templates such as the Ubuntu 14.04 can be cloned by anyone to get a pre-installed server image that is immediately ready to go. A user can also create private templates for themselves out of any storage. Storages can be cloned from templates during server creation.
+Public templates such as the 01000000-0000-4000-8000-000030060200 can be cloned by anyone to get a pre-installed server image that is immediately ready to go. A user can also create private templates for themselves out of any storage. Storages can be cloned from templates during server creation.
 
 ## List / Get
 
@@ -54,9 +53,9 @@ Storage can be created with the CloudManager's `.create_storage(size=10, tier="m
 storage1 = manager.create_storage(	size=10,
 									tier="maxiops",
 									title="my storage disk",
-									zone=ZONE.Helsinki )
+									zone='fi-hel1' )
 
-storage2 = manager.create_storage(100, zone=ZONE.Helsinki)
+storage2 = manager.create_storage(100, zone='fi-hel1')
 
 ```
 
@@ -91,7 +90,7 @@ Method requires title and zone to be passed while tier is optional.
 
 ```python
 
-storage_clone = storage.clone(title='title of storage clone', zone=ZONE.Helsinki, tier=None)
+storage_clone = storage.clone(title='title of storage clone', zone='fi-hel1', tier=None)
 
 ```
 

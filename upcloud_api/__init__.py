@@ -8,17 +8,16 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 
-__version__ = '0.4.6'		
+__version__ = '0.4.6'
 __author__ = 'Elias Nygren'
-__author_email__ = 'elias.nygren@upcloud.com'		
+__author_email__ = 'elias.nygren@upcloud.com'
 __maintainer__ = 'UpCloud'
 __maintainer_email__ = 'hello@upcloud.com'
-__license__ = 'MIT'		
+__license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2015 UpCloud'
 
 from upcloud_api.upcloud_resource import UpCloudResource
 from upcloud_api.errors import UpCloudClientError, UpCloudAPIError
-from upcloud_api.constants import OperatingSystems, ZONE
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
 from upcloud_api.ip_address import IPAddress
