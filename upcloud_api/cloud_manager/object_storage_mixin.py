@@ -5,7 +5,6 @@ from __future__ import absolute_import
 
 from upcloud_api import ObjectStorage
 from upcloud_api.utils import convert_datetime_string_to_object
-import urllib.parse
 
 
 class ObjectStorageManager(object):
