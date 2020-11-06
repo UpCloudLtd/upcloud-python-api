@@ -48,7 +48,7 @@ class Mock(object):
                       body=data,
                       status=200,
                       content_type='application/json',
-                      match_querystring=True)
+                      match_querystring=match_querystring)
         return data
 
     @staticmethod
