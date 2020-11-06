@@ -1,0 +1,12 @@
+{
+  "object_storage": {
+    "created": "2020-11-03T15:28:59Z",
+    "description": "test for python api",
+    "name": "pyapi-test3",
+    "size": 250,
+    "state": "started",
+    "url": "https://pyapi-test3.fi-hel2.upcloudobjects.com/",
+    "uuid": "06b0e4fc-d74b-455e-a373-60cd6ca84022",
+    "zone": "fi-hel2"
+  }
+}

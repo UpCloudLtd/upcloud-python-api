@@ -1,0 +1,26 @@
+{
+  "stats":
+  {
+    "stat":
+    [
+      {
+        "bytes_received": 1041,
+        "bytes_transmitted": 3011,
+        "requests": 5,
+        "timestamp": "2020-11-03T15:00:00Z"
+      },
+      {
+        "bytes_received": 583,
+        "bytes_transmitted": 1296,
+        "requests": 2,
+        "timestamp": "2020-11-04T10:00:00Z"
+      },
+      {
+        "bytes_received": 279,
+        "bytes_transmitted": 648,
+        "requests": 1,
+        "timestamp": "2020-11-04T11:00:00Z"
+      }
+    ]
+  }
+}
