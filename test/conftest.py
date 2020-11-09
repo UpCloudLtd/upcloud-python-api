@@ -39,7 +39,7 @@ class Mock(object):
         return read_from_file(filename)
 
     @staticmethod
-    def mock_get(target, response_file=None, match_querystring=False):
+    def mock_get(target, response_file=None):
         if not response_file:
             response_file = target + '.json'
 
@@ -47,8 +47,7 @@ class Mock(object):
         responses.add(responses.GET, Mock.base_url + '/' + target,
                       body=data,
                       status=200,
-                      content_type='application/json',
-                      match_querystring=match_querystring)
+                      content_type='application/json')
         return data
 
     @staticmethod

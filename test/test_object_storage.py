@@ -58,8 +58,8 @@ class TestObjectStorage(object):
 
     @responses.activate
     def test_get_object_storage_network_statistics(self, manager):
-        data = Mock.mock_get('object-storage/06b0e4fc-d74b-455e-a373-60cd6ca84022/stats/network/?from=2020-11-03T00%3A00%3A00%2B02%3A00', match_querystring=True)
+        data = Mock.mock_get('object-storage/06b0e4fc-d74b-455e-a373-60cd6ca84022/stats/network/', response_file='object-storage_06b0e4fc-d74b-455e-a373-60cd6ca84022_stats_network.json')
         res = manager.get_object_storage_network_statistics('06b0e4fc-d74b-455e-a373-60cd6ca84022', '2020-11-03 00:00:00')
 
         assert 'stats' in res
-        assert len(res.get('stats').get('stat')) == 3  
+        assert len(res.get('stats').get('stat')) == 3
