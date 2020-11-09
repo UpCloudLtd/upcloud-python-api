@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import json
 import requests
-import urllib.parse
 
 from upcloud_api import UpCloudAPIError, __version__
 
@@ -29,8 +28,6 @@ class BaseAPI(object):
             raise Exception('Invalid/Forbidden HTTP method')
 
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
-        if params:
-            url += urllib.parse.urlencode(params, doseq=True)
         headers = {
             'Authorization': self.token,
             'User-Agent': 'upcloud-python-api/{}'.format(__version__)
@@ -50,6 +47,7 @@ class BaseAPI(object):
         APIcall = getattr(requests, method.lower())
         res = APIcall(url,
                       data=data,
+                      params=params,
                       headers=headers,
                       timeout=call_timeout)
 
