@@ -56,9 +56,6 @@ python setup.py install
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 
-**Documentation:**
-* Available [here](http://upcloudltd.github.io/upcloud-python-api/)
-
 
 
 ## Examples
