@@ -29,7 +29,7 @@ python setup.py install
 	  (http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package)
 
 
-**Supported versions as of 0.4.6** (offline tests pass with tox):
+**Supported versions in the next release** (offline tests pass with tox):
 
 * <del>python 2.6</del> removed due to deprecation
 * python 2.7 supported but not recommended, especially when upcloud-ansible will be ported to python3
