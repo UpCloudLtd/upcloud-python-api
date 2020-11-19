@@ -18,7 +18,7 @@ class BaseAPI(object):
         self.token = token
         self.timeout = timeout
 
-    def request(self, method, endpoint, body=None, timeout=-1, request_to_api=True):
+    def request(self, method, endpoint, body=None, params=None, timeout=-1, request_to_api=True):
         """
         Perform a request with a given body to a given endpoint in UpCloud's API or UpCloud's uploader session.
 
@@ -47,6 +47,7 @@ class BaseAPI(object):
         APIcall = getattr(requests, method.lower())
         res = APIcall(url,
                       data=data,
+                      params=params,
                       headers=headers,
                       timeout=call_timeout)
 
@@ -57,35 +58,35 @@ class BaseAPI(object):
 
         return self.__error_middleware(res, res_json)
 
-    def get_request(self, endpoint, timeout=-1):
+    def get_request(self, endpoint, params=None, timeout=-1):
         """
         Perform a GET request to a given endpoint in UpCloud's API.
         """
-        return self.request('GET', endpoint, timeout=timeout)
+        return self.request('GET', endpoint, params=params, timeout=timeout)
 
     def post_request(self, endpoint, body=None, timeout=-1):
         """
         Perform a POST request to a given endpoint in UpCloud's API.
         """
-        return self.request('POST', endpoint, body, timeout)
+        return self.request('POST', endpoint, body=body, timeout=timeout)
 
     def put_request(self, endpoint, body=None, timeout=-1, request_to_api=True):
         """
         Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
         """
-        return self.request('PUT', endpoint, body, timeout, request_to_api=request_to_api)
+        return self.request('PUT', endpoint, body=body, timeout=timeout, request_to_api=request_to_api)
 
     def patch_request(self, endpoint, body=None, timeout=-1):
         """
         Perform a PATCH request to a given endpoint in UpCloud's API.
         """
-        return self.request('PATCH', endpoint, body, timeout)
+        return self.request('PATCH', endpoint, body=body, timeout=timeout)
 
-    def delete_request(self, endpoint, body=None, timeout=-1):
+    def delete_request(self, endpoint, timeout=-1):
         """
         Perform a DELETE request to a given endpoint in UpCloud's API.
         """
-        return self.request('DELETE', endpoint, body, timeout)
+        return self.request('DELETE', endpoint, timeout=timeout)
 
     def __error_middleware(self, res, res_json):
         """

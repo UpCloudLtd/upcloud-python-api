@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/UpCloudLtd/upcloud-python-api.svg?branch=master)](https://travis-ci.org/UpCloudLtd/upcloud-python-api) [![Code Health](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master/landscape.svg?style=flat)](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master) [![PyPI version](https://badge.fury.io/py/upcloud-api.svg)](https://badge.fury.io/py/upcloud-api) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/master/LICENSE)
 
 # UpCloud's Python API Client
-OOP-based api client for [UpCloud's API](https://www.upcloud.com/documentation/api/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
+OOP-based api client for [UpCloud's API](https://developers.upcloud.com/1.3/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
 
 NOTE: This Python client is still evolving. Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
 
@@ -29,15 +29,18 @@ python setup.py install
 	  (http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package)
 
 
-**Supported versions as of 0.3.3** (offline tests pass with tox):
+**Supported versions in the next release** (offline tests pass with tox):
 
 * <del>python 2.6</del> removed due to deprecation
-* python 2.7
+* python 2.7 supported but not recommended, especially when upcloud-ansible will be ported to python3
 * <del>python 3.2</del> removed due to python2/3 support
-* <del>python 3.3</del> removed due to deprecation
-* python 3.4
-* python 3.5
-* pypi3  2.4.0
+* <del>python 3.3</del> removed due to python2/3 support
+* <del>python 3.4</del> removed due to python2/3 support
+* <del>python 3.5</del> removed due to python2/3 support
+* python 3.6
+* python 3.7
+* python 3.9
+* pypi3
 
 ## Features
 * OOP based management of Servers, Storages and IP-addresses with full CRUD.
@@ -52,9 +55,6 @@ python setup.py install
 
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
-
-**Documentation:**
-* Available [here](http://upcloudltd.github.io/upcloud-python-api/)
 
 
 
@@ -233,7 +233,7 @@ Set up environment and install dependencies:
 # run at project root, python3 and virtualenv must be installed
 virtualenv ENV
 source ENV/bin/activate
-pip install -r requirements.txt or pip install -r requirements-dev.txt if changes to the api need to be made
+pip install -r requirements.txt && pip install -r requirements-dev.txt
 ```
 
 Install the package in editable mode, as mentioned in

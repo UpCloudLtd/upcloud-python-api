@@ -7,21 +7,23 @@ from upcloud_api import UpCloudResource
 from upcloud_api.utils import assignIfExists
 
 
-class Host(UpCloudResource):
+class ObjectStorage(UpCloudResource):
     """
-    Class representation of UpCloud network.
+    Class representation of UpCloud Object Storage.
     """
 
     ATTRIBUTES = {
-        'id': None,
+        'uuid': None,
+        'name': None,
         'description': None,
-        'zone': None,
-        'windows_enabled': None,
-        'stats': None
+        'size': None,
+        'state': None,
+        'url': None,
+        'zone': None
     }
 
     def __str__(self):
         """
-        String representation of Host.
+        String representation of Object Storage.
         """
-        return self.id
+        return self.uuid
