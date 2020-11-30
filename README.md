@@ -39,6 +39,7 @@ python setup.py install
 * <del>python 3.5</del> removed due to python2/3 support
 * python 3.6
 * python 3.7
+* python 3.8
 * python 3.9
 * pypi3
 
