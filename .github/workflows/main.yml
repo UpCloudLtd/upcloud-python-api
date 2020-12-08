@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-
+    name: Test run
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,7 +41,15 @@ jobs:
       run: pip install tox
     - name: Run tox e2e tests
       run: tox -e integration
-        
-        
-        
-
+  
+  deploy:
+    name: Build deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: casperdcl/deploy-pypi@v1
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          build: true
+      
