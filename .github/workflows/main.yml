@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         tox_env:
-          - py27
           - py36
           - py37
           - py38
