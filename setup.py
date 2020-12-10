@@ -23,23 +23,5 @@ def get_version(rel_path):
 with open('README.md') as f:
     long_description = f.read()
 
-version = get_version('upcloud_api/__init__.py')
-setup(
-    name='upcloud-api',
-    version=version,
-    description='UpCloud API Client',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    author='Elias Nygren',
-    maintainer='UpCloud',
-    maintainer_email='hello@upcloud.com',
-    url='https://github.com/UpCloudLtd/upcloud-python-api',
-    packages=['upcloud_api', 'upcloud_api.cloud_manager'],
-    download_url='https://github.com/UpCloudLtd/upcloud-python-api/archive/%s.tar.gz' % version,
-    license='MIT',
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*',
-    install_requires=[
-        'requests>=2.24.0',
-        'six==1.15.0'
-    ]
-)
+if __name__ == "__main__":
+    setup(version=get_version('upcloud_api/__init__.py'))
