@@ -22,12 +22,12 @@ class IPManager(object):
         res = self.get_request('/ip_address/' + address)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
-    def get_ips(self):
+    def get_ips(self, ignore_ips_without_server=False):
         """
         Get all IPAddress objects from the API.
         """
         res = self.get_request('/ip_address')
-        IPs = IPAddress._create_ip_address_objs(res['ip_addresses'], cloud_manager=self)
+        IPs = IPAddress._create_ip_address_objs(res['ip_addresses'], self, ignore_ips_without_server)
         return IPs
 
     def attach_ip(self, server, family='IPv4'):
