@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import ZONE, Tag
+from upcloud_api import Tag
 
 
 def create_cluster(manager, cluster):
@@ -52,7 +52,7 @@ def server_test(manager, server):
 
     server.add_ip()
 
-    storage = manager.create_storage(size=10, tier='maxiops', zone=ZONE.London)
+    storage = manager.create_storage(size=10, tier='maxiops', zone='uk-lon1')
     server.add_storage(storage)
 
     server.start()

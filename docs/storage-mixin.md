@@ -30,6 +30,13 @@ def get_storage(self, UUID):
 ```
 
 ```python
+def get_templates(self):
+	"""
+	Return a list of Storages that are templates in a dict with title as key and uuid as value.
+	"""
+```
+
+```python
 def create_storage(self, size=10, tier="maxiops", title="Storage disk", zone="fi-hel1"):
 	"""
 	Create a Storage object. Returns an object based on the API's response.

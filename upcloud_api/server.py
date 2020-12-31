@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 from time import sleep
 
-from upcloud_api import Storage, IPAddress, OperatingSystems
+from upcloud_api import Storage, IPAddress
 from upcloud_api.utils import try_it_n_times
 
 
@@ -344,7 +344,7 @@ class Server(object):
             # public template
             if hasattr(storage, 'os') and storage.os:
                 storage_body['action'] = 'clone'
-                storage_body['storage'] = OperatingSystems.get_OS_UUID(storage.os)
+                storage_body['storage'] = storage.os
 
             # private template
             elif hasattr(storage, 'uuid'):
