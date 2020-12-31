@@ -1,5 +1,7 @@
 import itertools
 from time import sleep
+from datetime import datetime
+from dateutil import tz
 
 from upcloud_api import UpCloudClientError, UpCloudAPIError
 
@@ -42,3 +44,11 @@ def get_raw_data_from_file(file):
         data = file.read()
     file.close()
     return data
+
+def convert_datetime_string_to_object(datetime_string):
+    """
+    Helper function to convert datetime string to object with local timezone
+    """
+    local_tz = tz.tzlocal()
+    datetime_object = datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
+    return datetime_object.replace(tzinfo=local_tz, microsecond=0).isoformat()

@@ -11,3 +11,4 @@ from upcloud_api.cloud_manager.storage_mixin import StorageManager
 from upcloud_api.cloud_manager.tag_mixin import TagManager
 from upcloud_api.cloud_manager.network_mixin import NetworkManager
 from upcloud_api.cloud_manager.host_mixin import HostManager
+from upcloud_api.cloud_manager.object_storage_mixin import ObjectStorageManager
