@@ -32,9 +32,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: casperdcl/deploy-pypi@v1
-        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      - uses: actions/setup-python@v2
+      - uses: casperdcl/deploy-pypi@v2
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           build: true
+          # only upload if a tag is pushed (otherwise just build & check)
+          upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
       
