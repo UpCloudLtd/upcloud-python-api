@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import absolute_import
 
 from upcloud_api import UpCloudResource
-from upcloud_api.utils import assignIfExists
 
 
 class StorageImport(UpCloudResource):

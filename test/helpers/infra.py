@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
-from upcloud_api import CloudManager, Storage, FirewallRule, Tag, IPAddress
+from upcloud_api import Storage, FirewallRule, Tag, IPAddress
 from upcloud_api.server import Server, login_user_block
 
 
@@ -17,7 +17,8 @@ CLUSTER = {
         storage_devices=[
             Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=10, tier='maxiops')
-        ]),
+        ]
+    ),
 
     'web2': Server(
         core_number=1,
@@ -31,7 +32,8 @@ CLUSTER = {
         ],
         ip_addresses=[
             IPAddress(family='IPv6', access='public')
-        ]),
+        ]
+    ),
 
     'db': Server(
         core_number=1,
@@ -43,20 +45,28 @@ CLUSTER = {
             Storage(os='01000000-0000-4000-8000-000050010300', size=10),
             Storage(size=10),
         ],
-        login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
+        login_user=login_user_block(
+            'testuser',
+            ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'],
+            True
         ),
+    ),
 
 
     'lb': Server(
-        plan= '1xCPU-1GB',
+        plan='1xCPU-1GB',
         hostname='balancer.example.com',
         zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
             Storage(os='Debian 10.0', size=30)
         ],
-        login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
-        )
+        login_user=login_user_block(
+            'testuser',
+            ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'],
+            True
+        ),
+    )
 }
 
 

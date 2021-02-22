@@ -97,7 +97,7 @@ class TestTags(object):
 
     @responses.activate
     def test_assign_tags_to_server(self, manager):
-        data = Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
+        Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
         server = manager.get_server('00798b85-efdc-41ca-8021-f6ef457b8531')
 
         responses.add(
@@ -114,7 +114,7 @@ class TestTags(object):
 
     @responses.activate
     def test_remove_tags_from_server(self, manager):
-        data = Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
+        Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
         server = manager.get_server('00798b85-efdc-41ca-8021-f6ef457b8531')
 
         responses.add(

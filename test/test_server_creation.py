@@ -7,7 +7,6 @@ from upcloud_api import Server, Storage, IPAddress, login_user_block
 
 from conftest import Mock
 import json
-import pytest
 import responses
 
 
@@ -48,7 +47,6 @@ class TestCreateServer(object):
         assert server1.memory_amount == 1024
         assert server1.hostname == server1.title
         assert server1.zone == 'us-chi1'
-
 
     def test_server_prepare_post_body(self):
         server = Server(
@@ -98,19 +96,18 @@ class TestCreateServer(object):
             login_user=login_user_block('upclouduser', ['this-is-a-SSH-key']),
             avoid_host='12345678',
             user_data='https://my.script.com/some_script.py',
-            ip_addresses = [
+            ip_addresses=[
                 IPAddress(family='IPv4', access='public'),
                 IPAddress(family='IPv6', access='public')
             ]
         )
 
-
         server2_dict = {
-            'core_number':2,
-            'memory_amount':1024,
-            'hostname':'my.example.com',
+            'core_number': 2,
+            'memory_amount': 1024,
+            'hostname': 'my.example.com',
             'zone': 'us-chi1',
-            'storage_devices':[
+            'storage_devices': [
                 {'os': '01000000-0000-4000-8000-000030200200', 'size': 10}
             ],
             'vnc_password': 'my-passwd',
@@ -119,15 +116,14 @@ class TestCreateServer(object):
             'avoid_host': '12345678',
             'user_data': 'https://my.script.com/some_script.py',
             'ip_addresses': [
-                {'family':'IPv4', 'access':'public'},
-                {'family':'IPv6', 'access':'public'}
+                {'family': 'IPv4', 'access': 'public'},
+                {'family': 'IPv6', 'access': 'public'}
             ]
         }
         server2 = Server._create_server_obj(server2_dict, cloud_manager=self)
 
         body1 = server1.prepare_post_body()
         body2 = server2.prepare_post_body()
-
 
         for body in [body1, body2]:
             assert body['server']['title'] == 'my.example.com'
@@ -152,7 +148,6 @@ class TestCreateServer(object):
                     {'family': 'IPv6', 'access': 'public'}
                 ]
             }
-
 
     @responses.activate
     def test_create_server(self, manager):
@@ -228,7 +223,6 @@ class TestCreateServer(object):
         assert server1.video_model == 'cirrus'
         assert server1.vnc == 'off'
         assert server1.vnc_password == 'aabbccdd'
-
 
     @responses.activate
     def test_create_server_from_template(self, manager):

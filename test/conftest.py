@@ -27,7 +27,7 @@ def manager():
 def read_from_file(filename):
     filename = filename.replace("/", "_")
     cwd = os.path.dirname(__file__)
-    f = open(cwd + '/json_data/'+filename, 'r')
+    f = open(cwd + '/json_data/' + filename, 'r')
     return f.read()
 
 
@@ -51,7 +51,13 @@ class Mock(object):
         return data
 
     @staticmethod
-    def __put_patch_post_callback(request, target, data, ignore_data_field=False, empty_payload=False):
+    def __put_patch_post_callback(
+        request,
+        target,
+        data,
+        ignore_data_field=False,
+        empty_payload=False
+    ):
         data_field = target.split("/")[0]
 
         if not empty_payload:
@@ -64,12 +70,23 @@ class Mock(object):
         return(200, {}, json.dumps(data))
 
     @staticmethod
-    def mock_post(target, empty_content=False, ignore_data_field=False, empty_payload=False):
+    def mock_post(
+        target,
+        empty_content=False,
+        ignore_data_field=False,
+        empty_payload=False
+    ):
 
         def callback(request):
             if not empty_content:
                 data = json.loads(Mock.read_from_file(target + '_post.json'))
-                return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
+                return Mock.__put_patch_post_callback(
+                    request,
+                    target,
+                    data,
+                    ignore_data_field,
+                    empty_payload
+                )
             else:
                 return(200, {}, '{}')
 
@@ -82,7 +99,13 @@ class Mock(object):
         data = json.loads(Mock.read_from_file(target + '.json'))
 
         def callback(request):
-            return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
+            return Mock.__put_patch_post_callback(
+                request,
+                target,
+                data,
+                ignore_data_field,
+                empty_payload
+            )
 
         url = Mock.base_url + '/' + target if call_api else target
         responses.add_callback(responses.PUT, url,
@@ -94,7 +117,13 @@ class Mock(object):
         data = json.loads(Mock.read_from_file(target + '.json'))
 
         def callback(request):
-            return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
+            return Mock.__put_patch_post_callback(
+                request,
+                target,
+                data,
+                ignore_data_field,
+                empty_payload
+            )
 
         url = Mock.base_url + '/' + target if call_api else target
         responses.add_callback(responses.PATCH, url,
@@ -108,14 +137,21 @@ class Mock(object):
 
     @staticmethod
     def mock_server_operation(target):
-        # drop third (last) part of a string divided by two slashes ("/"); e.g "this/is/string" -> "this/is"
+        # drop third (last) part of a string divided by two slashes ("/");
+        # e.g "this/is/string" -> "this/is"
         targetsplit = target.split('/')
-        targetfile = '/'.join( targetsplit[:2] )
+        targetfile = '/'.join(targetsplit[:2])
 
-        data = json.loads( Mock.read_from_file(targetfile + '.json') )
+        data = json.loads(Mock.read_from_file(targetfile + '.json'))
 
         # API will always respond state: "started", see: Server.stop, Server.start, Server,restart
         data['server']['state'] = 'started'
 
-        data = json.dumps( data )
-        responses.add(responses.POST, Mock.base_url + "/" + target, status=200, body = data, content_type='application/json')
+        data = json.dumps(data)
+        responses.add(
+            responses.POST,
+            Mock.base_url + "/" + target,
+            status=200,
+            body=data,
+            content_type='application/json'
+        )

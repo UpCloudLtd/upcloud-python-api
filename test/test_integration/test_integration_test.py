@@ -2,9 +2,9 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import multiprocessing
 import os
 import pytest
-import multiprocessing
 
 from upcloud_api import CloudManager
 
@@ -71,7 +71,7 @@ def test_infra_ops():
     manager = CloudManager(USERNAME, PASSWORD, timeout=120)
 
     try:
-        auth = manager.authenticate()
+        manager.authenticate()
         assert True
     except Exception:
         assert False

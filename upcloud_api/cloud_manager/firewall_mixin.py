@@ -3,11 +3,13 @@ from __future__ import absolute_import
 
 from upcloud_api import FirewallRule, Server
 
+
 def uuid_and_instance(server):
-    """server => uuid, instance"""
+    """server => uuid, instance."""
     if isinstance(server, Server):
         return server.uuid, server
     return server, None
+
 
 class FirewallManager(object):
     """

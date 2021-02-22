@@ -20,7 +20,8 @@ class BaseAPI(object):
 
     def request(self, method, endpoint, body=None, params=None, timeout=-1, request_to_api=True):
         """
-        Perform a request with a given body to a given endpoint in UpCloud's API or UpCloud's uploader session.
+        Perform a request with a given body to a given endpoint.
+        It can be either UpCloud's API or UpCloud's uploader session.
 
         Handles errors with __error_middleware.
         """
@@ -33,7 +34,8 @@ class BaseAPI(object):
             'User-Agent': 'upcloud-python-api/{}'.format(__version__)
         }
 
-        headers['Content-Type'] = 'application/json' if request_to_api else 'application/octet-stream'
+        headers['Content-Type'] = 'application/json' if request_to_api \
+            else 'application/octet-stream'
 
         if body and request_to_api:
             data = json.dumps(body)
@@ -72,9 +74,16 @@ class BaseAPI(object):
 
     def put_request(self, endpoint, body=None, timeout=-1, request_to_api=True):
         """
-        Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
+        Perform a PUT request to a given endpoint.
+        Can be to the UpCloud's API or UpCloud's uploader session.
         """
-        return self.request('PUT', endpoint, body=body, timeout=timeout, request_to_api=request_to_api)
+        return self.request(
+            'PUT',
+            endpoint,
+            body=body,
+            timeout=timeout,
+            request_to_api=request_to_api
+        )
 
     def patch_request(self, endpoint, body=None, timeout=-1):
         """

@@ -5,9 +5,9 @@ from __future__ import absolute_import
 
 
 from upcloud_api import IPAddress, Server
-from conftest import Mock, read_from_file
+from conftest import read_from_file
 import json
-import responses
+
 
 class TestIP(object):
 
@@ -30,7 +30,7 @@ class TestIP(object):
         assert ip.to_dict() == {
             'access': 'private',
             'address': '10.0.0.0',
-            'family' : 'IPv4'
+            'family': 'IPv4'
         }
 
         data = read_from_file('server_00798b85-efdc-41ca-8021-f6ef457b8531.json')

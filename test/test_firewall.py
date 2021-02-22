@@ -30,7 +30,9 @@ def firewall_rule_callback(request):
         """
         for field in required_fields:
             if field not in request_body['firewall_rule']:
-                raise Exception('missing required field: {0}. Body was:{1}'.format(field, request_body))
+                raise Exception(
+                    'missing required field: {0}. Body was:{1}'.format(field, request_body)
+                )
 
     if isinstance(request_body, list):
         for body in request_body:
@@ -39,7 +41,6 @@ def firewall_rule_callback(request):
         check_fields(request_body)
 
     return(201, {}, json.dumps(request_body))
-
 
 
 class TestFirewall(object):
@@ -72,7 +73,6 @@ class TestFirewall(object):
         assert returned_firewall.direction == 'in'
         assert returned_firewall.source_address_end == '192.168.1.255'
 
-
     @responses.activate
     def test_remove_firewall_rule(self, manager):
         Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
@@ -100,7 +100,6 @@ class TestFirewall(object):
         firewall_rules = server.get_firewall_rules()
 
         assert firewall_rules[0].position == '1'
-
 
     @responses.activate
     def test_configure_firewall(self, manager):

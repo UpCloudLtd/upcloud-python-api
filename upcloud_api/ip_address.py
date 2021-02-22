@@ -16,7 +16,7 @@ class IPAddress(UpCloudResource):
 
     The only updateable field is the ptr_record.
 
-    Note that all of the fields are not always available depending on the API call, 
+    Note that all of the fields are not always available depending on the API call,
     consult the official API docs for details.
     """
 
@@ -51,7 +51,7 @@ class IPAddress(UpCloudResource):
         return self.address
 
     @staticmethod
-    def _create_ip_address_objs(ip_addresses, cloud_manager):
+    def _create_ip_address_objs(ip_addresses, cloud_manager, ignore_ips_without_server=False):
         """
         Create IPAddress objects from API response data.
         Also associates CloudManager with the objects.
@@ -65,7 +65,14 @@ class IPAddress(UpCloudResource):
         if 'ip_address' in ip_addresses:
             ip_addresses = ip_addresses['ip_address']
 
+        filtered_ip_addresses = [] if ignore_ips_without_server else ip_addresses
+
+        if ignore_ips_without_server:
+            for ip_addr in ip_addresses:
+                if ip_addr.get('server'):
+                    filtered_ip_addresses.append(ip_addr)
+
         return [
             IPAddress(cloud_manager=cloud_manager, **ip_addr)
-            for ip_addr in ip_addresses
+            for ip_addr in filtered_ip_addresses
         ]
