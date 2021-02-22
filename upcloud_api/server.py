@@ -172,7 +172,8 @@ class Server(object):
 
     def restart(self, hard=False, timeout=30, force=True):
         """
-        Restart the server. By default, issue a soft restart with a timeout of 30s
+        Restart the server.
+        By default, issue a soft restart with a timeout of 30s
         and a hard restart after the timeout.
 
         After the a timeout a hard restart is performed if the server has not stopped.
@@ -337,8 +338,8 @@ class Server(object):
                 if hasattr(storage, 'os') and storage.os:
                     storage_body['title'] = self.hostname + ' OS disk'
                 else:
-                    storage_body['title'] = self.hostname + ' storage disk ' + str(storage_title_id)
-
+                    title = '{} storage disk {}'.format(self.hostname, str(storage_title_id))
+                    storage_body['title'] = title
 
             # figure out the storage `action` parameter
             # public template
@@ -363,7 +364,6 @@ class Server(object):
                     ip.to_dict() for ip in self.ip_addresses
                 ]
             }
-
 
         return body
 
@@ -433,11 +433,11 @@ class Server(object):
         return ip_addrs[0].address if ip_addrs and not addr_family else None
 
     def get_public_ip(self, addr_family=None, *args, **kwargs):
-        """Alias for get_ip('public')"""
+        """Alias for get_ip('public')."""
         return self.get_ip('public', addr_family, *args, **kwargs)
 
     def get_private_ip(self, addr_family=None, *args, **kwargs):
-        """Alias for get_ip('private')"""
+        """Alias for get_ip('private')."""
         return self.get_ip('private', addr_family, *args, **kwargs)
 
     def _wait_for_state_change(self, target_states, update_interval=10):
@@ -475,12 +475,10 @@ class Server(object):
     def stop_and_destroy(self, sync=True):
         """
         Destroy a server and its storages. Stops the server before destroying.
-
         Syncs the server state from the API, use sync=False to disable.
         """
         def _self_destruct():
             """destroy the server and all storages attached to it."""
-
             # try_it_n_times util is used as a convenience because
             # Servers and Storages can fluctuate between "maintenance" and their
             # original state due to several different reasons especially when

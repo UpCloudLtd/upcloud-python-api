@@ -14,14 +14,25 @@ class ObjectStorageManager(object):
 
     def get_object_storages(self):
         """
-        List all Object Storage devices on the account or those which the subaccount has permissions.
+        List all Object Storage devices on the account.
+        Also includes those of which the subaccount has permissions to.
         """
         url = '/object-storage'
         res = self.get_request(url)
-        object_storages = [ObjectStorage(**o_s) for o_s in res['object_storages']['object_storage']]
+        object_storages = [
+            ObjectStorage(**o_s) for o_s in res['object_storages']['object_storage']
+        ]
         return object_storages
 
-    def create_object_storage(self, zone, access_key, secret_key, size, name=None, description=None):
+    def create_object_storage(
+        self,
+        zone,
+        access_key,
+        secret_key,
+        size,
+        name=None,
+        description=None
+    ):
         """
         Used to create a new Object Storage device with a given name, size and location.
         """
@@ -37,7 +48,7 @@ class ObjectStorageManager(object):
         if name:
             body['object_storage']['name'] = name
         if description:
-            body['object_storage']['description']= description
+            body['object_storage']['description'] = description
         res = self.post_request(url, body)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
@@ -49,9 +60,17 @@ class ObjectStorageManager(object):
         res = self.get_request(url)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
-    def modify_object_storage(self, object_storage, access_key=None, secret_key=None, description=None, size=None):
+    def modify_object_storage(
+        self,
+        object_storage,
+        access_key=None,
+        secret_key=None,
+        description=None,
+        size=None
+    ):
         """
-        Modify requests can be used to update the details of an Object Storage including description, access_key and secret_key.
+        Modify requests can be used to update the details of an Object Storage.
+        Such as description, access_key and secret_key.
         """
         url = '/object-storage/{}'.format(object_storage)
         body = {
@@ -91,9 +110,10 @@ class ObjectStorageManager(object):
             group_by=[],
             order_by=[],
             limit=None
-            ):
+    ):
         """
-        The network usage of an Object Storage device is metered and can be reviewed using the statistics request.
+        The network usage of an Object Storage device is metered.
+        The data can be reviewed using the statistics request.
         """
         key_dict = {'from': convert_datetime_string_to_object(datetime_from)}
         url = '/object-storage/{}/stats/network/?'.format(object_storage)

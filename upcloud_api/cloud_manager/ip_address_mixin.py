@@ -2,9 +2,6 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-
-import six
-
 from upcloud_api import IPAddress
 
 
@@ -27,7 +24,8 @@ class IPManager(object):
         Get all IPAddress objects from the API.
         """
         res = self.get_request('/ip_address')
-        IPs = IPAddress._create_ip_address_objs(res['ip_addresses'], self, ignore_ips_without_server)
+        IPs = IPAddress._create_ip_address_objs(
+            res['ip_addresses'], self, ignore_ips_without_server)
         return IPs
 
     def attach_ip(self, server, family='IPv4'):

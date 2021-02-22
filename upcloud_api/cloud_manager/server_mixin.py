@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import absolute_import
 
 from upcloud_api import IPAddress, Server, Storage
-from upcloud_api.utils import assignIfExists
 
 
 class ServerManager(object):
@@ -92,7 +91,12 @@ class ServerManager(object):
               hostname = "my.example.1",
               zone = "uk-lon1",
               storage_devices = [
-                Storage(os = "01000000-0000-4000-8000-000030060200", size=10, tier=maxiops, title='The OS drive'),
+                Storage(
+                    os = "01000000-0000-4000-8000-000030060200",
+                    size=10,
+                    tier=maxiops,
+                    title='The OS drive'
+              ),
                 Storage(size=10),
                 Storage()
               title = "My Example Server"
@@ -142,8 +146,10 @@ class ServerManager(object):
         server = res['server']
 
         # Populate subobjects
-        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
-                                                          cloud_manager=self)
+        IPAddresses = IPAddress._create_ip_address_objs(
+            server.pop('ip_addresses'),
+            cloud_manager=self
+        )
 
         storages = Storage._create_storage_objs(server.pop('storage_devices'),
                                                 cloud_manager=self)
@@ -176,10 +182,14 @@ class ServerManager(object):
         server = data['server']
 
         # Populate subobjects
-        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
-                                                          cloud_manager=self)
+        IPAddresses = IPAddress._create_ip_address_objs(
+            server.pop('ip_addresses'),
+            cloud_manager=self
+        )
 
-        storages = Storage._create_storage_objs(server.pop('storage_devices'),
-                                                cloud_manager=self)
+        storages = Storage._create_storage_objs(
+            server.pop('storage_devices'),
+            cloud_manager=self
+        )
 
         return server, IPAddresses, storages

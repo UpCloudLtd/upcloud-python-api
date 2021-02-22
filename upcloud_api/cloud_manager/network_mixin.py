@@ -33,7 +33,19 @@ class NetworkManager(object):
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
 
-    def create_network(self, name, zone, address, dhcp, family, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
+    def create_network(
+        self,
+        name,
+        zone,
+        address,
+        dhcp,
+        family,
+        router=None,
+        dhcp_default_route=None,
+        dhcp_dns=None,
+        dhcp_bootfile_url=None,
+        gateway=None
+    ):
         """
         Creates a new SDN private network that cloud servers from the same zone can be attached to.
         """
@@ -67,9 +79,21 @@ class NetworkManager(object):
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
 
-    def modify_network(self, network, dhcp, family, name=None, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
+    def modify_network(
+        self,
+        network,
+        dhcp,
+        family,
+        name=None,
+        router=None,
+        dhcp_default_route=None,
+        dhcp_dns=None,
+        dhcp_bootfile_url=None,
+        gateway=None
+    ):
         """
-        Modifies the details of a specific SDN private network. The Utility and public networks cannot be modified.
+        Modifies the details of a specific SDN private network.
+        The Utility and public networks cannot be modified.
         """
         url = '/network/{}'.format(network)
         body = {
@@ -100,7 +124,9 @@ class NetworkManager(object):
 
     def delete_network(self, network):
         """
-        Deletes an SDN private network. All attached cloud servers must first be detached before SDN private networks can be deleted.
+        Deletes an SDN private network.
+        All attached cloud servers must first be detached
+        before SDN private networks can be deleted.
         """
         url = '/network/{0}'.format(network)
         res = self.delete_request(url)
@@ -112,14 +138,32 @@ class NetworkManager(object):
         """
         url = '/server/{0}/networking'.format(server)
         res = self.get_request(url)
-        return [Interface(**interface) for interface in res['networking']['interfaces']['interface']]
+        return [
+            Interface(**interface) for interface in res['networking']['interfaces']['interface']
+        ]
 
-    def create_network_interface(self, server, network, type, ip_addresses, index=None, source_ip_filtering=None, bootable=None):
+    def create_network_interface(
+        self,
+        server,
+        network,
+        type,
+        ip_addresses,
+        index=None,
+        source_ip_filtering=None,
+        bootable=None
+    ):
         """
-        Creates a new network interface on the specific cloud server and attaches the specified SDN private network to the new interface.
+        Creates a new network interface on the specific cloud server.
+        Also attaches the specified SDN private network to the new interface.
         """
         url = '/server/{0}/networking/interface'.format(server)
-        body = {'interface': {'network': network, 'type': type, 'ip_addresses': {'ip_address': ip_addresses}}}
+        body = {
+            'interface': {
+                'network': network,
+                'type': type,
+                'ip_addresses': {'ip_address': ip_addresses}
+            }
+        }
         if index:
             body['interface']['index'] = index
         if source_ip_filtering:
@@ -129,7 +173,15 @@ class NetworkManager(object):
         res = self.post_request(url, body)
         return Interface(**res['interface'])
 
-    def modify_network_interface(self, server, index_in_path, index_in_body=None, ip_addresses=None, source_ip_filtering=None, bootable=None):
+    def modify_network_interface(
+        self,
+        server,
+        index_in_path,
+        index_in_body=None,
+        ip_addresses=None,
+        source_ip_filtering=None,
+        bootable=None
+    ):
         """
         Modifies the network interface at the selected index on the specific cloud server.
         """
@@ -148,7 +200,8 @@ class NetworkManager(object):
 
     def delete_network_interface(self, server, index):
         """
-        Detaches an SDN private network from a cloud server by deleting the network interface at the selected index on the specific cloud server.
+        Detaches an SDN private network from a cloud server by deleting the network interface.
+        Deleted network is selected by the index on the specific cloud server.
         """
         url = '/server/{0}/networking/interface/{1}'.format(server, str(index))
         res = self.delete_request(url)

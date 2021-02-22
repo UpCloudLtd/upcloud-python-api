@@ -10,7 +10,7 @@ import responses
 class TestHost(object):
     @responses.activate
     def test_get_hosts(self, manager):
-        data = Mock.mock_get('host')
+        Mock.mock_get('host')
         hosts = manager.get_hosts()
 
         for host in hosts:
@@ -18,7 +18,7 @@ class TestHost(object):
 
     @responses.activate
     def test_get_host(self, manager):
-        data = Mock.mock_get('host/7653311107')
+        Mock.mock_get('host/7653311107')
         host = manager.get_host('7653311107')
 
         assert type(host).__name__ == 'Host'
@@ -30,7 +30,7 @@ class TestHost(object):
 
     @responses.activate
     def test_modify_host(self, manager):
-        data = Mock.mock_patch('host/7653311107')
+        Mock.mock_patch('host/7653311107')
         host = manager.modify_host('7653311107', 'My New Host')
 
         assert type(host).__name__ == 'Host'

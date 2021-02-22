@@ -39,8 +39,7 @@ class UpCloudResource(object):
 
     def sync(self):
         """
-        Sync the object from the API and use the internal resource._reset to
-        update fields.
+        Sync the object from the API and use the internal resource._reset to update fields.
         """
         raise NotImplementedError
 

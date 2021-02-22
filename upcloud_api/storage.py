@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import absolute_import
 
 from upcloud_api import UpCloudResource
-from upcloud_api.utils import assignIfExists
 
 
 class Storage(UpCloudResource):
@@ -25,12 +24,10 @@ class Storage(UpCloudResource):
         'zone': None,
     }
 
-
     def _reset(self, **kwargs):
         """
         Reset after repopulating from API.
         """
-
         # there are some inconsistenciens in the API regarding these
         # note: this could be written in fancier ways, but this way is simpler
 
@@ -102,14 +99,16 @@ class Storage(UpCloudResource):
 
     def restore_backup(self):
         """
-        Restores the origin storage with data from the specified backup storage using StorageManager.
+        Restores the origin storage.
+        Uses data from the specified backup storage using StorageManager.
         Must be called from a storage object created by create_backup and not the original one.
         """
         return self.cloud_manager.restore_storage_backup(self.uuid)
 
     def templatize(self, title):
         """
-        Creates an exact copy of an existing storage resource which can be used as a template for creating new servers using StorageManager.
+        Creates an exact copy of an existing storage resource.
+        It can be used as a template for creating new servers using StorageManager.
         """
         return self.cloud_manager.templatize_storage(self.uuid, title)
 
