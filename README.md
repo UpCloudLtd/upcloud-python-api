@@ -3,7 +3,7 @@
 # UpCloud's Python API Client
 OOP-based api client for [UpCloud's API](https://developers.upcloud.com/1.3/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
 
-NOTE: This Python client is still evolving. Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
+Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
 
 ## Installation
 
@@ -43,25 +43,12 @@ python setup.py install
 * python 3.9
 * pypi3
 
-## Features
-* OOP based management of Servers, Storages and IP-addresses with full CRUD.
-	* since 0.2: manage both IPv4 and IPv6 addresses
-	* since 0.1.1: can use custom storage templates in addition to public templates
-* Clear way to define your infrastructure, emphasis on clear and easy syntax
-* Access all the data of the objects ( e.g. ssh credentials )
-* Scale horizontally by creating / destroying servers
-* Scale vertically by changing the RAM, CPU, storage specs of any server
-* Manage firewall (on/off and individual rules)
-	* since 0.2: full management of firewall rules
-
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 
-
-
 ## Examples
 
-Note that some operations are not instant, for example a server is not fully shut down when the API responds.
+Note that the API finishes the request before the server is shutdown. Poll the server details to monitor server status.
 You must take this into account in your automations.
 
 ### Defining and creating Servers
@@ -134,7 +121,7 @@ for server in cluster:
 
 ```
 
-New in 0.3.0: servers can now be defined as dicts without using Server or Storage classes.
+Servers can be defined as dicts without using Server or Storage classes.
 The syntax/attributes are exactly like above and under the hood they are converted to Server and Storage classes.
 This feature is mainly for easier usage of the module from Ansible, but may provide useful elsewhere.
 
@@ -153,7 +140,7 @@ for server in cluster:
 
 ```
 
-New in 0.3.0: as the success of server.start() or server.destroy() and storage.destroy()
+As the success of server.start() or server.destroy() and storage.destroy()
 depend on the Server's `state`, new helpers have been added. The helpers may be called regardless of
 the server's current state.
 
@@ -201,9 +188,6 @@ manager.create_server(clone)
 ```
 
 ### Easy access to servers and their information:
-
-New in 0.3.0.
-
 ```python
 
 # returns a public IPv4 (preferred) IPv6 (no public IPv4 was attached) address
