@@ -68,7 +68,6 @@ class Mock(object):
 
         def callback(request):
             if not empty_content:
-                assert True
                 data = json.loads(Mock.read_from_file(target + '_post.json'))
                 return Mock.__put_patch_post_callback(request, target, data, ignore_data_field, empty_payload)
             else:
