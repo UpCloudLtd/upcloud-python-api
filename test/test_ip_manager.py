@@ -59,7 +59,6 @@ class TestIP(object):
     @responses.activate
     def test_create_floating_ip(self, manager):
         Mock.mock_post('ip_address')
-        assert True
         floating_ip = manager.create_floating_ip('fi-hel2')
         assert type(floating_ip).__name__ == 'IPAddress'
         assert floating_ip.floating == 'yes'
