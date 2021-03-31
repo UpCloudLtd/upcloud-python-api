@@ -55,3 +55,15 @@ class IPManager:
         Accepts an IPAddress instance (object) or its address (string).
         """
         return self.api.delete_request('/ip_address/' + str(ip_addr))
+
+    def create_floating_ip(self, zone: str, mac: str = '', family: str = 'IPv4') -> IPAddress:
+        """
+        Create a floating IP and returns an IPAddress object.
+        Specifiy MAC address of network interface to attach the floating IP when it is created
+        """
+        body = {'ip_address': {'family': family, 'floating': 'yes', 'zone': zone}}
+        if mac:
+            body['ip_address']['mac'] = mac
+
+        res = self.api.post_request('/ip_address', body)
+        return IPAddress(cloud_manager=self, **res['ip_address'])
