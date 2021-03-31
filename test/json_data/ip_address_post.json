@@ -4,6 +4,8 @@
         "address": "10.1.0.101",
         "family": "IPv4",
         "ptr_record": "a.ptr.record",
-        "server": "00798b85-efdc-41ca-8021-f6ef457b8531"
+        "server": "00798b85-efdc-41ca-8021-f6ef457b8531",
+        "floating": "yes",
+        "zone": "fi-hel2"
     }
 }

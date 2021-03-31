@@ -16,7 +16,7 @@ class IPAddress(UpCloudResource):
 
     The only updateable field is the ptr_record.
 
-    Note that all of the fields are not always available depending on the API call, 
+    Note that all of the fields are not always available depending on the API call,
     consult the official API docs for details.
     """
 
