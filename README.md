@@ -218,7 +218,7 @@ Set up environment and install dependencies:
 # run at project root, python3 and virtualenv must be installed
 virtualenv ENV
 source ENV/bin/activate
-pip install -r requirements.txt && pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt
 ```
 
 Install the package in editable mode, as mentioned in
