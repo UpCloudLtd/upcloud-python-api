@@ -1,0 +1,8 @@
+flake8
+flake8-docstrings
+hacking
+mock
+pip-tools
+pytest
+responses
+safety
