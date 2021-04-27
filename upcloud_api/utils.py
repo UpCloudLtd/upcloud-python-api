@@ -1,19 +1,10 @@
 import itertools
-from time import sleep
 from datetime import datetime
+from time import sleep
+
 from dateutil import tz
 
-from upcloud_api import UpCloudClientError, UpCloudAPIError
-
-
-def assignIfExists(opts, default=None, **kwargs):
-    """
-    Helper for assigning object attributes from API responses.
-    """
-    for opt in opts:
-        if opt in kwargs:
-            return kwargs[opt]
-    return default
+from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
 
 
 def try_it_n_times(operation, expected_error_codes, custom_error='operation failed', n=10):

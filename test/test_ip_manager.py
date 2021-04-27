@@ -1,5 +1,5 @@
-from conftest import Mock
 import responses
+from conftest import Mock
 
 
 class TestIP:
@@ -30,13 +30,6 @@ class TestIP:
         data = Mock.mock_put('ip_address/10.1.0.101')
         ip_addr.ptr_record = 'my.ptr.record'
         ip_addr.save()
-
-        assert ip_addr.ptr_record == 'my.ptr.record'
-
-    @responses.activate
-    def test_modify_ip(self, manager):
-        data = Mock.mock_put('ip_address/10.1.0.101')
-        ip_addr = manager.modify_ip('10.1.0.101', ptr_record='my.ptr.record')
 
         assert ip_addr.ptr_record == 'my.ptr.record'
 

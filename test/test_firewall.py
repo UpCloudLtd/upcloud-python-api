@@ -1,8 +1,9 @@
-from upcloud_api import FirewallRule
-
-from conftest import Mock
 import json
+
 import responses
+from conftest import Mock
+
+from upcloud_api import FirewallRule
 
 
 def firewall_rule_callback(request):

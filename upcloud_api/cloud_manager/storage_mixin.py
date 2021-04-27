@@ -1,4 +1,7 @@
-from upcloud_api import Storage, StorageImport
+from typing import Optional
+
+from upcloud_api.storage import Storage
+from upcloud_api.storage_import import StorageImport
 from upcloud_api.utils import get_raw_data_from_file
 
 
@@ -34,11 +37,18 @@ class StorageManager:
         return Storage(cloud_manager=self, **res['storage'])
 
     def create_storage(
-        self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1', backup_rule={}
+        self,
+        size=10,
+        tier='maxiops',
+        title='Storage disk',
+        zone='fi-hel1',
+        backup_rule: Optional[dict] = None,
     ):
         """
         Create a Storage object. Returns an object based on the API's response.
         """
+        if backup_rule is None:
+            backup_rule = {}
         body = {
             'storage': {
                 'size': size,
@@ -51,7 +61,7 @@ class StorageManager:
         res = self.post_request('/storage', body)
         return Storage(cloud_manager=self, **res['storage'])
 
-    def _modify_storage(self, storage, size, title, backup_rule={}):
+    def _modify_storage(self, storage, size, title, backup_rule: Optional[dict] = None):
         body = {'storage': {}}
         if size:
             body['storage']['size'] = size
@@ -61,7 +71,7 @@ class StorageManager:
             body['storage']['backup_rule'] = backup_rule
         return self.put_request('/storage/' + str(storage), body)
 
-    def modify_storage(self, storage, size, title, backup_rule={}):
+    def modify_storage(self, storage, size, title, backup_rule: Optional[dict] = None):
         """
         Modify a Storage object. Returns an object based on the API's response.
         """

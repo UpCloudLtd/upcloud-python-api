@@ -1,4 +1,6 @@
-from upcloud_api import Tag
+from typing import Optional
+
+from upcloud_api.tag import Tag
 
 
 class TagManager:
@@ -18,12 +20,14 @@ class TagManager:
         res = self.get_request('/tag/' + name)
         return Tag(cloud_manager=self, **res['tag'])
 
-    def create_tag(self, name, description=None, servers=[]):
+    def create_tag(self, name, description=None, servers: Optional[list] = None):
         """
         Create a new Tag. Only name is mandatory.
 
         Returns the created Tag object.
         """
+        if servers is None:
+            servers = []
         servers = [str(server) for server in servers]
         body = {'tag': Tag(name, description, servers).to_dict()}
         res = self.post_request('/tag', body)

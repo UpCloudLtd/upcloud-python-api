@@ -1,6 +1,7 @@
 from time import sleep
 
-from upcloud_api import Storage, IPAddress
+from upcloud_api.ip_address import IPAddress
+from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
 
 
@@ -139,7 +140,10 @@ class Server:
         self.cloud_manager.modify_server(self.uuid, **kwargs)
         self._reset(kwargs)
 
-    def destroy(self):  # noqa
+    def destroy(self):
+        """
+        Destroy the server.
+        """
         self.cloud_manager.delete_server(self.uuid)
 
     def shutdown(self, hard=False, timeout=30):
@@ -159,7 +163,7 @@ class Server:
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
-    def stop(self):  # noqa
+    def stop(self):
         """
         Alias for shutdown.
         """
@@ -256,7 +260,10 @@ class Server:
         """
         return self.cloud_manager.create_firewall_rule(self, FirewallRule.to_dict())
 
-    def remove_firewall_rule(self, FirewallRule):  # noqa
+    def remove_firewall_rule(self, FirewallRule):
+        """
+        Remove a firewall rule.
+        """
         return FirewallRule.destroy()
 
     def get_firewall_rules(self):

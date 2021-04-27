@@ -1,6 +1,4 @@
-import six
-
-from upcloud_api import IPAddress
+from upcloud_api.ip_address import IPAddress
 
 
 class IPManager:

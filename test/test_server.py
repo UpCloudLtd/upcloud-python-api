@@ -1,6 +1,6 @@
-from conftest import Mock
 import pytest
 import responses
+from conftest import Mock
 
 
 class TestServer:

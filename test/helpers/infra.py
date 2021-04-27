@@ -1,6 +1,8 @@
-from upcloud_api import CloudManager, Storage, FirewallRule, Tag, IPAddress
+from upcloud_api.firewall import FirewallRule
+from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server, login_user_block
-
+from upcloud_api.storage import Storage
+from upcloud_api.tag import Tag
 
 CLUSTER = {
     'web1': Server(

@@ -1,7 +1,13 @@
 black~=21.4b1; platform_python_implementation != "PyPy"
 flake8
+flake8-bandit
+flake8-black; platform_python_implementation != "PyPy"
+flake8-bugbear
 flake8-docstrings
+flake8-isort
+flake8-pytest
 hacking
+isort
 mock
 pip-tools
 pytest

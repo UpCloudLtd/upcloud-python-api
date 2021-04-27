@@ -1,4 +1,5 @@
-from upcloud_api import Server, UpCloudResource
+from upcloud_api.server import Server
+from upcloud_api.upcloud_resource import UpCloudResource
 
 
 class Tag(UpCloudResource):
@@ -14,8 +15,10 @@ class Tag(UpCloudResource):
 
     ATTRIBUTES = {'name': None, 'description': None, 'servers': []}
 
-    def __init__(self, name, description=None, servers=[], **kwargs):
+    def __init__(self, name, description=None, servers=None, **kwargs):
         """Init with Tag('tagname', 'description', [servers]) syntax."""
+        if servers is None:
+            servers = []
         super().__init__(name=name, description=description, servers=servers, **kwargs)
 
     def _reset(self, **kwargs):
@@ -46,6 +49,9 @@ class Tag(UpCloudResource):
         return [server.uuid for server in self.servers]
 
     def save(self):
+        """
+        Save any changes made to the tag.
+        """
         tag_dict = self.cloud_manager._modify_tag(
             self._api_name, self.description, self.server_uuids, self.name
         )

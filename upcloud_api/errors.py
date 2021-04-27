@@ -17,6 +17,9 @@ class UpCloudAPIError(UpCloudClientError):
     """
 
     def __init__(self, error_code, error_message):
+        """
+        Initialize API error with an error code and message.
+        """
         self.error_code = error_code
         self.error_message = error_message
 

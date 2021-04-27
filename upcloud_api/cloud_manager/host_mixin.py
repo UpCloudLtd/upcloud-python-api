@@ -1,4 +1,4 @@
-from upcloud_api import Host
+from upcloud_api.host import Host
 
 
 class HostManager:

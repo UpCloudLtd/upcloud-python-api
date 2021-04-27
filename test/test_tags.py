@@ -1,8 +1,9 @@
-from upcloud_api import Tag
-
-from conftest import Mock
 import json
+
 import responses
+from conftest import Mock
+
+from upcloud_api import Tag
 
 
 def tag_post_callback(request):
@@ -48,7 +49,7 @@ class TestTags:
     @responses.activate
     def test_create_new_tag(self, manager):
 
-        for i in range(1, 4):
+        for _ in range(1, 4):
             responses.add_callback(
                 responses.POST,
                 Mock.base_url + '/tag',

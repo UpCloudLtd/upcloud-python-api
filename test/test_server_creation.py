@@ -1,9 +1,9 @@
-from upcloud_api import Server, Storage, IPAddress, login_user_block
-
-from conftest import Mock
 import json
-import pytest
+
 import responses
+from conftest import Mock
+
+from upcloud_api import IPAddress, Server, Storage, login_user_block
 
 
 class TestCreateServer:
