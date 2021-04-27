@@ -1,24 +1,19 @@
-#!/usr/bin/env python
-
-import codecs
+import ast
 import os.path
+import re
 
 from setuptools import setup
 
 
-def read(rel_path):
-    here = os.path.abspath(os.path.dirname(__file__))
-    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
-        return fp.read()
-
-
-def get_version(rel_path):
-    for line in read(rel_path).splitlines():
-        if line.startswith('__version__'):
-            delim = '"' if '"' in line else "'"
-            return line.split(delim)[1]
-    else:
-        raise RuntimeError("Unable to find version string.")
+def get_version(rel_path: str) -> str:
+    """
+    Parse a version string from a __version__ = ... line in the given file.
+    """
+    with open(os.path.join(os.path.dirname(__file__), rel_path)) as infp:
+        match = re.search("__version__ = (.+?)$", infp.read(), re.M)
+        if not match:
+            raise ValueError("No version could be found")
+        return ast.literal_eval(match.group(1))
 
 
 with open('README.md') as f:
