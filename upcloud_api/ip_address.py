@@ -25,7 +25,7 @@ class IPAddress(UpCloudResource):
         'family': 'IPv4',
         'part_of_plan': None,
         'ptr_record': None,
-        'server': None
+        'server': None,
     }
 
     def save(self):
@@ -70,8 +70,7 @@ class IPAddress(UpCloudResource):
             for ip_addr in ip_addresses:
                 if ip_addr.get('server'):
                     filtered_ip_addresses.append(ip_addr)
-    
+
         return [
-            IPAddress(cloud_manager=cloud_manager, **ip_addr)
-            for ip_addr in filtered_ip_addresses
+            IPAddress(cloud_manager=cloud_manager, **ip_addr) for ip_addr in filtered_ip_addresses
         ]

@@ -1,5 +1,6 @@
 from upcloud_api import UpCloudResource
 
+
 class FirewallRule(UpCloudResource):
     """
     Class representation of the API's firewall rule. Extends UpCloudResource.
@@ -35,8 +36,6 @@ class FirewallRule(UpCloudResource):
                 """FirewallRule not associated with server;
                 please use or server.get_firewall_rules() to get objects
                 that are associated with a server.
-                """)
-        return self.server.cloud_manager.delete_firewall_rule(
-            self.server.uuid,
-            self.position
-        )
+                """
+            )
+        return self.server.cloud_manager.delete_firewall_rule(self.server.uuid, self.position)

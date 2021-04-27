@@ -12,7 +12,7 @@ class Host(UpCloudResource):
         'description': None,
         'zone': None,
         'windows_enabled': None,
-        'stats': None
+        'stats': None,
     }
 
     def __str__(self):

@@ -5,7 +5,6 @@ Python Interface to UpCloud's API.
 # flake8: noqa
 
 
-
 __version__ = '1.0.1'
 __author__ = 'Elias Nygren'
 __author_email__ = 'elias.nygren@upcloud.com'

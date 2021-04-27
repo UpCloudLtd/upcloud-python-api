@@ -1,6 +1,7 @@
 from conftest import Mock
 import responses
 
+
 class TestIP:
     @responses.activate
     def test_get_ip(self, manager):

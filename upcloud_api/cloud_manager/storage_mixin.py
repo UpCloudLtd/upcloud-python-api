@@ -33,7 +33,9 @@ class StorageManager:
         res = self.get_request('/storage/' + str(storage))
         return Storage(cloud_manager=self, **res['storage'])
 
-    def create_storage(self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1', backup_rule={}):
+    def create_storage(
+        self, size=10, tier='maxiops', title='Storage disk', zone='fi-hel1', backup_rule={}
+    ):
         """
         Create a Storage object. Returns an object based on the API's response.
         """
@@ -43,7 +45,7 @@ class StorageManager:
                 'tier': tier,
                 'title': title,
                 'zone': zone,
-                'backup_rule': backup_rule
+                'backup_rule': backup_rule,
             }
         }
         res = self.post_request('/storage', body)

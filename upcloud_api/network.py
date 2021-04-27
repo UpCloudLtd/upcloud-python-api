@@ -13,7 +13,7 @@ class Network(UpCloudResource):
         'uuid': None,
         'zone': None,
         'ip_networks': None,
-        'servers': None
+        'servers': None,
     }
 
     def __str__(self):

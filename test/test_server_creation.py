@@ -7,7 +7,6 @@ import responses
 
 
 class TestCreateServer:
-
     def test_storage_prepare_post_body(self, manager):
         s1 = Storage(os='01000000-0000-4000-8000-000030200200', size=10)
         body1 = s1.to_dict()
@@ -35,15 +34,15 @@ class TestCreateServer:
             zone='us-chi1',
             storage_devices=[
                 Storage(os='01000000-0000-4000-8000-000030200200', size=10),
-                Storage(size=100, title='storage disk 1')
-            ])
+                Storage(size=100, title='storage disk 1'),
+            ],
+        )
 
         assert server1.title == 'my.example.com'
         assert server1.core_number == 2
         assert server1.memory_amount == 1024
         assert server1.hostname == server1.title
         assert server1.zone == 'us-chi1'
-
 
     def test_server_prepare_post_body(self):
         server = Server(
@@ -53,8 +52,8 @@ class TestCreateServer:
             zone='us-chi1',
             storage_devices=[
                 Storage(os='01000000-0000-4000-8000-000030200200', size=10),
-                Storage()
-            ]
+                Storage(),
+            ],
         )
         body = server.prepare_post_body()
 
@@ -82,47 +81,38 @@ class TestCreateServer:
             memory_amount=1024,
             hostname='my.example.com',
             zone='us-chi1',
-            storage_devices=[
-                Storage(
-                    os='01000000-0000-4000-8000-000030200200',
-                    size=10
-                )
-            ],
+            storage_devices=[Storage(os='01000000-0000-4000-8000-000030200200', size=10)],
             vnc_password='my-passwd',
             password_delivery='email',
             login_user=login_user_block('upclouduser', ['this-is-a-SSH-key']),
             avoid_host='12345678',
             user_data='https://my.script.com/some_script.py',
-            ip_addresses = [
+            ip_addresses=[
                 IPAddress(family='IPv4', access='public'),
-                IPAddress(family='IPv6', access='public')
-            ]
+                IPAddress(family='IPv6', access='public'),
+            ],
         )
 
-
         server2_dict = {
-            'core_number':2,
-            'memory_amount':1024,
-            'hostname':'my.example.com',
+            'core_number': 2,
+            'memory_amount': 1024,
+            'hostname': 'my.example.com',
             'zone': 'us-chi1',
-            'storage_devices':[
-                {'os': '01000000-0000-4000-8000-000030200200', 'size': 10}
-            ],
+            'storage_devices': [{'os': '01000000-0000-4000-8000-000030200200', 'size': 10}],
             'vnc_password': 'my-passwd',
             'password_delivery': 'email',
             'login_user': login_user_block('upclouduser', ['this-is-a-SSH-key']),
             'avoid_host': '12345678',
             'user_data': 'https://my.script.com/some_script.py',
             'ip_addresses': [
-                {'family':'IPv4', 'access':'public'},
-                {'family':'IPv6', 'access':'public'}
-            ]
+                {'family': 'IPv4', 'access': 'public'},
+                {'family': 'IPv6', 'access': 'public'},
+            ],
         }
         server2 = Server._create_server_obj(server2_dict, cloud_manager=self)
 
         body1 = server1.prepare_post_body()
         body2 = server2.prepare_post_body()
-
 
         for body in [body1, body2]:
             assert body['server']['title'] == 'my.example.com'
@@ -135,19 +125,16 @@ class TestCreateServer:
             assert body['server']['login_user'] == {
                 'username': 'upclouduser',
                 'create_password': 'yes',
-                'ssh_keys': {
-                    'ssh_key': ['this-is-a-SSH-key']
-                }
+                'ssh_keys': {'ssh_key': ['this-is-a-SSH-key']},
             }
             assert body['server']['avoid_host'] == '12345678'
             assert body['server']['user_data'] == 'https://my.script.com/some_script.py'
             assert body['server']['ip_addresses'] == {
                 'ip_address': [
                     {'family': 'IPv4', 'access': 'public'},
-                    {'family': 'IPv6', 'access': 'public'}
+                    {'family': 'IPv6', 'access': 'public'},
                 ]
             }
-
 
     @responses.activate
     def test_create_server(self, manager):
@@ -157,7 +144,7 @@ class TestCreateServer:
             Mock.base_url + '/server',
             body=Mock.read_from_file('server_create.json'),
             status=202,
-            content_type='application/json'
+            content_type='application/json',
         )
 
         server1 = Server(
@@ -167,8 +154,8 @@ class TestCreateServer:
             zone='us-chi1',
             storage_devices=[
                 Storage(os='01000000-0000-4000-8000-000030200200', size=10),
-                Storage(size=100, title='storage disk 1')
-            ]
+                Storage(size=100, title='storage disk 1'),
+            ],
         )
 
         manager.create_server(server1)
@@ -194,7 +181,7 @@ class TestCreateServer:
             Mock.base_url + '/server',
             body=Mock.read_from_file('server_create.json'),
             status=202,
-            content_type='application/json'
+            content_type='application/json',
         )
 
         server1 = {
@@ -205,7 +192,7 @@ class TestCreateServer:
             'storage_devices': [
                 {'os': '01000000-0000-4000-8000-000030200200', 'size': 10},
                 {'size': 100, 'title': 'storage disk 1'},
-            ]
+            ],
         }
 
         server1 = manager.create_server(server1)
@@ -223,7 +210,6 @@ class TestCreateServer:
         assert server1.video_model == 'cirrus'
         assert server1.vnc == 'off'
         assert server1.vnc_password == 'aabbccdd'
-
 
     @responses.activate
     def test_create_server_from_template(self, manager):
@@ -243,7 +229,7 @@ class TestCreateServer:
             responses.POST,
             Mock.base_url + '/server',
             content_type='application/json',
-            callback=_from_template_callback
+            callback=_from_template_callback,
         )
 
         manager.create_server(
@@ -254,6 +240,6 @@ class TestCreateServer:
                 zone='us-chi1',
                 storage_devices=[
                     Storage(storage=UUID, size=10),
-                ]
+                ],
             )
         )

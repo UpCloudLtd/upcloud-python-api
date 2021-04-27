@@ -52,7 +52,7 @@ def server_test(manager, server):
 
     server.start()
 
-    #sync new info from API and assert the changes from above have happened
+    # sync new info from API and assert the changes from above have happened
     server.populate()
     assert server.core_number == '3'
     assert server.memory_amount == '1024'
@@ -70,7 +70,7 @@ def tag_servers_test(manager, tags, cluster):
 
     cluster['web1'].add_tags(['testweb'])
     cluster['web2'].add_tags(['testweb'])
-    cluster['lb'].add_tags([tags[1]]) # tags[1] is 'db'
+    cluster['lb'].add_tags([tags[1]])  # tags[1] is 'db'
     cluster['db'].add_tags(['testlb'])
 
     fetched_servers = manager.get_servers(tags_has_one=['testlb'])

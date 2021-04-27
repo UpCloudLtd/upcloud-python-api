@@ -11,10 +11,15 @@ def firewall_rule_callback(request):
     Returns the same body with 201 Created.
     """
     required_fields = [
-        'position', 'direction', 'family', 'protocol',
-        'source_address_start', 'source_address_end',
-        'destination_port_start', 'destination_port_end',
-        'action'
+        'position',
+        'direction',
+        'family',
+        'protocol',
+        'source_address_start',
+        'source_address_end',
+        'destination_port_start',
+        'destination_port_end',
+        'action',
     ]
 
     request_body = json.loads(request.body)
@@ -33,8 +38,7 @@ def firewall_rule_callback(request):
     else:
         check_fields(request_body)
 
-    return(201, {}, json.dumps(request_body))
-
+    return (201, {}, json.dumps(request_body))
 
 
 class TestFirewall:
@@ -47,26 +51,27 @@ class TestFirewall:
             responses.POST,
             Mock.base_url + '/server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule',
             content_type='application/json',
-            callback=firewall_rule_callback
+            callback=firewall_rule_callback,
         )
 
-        returned_firewall = server.add_firewall_rule(FirewallRule(
-            position='1',
-            direction='in',
-            family='IPv4',
-            protocol='tcp',
-            source_address_start='192.168.1.1',
-            source_address_end='192.168.1.255',
-            destination_port_start='22',
-            destination_port_end='22',
-            action='accept'
-        ))
+        returned_firewall = server.add_firewall_rule(
+            FirewallRule(
+                position='1',
+                direction='in',
+                family='IPv4',
+                protocol='tcp',
+                source_address_start='192.168.1.1',
+                source_address_end='192.168.1.255',
+                destination_port_start='22',
+                destination_port_end='22',
+                action='accept',
+            )
+        )
 
         # everything should run without errors, returned created object
         assert returned_firewall.position == '1'
         assert returned_firewall.direction == 'in'
         assert returned_firewall.source_address_end == '192.168.1.255'
-
 
     @responses.activate
     def test_remove_firewall_rule(self, manager):
@@ -96,7 +101,6 @@ class TestFirewall:
 
         assert firewall_rules[0].position == '1'
 
-
     @responses.activate
     def test_configure_firewall(self, manager):
         Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
@@ -106,7 +110,7 @@ class TestFirewall:
             responses.POST,
             Mock.base_url + '/server/00798b85-efdc-41ca-8021-f6ef457b8531/firewall_rule',
             content_type='application/json',
-            callback=firewall_rule_callback
+            callback=firewall_rule_callback,
         )
 
         returned_firewall = server.configure_firewall(
@@ -120,7 +124,7 @@ class TestFirewall:
                     source_address_end='192.168.1.255',
                     destination_port_start='22',
                     destination_port_end='22',
-                    action='accept'
+                    action='accept',
                 ),
                 FirewallRule(
                     position='2',
@@ -131,8 +135,8 @@ class TestFirewall:
                     source_address_end='192.168.1.255',
                     destination_port_start='22',
                     destination_port_end='22',
-                    action='accept'
-                )
+                    action='accept',
+                ),
             ]
         )
 

@@ -3,8 +3,8 @@ from conftest import Mock, read_from_file
 import json
 import responses
 
-class TestIP:
 
+class TestIP:
     def test_ip_in_server_creation(self):
         """IPAddress in server creation.
 
@@ -21,11 +21,7 @@ class TestIP:
         https://www.upcloud.com/api/8-servers/#get-server-details
         """
         ip = IPAddress(access='private', address='10.0.0.0', family='IPv4')
-        assert ip.to_dict() == {
-            'access': 'private',
-            'address': '10.0.0.0',
-            'family' : 'IPv4'
-        }
+        assert ip.to_dict() == {'access': 'private', 'address': '10.0.0.0', 'family': 'IPv4'}
 
         data = read_from_file('server_00798b85-efdc-41ca-8021-f6ef457b8531.json')
         s = Server(**json.loads(data))
@@ -44,5 +40,5 @@ class TestIP:
             'family': 'IPv4',
             'part_of_plan': 'yes',
             'ptr_record': 'a.ptr.record',
-            'server': '008c365d-d307-4501-8efc-cd6d3bb0e494'
+            'server': '008c365d-d307-4501-8efc-cd6d3bb0e494',
         }

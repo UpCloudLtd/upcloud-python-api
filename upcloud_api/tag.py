@@ -12,11 +12,7 @@ class Tag(UpCloudResource):
                can be instantiated with UUID strings or Server objects
     """
 
-    ATTRIBUTES = {
-        'name': None,
-        'description': None,
-        'servers': []
-    }
+    ATTRIBUTES = {'name': None, 'description': None, 'servers': []}
 
     def __init__(self, name, description=None, servers=[], **kwargs):
         """Init with Tag('tagname', 'description', [servers]) syntax."""
@@ -50,10 +46,9 @@ class Tag(UpCloudResource):
         return [server.uuid for server in self.servers]
 
     def save(self):
-        tag_dict = self.cloud_manager._modify_tag(self._api_name,
-                                                  self.description,
-                                                  self.server_uuids,
-                                                  self.name)
+        tag_dict = self.cloud_manager._modify_tag(
+            self._api_name, self.description, self.server_uuids, self.name
+        )
         self._reset(**tag_dict)
 
     def destroy(self):
@@ -69,9 +64,7 @@ class Tag(UpCloudResource):
         return {
             'name': self.name,
             'description': self.description or '',
-            'servers': {
-                'server': self.server_uuids
-            }
+            'servers': {'server': self.server_uuids},
         }
 
     def __str__(self):

@@ -20,7 +20,6 @@ class Storage(UpCloudResource):
         'zone': None,
     }
 
-
     def _reset(self, **kwargs):
         """
         Reset after repopulating from API.
@@ -156,7 +155,4 @@ class Storage(UpCloudResource):
         if 'storage' in storages:
             storages = storages['storage']
 
-        return [
-            Storage(cloud_manager=cloud_manager, **storage)
-            for storage in storages
-        ]
+        return [Storage(cloud_manager=cloud_manager, **storage) for storage in storages]

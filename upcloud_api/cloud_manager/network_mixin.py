@@ -28,7 +28,19 @@ class NetworkManager:
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
 
-    def create_network(self, name, zone, address, dhcp, family, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
+    def create_network(
+        self,
+        name,
+        zone,
+        address,
+        dhcp,
+        family,
+        router=None,
+        dhcp_default_route=None,
+        dhcp_dns=None,
+        dhcp_bootfile_url=None,
+        gateway=None,
+    ):
         """
         Creates a new SDN private network that cloud servers from the same zone can be attached to.
         """
@@ -38,12 +50,8 @@ class NetworkManager:
                 'name': name,
                 'zone': zone,
                 'ip_networks': {
-                    'ip_network': {
-                        'address': address,
-                        'dhcp': dhcp,
-                        'family': family
-                    }
-                }
+                    'ip_network': {'address': address, 'dhcp': dhcp, 'family': family}
+                },
             }
         }
 
@@ -62,18 +70,23 @@ class NetworkManager:
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
 
-    def modify_network(self, network, dhcp, family, name=None, router=None, dhcp_default_route=None, dhcp_dns=None, dhcp_bootfile_url=None, gateway=None):
+    def modify_network(
+        self,
+        network,
+        dhcp,
+        family,
+        name=None,
+        router=None,
+        dhcp_default_route=None,
+        dhcp_dns=None,
+        dhcp_bootfile_url=None,
+        gateway=None,
+    ):
         """
         Modifies the details of a specific SDN private network. The Utility and public networks cannot be modified.
         """
         url = f'/network/{network}'
-        body = {
-            'network': {
-                'ip_networks': {
-                    'ip_network': {'family': family}
-                }
-            }
-        }
+        body = {'network': {'ip_networks': {'ip_network': {'family': family}}}}
         if name:
             body['network']['name'] = name
         if dhcp:
@@ -107,14 +120,31 @@ class NetworkManager:
         """
         url = f'/server/{server}/networking'
         res = self.get_request(url)
-        return [Interface(**interface) for interface in res['networking']['interfaces']['interface']]
+        return [
+            Interface(**interface) for interface in res['networking']['interfaces']['interface']
+        ]
 
-    def create_network_interface(self, server, network, type, ip_addresses, index=None, source_ip_filtering=None, bootable=None):
+    def create_network_interface(
+        self,
+        server,
+        network,
+        type,
+        ip_addresses,
+        index=None,
+        source_ip_filtering=None,
+        bootable=None,
+    ):
         """
         Creates a new network interface on the specific cloud server and attaches the specified SDN private network to the new interface.
         """
         url = f'/server/{server}/networking/interface'
-        body = {'interface': {'network': network, 'type': type, 'ip_addresses': {'ip_address': ip_addresses}}}
+        body = {
+            'interface': {
+                'network': network,
+                'type': type,
+                'ip_addresses': {'ip_address': ip_addresses},
+            }
+        }
         if index:
             body['interface']['index'] = index
         if source_ip_filtering:
@@ -124,7 +154,15 @@ class NetworkManager:
         res = self.post_request(url, body)
         return Interface(**res['interface'])
 
-    def modify_network_interface(self, server, index_in_path, index_in_body=None, ip_addresses=None, source_ip_filtering=None, bootable=None):
+    def modify_network_interface(
+        self,
+        server,
+        index_in_path,
+        index_in_body=None,
+        ip_addresses=None,
+        source_ip_filtering=None,
+        bootable=None,
+    ):
         """
         Modifies the network interface at the selected index on the specific cloud server.
         """
