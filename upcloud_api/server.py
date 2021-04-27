@@ -141,6 +141,9 @@ class Server:
         self._reset(kwargs)
 
     def destroy(self):
+        """
+        Destroy the server.
+        """
         self.cloud_manager.delete_server(self.uuid)
 
     def shutdown(self, hard=False, timeout=30):
@@ -258,6 +261,9 @@ class Server:
         return self.cloud_manager.create_firewall_rule(self, FirewallRule.to_dict())
 
     def remove_firewall_rule(self, FirewallRule):
+        """
+        Remove a firewall rule.
+        """
         return FirewallRule.destroy()
 
     def get_firewall_rules(self):

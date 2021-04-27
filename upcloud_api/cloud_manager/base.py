@@ -14,6 +14,9 @@ class BaseAPI:
     api_v = '1.3'
 
     def __init__(self, token, timeout=None):
+        """
+        Initialize the API with a given Authorization token and default timeout.
+        """
         self.token = token
         self.timeout = timeout
 

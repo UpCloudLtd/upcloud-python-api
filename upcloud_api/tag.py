@@ -47,6 +47,9 @@ class Tag(UpCloudResource):
         return [server.uuid for server in self.servers]
 
     def save(self):
+        """
+        Save any changes made to the tag.
+        """
         tag_dict = self.cloud_manager._modify_tag(
             self._api_name, self.description, self.server_uuids, self.name
         )
