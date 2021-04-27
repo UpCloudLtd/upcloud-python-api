@@ -1,5 +1,3 @@
-import six
-
 from upcloud_api import IPAddress
 
 
