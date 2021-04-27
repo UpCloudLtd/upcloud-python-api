@@ -1,6 +1,3 @@
-from upcloud_api import Tag
-
-
 def create_cluster(manager, cluster):
     """Create all servers in cluster."""
     for server in cluster:

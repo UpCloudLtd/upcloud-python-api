@@ -1,7 +1,6 @@
 import json
 
-import responses
-from conftest import Mock, read_from_file
+from conftest import read_from_file
 
 from upcloud_api import IPAddress, Server
 

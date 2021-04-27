@@ -1,6 +1,5 @@
 import json
 
-import pytest
 import responses
 from conftest import Mock
 
