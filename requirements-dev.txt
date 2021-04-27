@@ -7,9 +7,15 @@
 appdirs==1.4.4
     # via black
 attrs==20.3.0
-    # via pytest
+    # via
+    #   flake8-bugbear
+    #   pytest
+bandit==1.7.0
+    # via flake8-bandit
 black==21.4b1 ; platform_python_implementation != "PyPy"
-    # via -r requirements-dev.in
+    # via
+    #   -r requirements-dev.in
+    #   flake8-black
 certifi==2020.12.5
     # via requests
 chardet==4.0.0
@@ -21,13 +27,35 @@ click==7.1.2
     #   safety
 dparse==0.5.1
     # via safety
+flake8-bandit==2.1.2
+    # via -r requirements-dev.in
+flake8-black==0.2.1 ; platform_python_implementation != "PyPy"
+    # via -r requirements-dev.in
+flake8-bugbear==21.4.3
+    # via -r requirements-dev.in
 flake8-docstrings==1.6.0
+    # via -r requirements-dev.in
+flake8-isort==4.0.0
+    # via -r requirements-dev.in
+flake8-polyfill==1.0.2
+    # via flake8-bandit
+flake8-pytest==1.3
     # via -r requirements-dev.in
 flake8==3.8.4
     # via
     #   -r requirements-dev.in
+    #   flake8-bandit
+    #   flake8-black
+    #   flake8-bugbear
     #   flake8-docstrings
+    #   flake8-isort
+    #   flake8-polyfill
+    #   flake8-pytest
     #   hacking
+gitdb==4.0.7
+    # via gitpython
+gitpython==3.1.14
+    # via bandit
 hacking==4.1.0
     # via -r requirements-dev.in
 idna==2.10
@@ -35,7 +63,9 @@ idna==2.10
 iniconfig==1.1.1
     # via pytest
 isort==5.8.0
-    # via -r requirements-dev.in
+    # via
+    #   -r requirements-dev.in
+    #   flake8-isort
 mccabe==0.6.1
     # via flake8
 mock==4.0.3
@@ -49,6 +79,8 @@ packaging==20.9
     #   safety
 pathspec==0.8.1
     # via black
+pbr==5.6.0
+    # via stevedore
 pep517==0.10.0
     # via pip-tools
 pip-tools==6.1.0
@@ -58,7 +90,9 @@ pluggy==0.13.1
 py==1.10.0
     # via pytest
 pycodestyle==2.6.0
-    # via flake8
+    # via
+    #   flake8
+    #   flake8-bandit
 pydocstyle==6.0.0
     # via flake8-docstrings
 pyflakes==2.2.0
@@ -68,7 +102,9 @@ pyparsing==2.4.7
 pytest==6.2.3
     # via -r requirements-dev.in
 pyyaml==5.4.1
-    # via dparse
+    # via
+    #   bandit
+    #   dparse
 regex==2021.4.4
     # via black
 requests==2.25.1
@@ -80,9 +116,17 @@ responses==0.13.2
 safety==1.10.3
     # via -r requirements-dev.in
 six==1.15.0
-    # via responses
+    # via
+    #   bandit
+    #   responses
+smmap==4.0.0
+    # via gitdb
 snowballstemmer==2.1.0
     # via pydocstyle
+stevedore==3.3.0
+    # via bandit
+testfixtures==6.17.1
+    # via flake8-isort
 toml==0.10.2
     # via
     #   black
