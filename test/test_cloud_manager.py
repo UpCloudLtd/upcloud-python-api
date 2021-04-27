@@ -1,6 +1,7 @@
-from conftest import Mock
 import json
+
 import responses
+from conftest import Mock
 
 
 class TestCloudManagerBasic:

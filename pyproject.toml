@@ -2,3 +2,7 @@
 line-length = 99
 target-version = ['py36']
 skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3

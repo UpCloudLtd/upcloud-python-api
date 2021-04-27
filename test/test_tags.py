@@ -1,8 +1,9 @@
-from upcloud_api import Tag
-
-from conftest import Mock
 import json
+
 import responses
+from conftest import Mock
+
+from upcloud_api import Tag
 
 
 def tag_post_callback(request):

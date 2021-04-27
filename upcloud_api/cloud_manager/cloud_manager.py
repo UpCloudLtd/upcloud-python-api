@@ -2,14 +2,14 @@ import base64
 
 from upcloud_api.cloud_manager import (
     BaseAPI,
-    ServerManager,
-    IPManager,
-    StorageManager,
     FirewallManager,
-    TagManager,
-    NetworkManager,
     HostManager,
+    IPManager,
+    NetworkManager,
     ObjectStorageManager,
+    ServerManager,
+    StorageManager,
+    TagManager,
 )
 
 

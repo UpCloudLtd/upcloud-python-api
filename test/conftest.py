@@ -1,9 +1,9 @@
 import json
 import os
-import pytest
-import responses
 import sys
 
+import pytest
+import responses
 
 # make files under helpers available for import
 HELPERS_PATH = os.path.join(os.path.dirname(__file__), 'helpers')

@@ -1,5 +1,5 @@
-from conftest import Mock
 import responses
+from conftest import Mock
 
 
 class TestHost:

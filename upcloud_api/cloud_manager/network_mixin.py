@@ -1,4 +1,4 @@
-from upcloud_api import Network, Interface, Router, IpNetwork
+from upcloud_api import Interface, IpNetwork, Network, Router
 
 
 class NetworkManager:

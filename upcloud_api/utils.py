@@ -1,9 +1,10 @@
 import itertools
-from time import sleep
 from datetime import datetime
+from time import sleep
+
 from dateutil import tz
 
-from upcloud_api import UpCloudClientError, UpCloudAPIError
+from upcloud_api import UpCloudAPIError, UpCloudClientError
 
 
 def assignIfExists(opts, default=None, **kwargs):

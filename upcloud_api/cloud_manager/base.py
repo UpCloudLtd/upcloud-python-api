@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 from upcloud_api import UpCloudAPIError, __version__
