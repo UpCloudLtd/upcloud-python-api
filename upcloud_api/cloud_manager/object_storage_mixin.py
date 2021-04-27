@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.utils import convert_datetime_string_to_object
 
@@ -82,14 +84,14 @@ class ObjectStorageManager:
         object_storage,
         datetime_from,
         datetime_to=None,
-        interval=None,
-        bucket=[],
-        filename=[],
-        method=[],
-        status=[],
-        group_by=[],
-        order_by=[],
-        limit=None,
+        interval: Optional[int] = None,
+        bucket: Optional[List[str]] = None,
+        filename: Optional[List[str]] = None,
+        method: Optional[List[str]] = None,
+        status: Optional[List[int]] = None,
+        group_by: Optional[List[str]] = None,
+        order_by: Optional[List[str]] = None,
+        limit: Optional[int] = None,
     ):
         """
         The network usage of an Object Storage device is metered and can be reviewed using the statistics request.

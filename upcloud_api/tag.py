@@ -15,8 +15,10 @@ class Tag(UpCloudResource):
 
     ATTRIBUTES = {'name': None, 'description': None, 'servers': []}
 
-    def __init__(self, name, description=None, servers=[], **kwargs):
+    def __init__(self, name, description=None, servers=None, **kwargs):
         """Init with Tag('tagname', 'description', [servers]) syntax."""
+        if servers is None:
+            servers = []
         super().__init__(name=name, description=description, servers=servers, **kwargs)
 
     def _reset(self, **kwargs):
