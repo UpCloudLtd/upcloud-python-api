@@ -49,7 +49,7 @@ class TestTags:
     @responses.activate
     def test_create_new_tag(self, manager):
 
-        for i in range(1, 4):
+        for _ in range(1, 4):
             responses.add_callback(
                 responses.POST,
                 Mock.base_url + '/tag',

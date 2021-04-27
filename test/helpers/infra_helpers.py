@@ -27,7 +27,7 @@ def firewall_test(manager, firewall_rules, server):
     fs = server.get_firewall_rules()
     assert len(fs) == 2
 
-    for f in fs:
+    for _ in fs:
         manager.delete_firewall_rule(server.uuid, 1)
 
     fs = server.get_firewall_rules()
