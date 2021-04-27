@@ -13,7 +13,7 @@ class BaseAPI:
     api = 'api.upcloud.com'
     api_v = '1.3'
 
-    def __init__(self, token, timeout=None):  # noqa
+    def __init__(self, token, timeout=None):
         self.token = token
         self.timeout = timeout
 
