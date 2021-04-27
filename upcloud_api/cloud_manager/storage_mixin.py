@@ -1,13 +1,8 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import Storage, StorageImport
 from upcloud_api.utils import get_raw_data_from_file
 
 
-class StorageManager(object):
+class StorageManager:
     """
     Functions for managing Storage disks. Intended to be used as a mixin for CloudManager.
     """
@@ -84,14 +79,14 @@ class StorageManager(object):
         body = {'storage': {'title': title, 'zone': zone}}
         if tier:
             body['storage']['tier'] = tier
-        res = self.post_request('/storage/{0}/clone'.format(str(storage)), body)
+        res = self.post_request(f'/storage/{str(storage)}/clone', body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def cancel_clone_storage(self, storage):
         """
         Cancels a running cloning operation and deletes the incomplete copy.
         """
-        return self.post_request('/storage/{0}/cancel'.format(str(storage)))
+        return self.post_request(f'/storage/{str(storage)}/cancel')
 
     def attach_storage(self, server, storage, storage_type, address):
         """
@@ -107,7 +102,7 @@ class StorageManager(object):
         if address:
             body['storage_device']['address'] = address
 
-        url = '/server/{0}/storage/attach'.format(server)
+        url = f'/server/{server}/storage/attach'
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
@@ -116,7 +111,7 @@ class StorageManager(object):
         Detach a Storage object to a Server. Return a list of the server's storages.
         """
         body = {'storage_device': {'address': address}}
-        url = '/server/{0}/storage/detach'.format(server)
+        url = f'/server/{server}/storage/detach'
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
@@ -125,7 +120,7 @@ class StorageManager(object):
         Loads a storage as a CD-ROM in the CD-ROM device of a server.
         """
         body = {'storage_device': {'storage': address}}
-        url = '/server/{0}/cdrom/load'.format(server)
+        url = f'/server/{server}/cdrom/load'
         res = self.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
@@ -133,7 +128,7 @@ class StorageManager(object):
         """
         Ejects the storage from the CD-ROM device of a server.
         """
-        url = '/server/{0}/cdrom/eject'.format(server)
+        url = f'/server/{server}/cdrom/eject'
         res = self.post_request(url)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
@@ -141,7 +136,7 @@ class StorageManager(object):
         """
         Creates a point-in-time backup of a storage resource.
         """
-        url = '/storage/{0}/backup'.format(storage)
+        url = f'/storage/{storage}/backup'
         body = {'storage': {'title': title}}
         res = self.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
@@ -150,14 +145,14 @@ class StorageManager(object):
         """
         Restores the origin storage with data from the specified backup storage.
         """
-        url = '/storage/{0}/restore'.format(storage)
+        url = f'/storage/{storage}/restore'
         return self.post_request(url)
 
     def templatize_storage(self, storage, title):
         """
         Creates an exact copy of an existing storage resource which can be used as a template for creating new servers.
         """
-        url = '/storage/{0}/templatize'.format(storage)
+        url = f'/storage/{storage}/templatize'
         body = {'storage': {'title': title}}
         res = self.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
@@ -167,7 +162,7 @@ class StorageManager(object):
         Creates an import task to import data into an existing storage.
         Source types: http_import or direct_upload.
         """
-        url = '/storage/{0}/import'.format(storage)
+        url = f'/storage/{storage}/import'
         body = {'storage_import': {'source': source}}
         if source_location:
             body['storage_import']['source_location'] = source_location
@@ -187,7 +182,7 @@ class StorageManager(object):
         """
         Returns detailed information of an ongoing or finished import task.
         """
-        url = '/storage/{0}/import'.format(storage)
+        url = f'/storage/{storage}/import'
         res = self.get_request(url)
         return StorageImport(**res['storage_import'])
 
@@ -195,6 +190,6 @@ class StorageManager(object):
         """
         Cancels an ongoing import task.
         """
-        url = '/storage/{0}/import/cancel'.format(storage)
+        url = f'/storage/{storage}/import/cancel'
         res = self.post_request(url)
         return StorageImport(**res['storage_import'])

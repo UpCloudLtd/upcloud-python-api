@@ -1,13 +1,8 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from conftest import Mock
 import pytest
 import responses
 
-class TestServer(object):
+class TestServer:
   @responses.activate
   def test_get_server(self, manager):
     data = Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')

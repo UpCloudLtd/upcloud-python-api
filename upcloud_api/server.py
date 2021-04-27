@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from time import sleep
 
 from upcloud_api import Storage, IPAddress
@@ -26,7 +23,7 @@ def login_user_block(username, ssh_keys, create_password=True):
     return block
 
 
-class Server(object):
+class Server:
     """
     Class representation of UpCloud Server instance.
 
@@ -67,7 +64,7 @@ class Server(object):
         Override to prevent updating readonly fields.
         """
         if name not in self.updateable_fields:
-            raise Exception("'{0}' is a readonly field".format(name))
+            raise Exception(f"'{name}' is a readonly field")
         else:
             object.__setattr__(self, name, value)
 
@@ -122,11 +119,11 @@ class Server(object):
         """
         # dict comprehension that also works with 2.6
         # http://stackoverflow.com/questions/21069668/alternative-to-dict-comprehension-prior-to-python-2-7
-        kwargs = dict(
-            (field, getattr(self, field))
+        kwargs = {
+            field: getattr(self, field)
             for field in self.updateable_fields
             if hasattr(self, field)
-        )
+        }
 
         self.cloud_manager.modify_server(self.uuid, **kwargs)
         self._reset(kwargs)
@@ -147,10 +144,10 @@ class Server(object):
         body = dict()
         body['stop_server'] = {
             'stop_type': 'hard' if hard else 'soft',
-            'timeout': '{0}'.format(timeout)
+            'timeout': f'{timeout}'
         }
 
-        path = '/server/{0}/stop'.format(self.uuid)
+        path = f'/server/{self.uuid}/stop'
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
@@ -166,7 +163,7 @@ class Server(object):
 
         The API waits for confirmation from UpCloud's IaaS backend before responding.
         """
-        path = '/server/{0}/start'.format(self.uuid)
+        path = f'/server/{self.uuid}/start'
         self.cloud_manager.post_request(path, timeout=timeout)
         object.__setattr__(self, 'state', 'started')
 
@@ -184,11 +181,11 @@ class Server(object):
         body = dict()
         body['restart_server'] = {
             'stop_type': 'hard' if hard else 'soft',
-            'timeout': '{0}'.format(timeout),
+            'timeout': f'{timeout}',
             'timeout_action': 'destroy' if force else 'ignore'
         }
 
-        path = '/server/{0}/restart'.format(self.uuid)
+        path = f'/server/{self.uuid}/restart'
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
@@ -232,10 +229,10 @@ class Server(object):
         """
         if not hasattr(storage, 'address'):
             raise Exception(
-                ('Storage does not have an address. '
+                'Storage does not have an address. '
                  'Access the Storage via Server.storage_devices '
                  'so they include an address. '
-                 '(This is due how the API handles Storages)')
+                 '(This is due how the API handles Storages)'
             )
 
         self.cloud_manager.detach_storage(server=self.uuid, address=storage.address)

@@ -1,13 +1,8 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from conftest import Mock
 import responses
 
 
-class TestObjectStorage(object):
+class TestObjectStorage:
     @responses.activate
     def test_get_object_storages(self, manager):
         data = Mock.mock_get('object-storage')

@@ -1,12 +1,10 @@
-from __future__ import unicode_literals
-
 import json
 import requests
 
 from upcloud_api import UpCloudAPIError, __version__
 
 
-class BaseAPI(object):
+class BaseAPI:
     """
     CloudManager base that handles basic HTTP communication with API.
     """
@@ -24,13 +22,13 @@ class BaseAPI(object):
 
         Handles errors with __error_middleware.
         """
-        if method not in set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']):
+        if method not in {'GET', 'POST', 'PUT', 'PATCH', 'DELETE'}:
             raise Exception('Invalid/Forbidden HTTP method')
 
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
         headers = {
             'Authorization': self.token,
-            'User-Agent': 'upcloud-python-api/{}'.format(__version__)
+            'User-Agent': f'upcloud-python-api/{__version__}'
         }
 
         headers['Content-Type'] = 'application/json' if request_to_api else 'application/octet-stream'

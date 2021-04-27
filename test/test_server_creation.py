@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import Server, Storage, IPAddress, login_user_block
 
 from conftest import Mock
@@ -11,7 +6,7 @@ import pytest
 import responses
 
 
-class TestCreateServer(object):
+class TestCreateServer:
 
     def test_storage_prepare_post_body(self, manager):
         s1 = Storage(os='01000000-0000-4000-8000-000030200200', size=10)

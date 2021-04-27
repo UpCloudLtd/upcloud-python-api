@@ -1,14 +1,9 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 import six
 
 from upcloud_api import IPAddress
 
 
-class IPManager(object):
+class IPManager:
     """
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
     """

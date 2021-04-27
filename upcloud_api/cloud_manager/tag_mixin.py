@@ -1,14 +1,9 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 import six
 
 from upcloud_api import Tag
 
 
-class TagManager(object):
+class TagManager:
     """
     Functions for managing Tags.
 
@@ -64,7 +59,7 @@ class TagManager(object):
         uuid = str(server)
         tags = [str(tag) for tag in tags]
 
-        url = '/server/{0}/tag/{1}'.format(uuid, ','.join(tags))
+        url = f"/server/{uuid}/tag/{','.join(tags)}"
         return self.post_request(url)
 
     def remove_tags(self, server, tags):
@@ -77,7 +72,7 @@ class TagManager(object):
         uuid = str(server)
         tags = [str(tag) for tag in tags]
 
-        url = '/server/{0}/untag/{1}'.format(uuid, ','.join(tags))
+        url = f"/server/{uuid}/untag/{','.join(tags)}"
         return self.post_request(url)
 
     def delete_tag(self, tag):

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from upcloud_api import UpCloudResource
 
 class FirewallRule(UpCloudResource):

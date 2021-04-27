@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 import six
 
 from upcloud_api import Tag
@@ -23,15 +18,15 @@ def tag_post_callback(request):
         assert isinstance(request_body['tag']['servers'], dict)
         assert isinstance(request_body['tag']['servers']['server'], list)
         if len(request_body['tag']['servers']['server']) > 0:
-            assert isinstance(request_body['tag']['servers']['server'][0], six.string_types)
+            assert isinstance(request_body['tag']['servers']['server'][0], str)
 
     if 'description' in request_body['tag']:
-        assert isinstance(request_body['tag']['description'], six.string_types)
+        assert isinstance(request_body['tag']['description'], str)
 
     return(201, {}, json.dumps(request_body))
 
 
-class TestTags(object):
+class TestTags:
 
     @responses.activate
     def test_get_tag(self, manager):

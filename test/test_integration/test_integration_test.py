@@ -1,7 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
 import os
 import pytest
 import multiprocessing
@@ -52,11 +48,11 @@ def teardown_module(module):
         pool.map(destroy_server, manager.get_servers())
         pool.map(delete_tag, manager.get_tags())
     else:
-        print('removing {0}'.format(CREATED_SERVERS))
+        print(f'removing {CREATED_SERVERS}')
         for server in CREATED_SERVERS:
             server.stop_and_destroy()
 
-        print('removing {0}'.format(CREATED_TAGS))
+        print(f'removing {CREATED_TAGS}')
         for tag in CREATED_TAGS:
             manager.delete_tag(tag)
 
@@ -97,7 +93,7 @@ def test_infra_ops():
                 found = True
 
         if not found:
-            raise Exception('server {0} not found in all_servers'.format(cs.uuid))
+            raise Exception(f'server {cs.uuid} not found in all_servers')
 
     # assert servers' states
     # TODO(elnygren): add more assertions here

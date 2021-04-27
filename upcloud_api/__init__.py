@@ -4,8 +4,6 @@ Python Interface to UpCloud's API.
 
 # flake8: noqa
 
-from __future__ import unicode_literals
-from __future__ import absolute_import
 
 
 __version__ = '1.0.1'

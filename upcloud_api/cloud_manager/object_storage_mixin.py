@@ -1,13 +1,8 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import ObjectStorage
 from upcloud_api.utils import convert_datetime_string_to_object
 
 
-class ObjectStorageManager(object):
+class ObjectStorageManager:
     """
     Functions for managing Object Storages. Intended to be used as a mixin for CloudManager.
     """
@@ -45,7 +40,7 @@ class ObjectStorageManager(object):
         """
         A request to get details about a specific Object Storage device by the given uuid.
         """
-        url = '/object-storage/{}'.format(uuid)
+        url = f'/object-storage/{uuid}'
         res = self.get_request(url)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
@@ -53,7 +48,7 @@ class ObjectStorageManager(object):
         """
         Modify requests can be used to update the details of an Object Storage including description, access_key and secret_key.
         """
-        url = '/object-storage/{}'.format(object_storage)
+        url = f'/object-storage/{object_storage}'
         body = {
             'object_storage': {}
         }
@@ -74,7 +69,7 @@ class ObjectStorageManager(object):
         """
         Object Storage devices can be deleted using the following API request.
         """
-        url = '/object-storage/{}'.format(object_storage)
+        url = f'/object-storage/{object_storage}'
         res = self.delete_request(url)
         return res
 
@@ -96,7 +91,7 @@ class ObjectStorageManager(object):
         The network usage of an Object Storage device is metered and can be reviewed using the statistics request.
         """
         key_dict = {'from': convert_datetime_string_to_object(datetime_from)}
-        url = '/object-storage/{}/stats/network/?'.format(object_storage)
+        url = f'/object-storage/{object_storage}/stats/network/?'
 
         if datetime_to:
             key_dict['to'] = convert_datetime_string_to_object(datetime_to)
