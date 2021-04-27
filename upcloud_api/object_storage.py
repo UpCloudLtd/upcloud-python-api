@@ -1,5 +1,4 @@
 from upcloud_api import UpCloudResource
-from upcloud_api.utils import assignIfExists
 
 
 class ObjectStorage(UpCloudResource):

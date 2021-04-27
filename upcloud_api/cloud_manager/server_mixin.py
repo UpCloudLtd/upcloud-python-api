@@ -1,5 +1,4 @@
 from upcloud_api import IPAddress, Server, Storage
-from upcloud_api.utils import assignIfExists
 
 
 class ServerManager:

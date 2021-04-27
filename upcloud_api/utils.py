@@ -7,16 +7,6 @@ from dateutil import tz
 from upcloud_api import UpCloudAPIError, UpCloudClientError
 
 
-def assignIfExists(opts, default=None, **kwargs):
-    """
-    Helper for assigning object attributes from API responses.
-    """
-    for opt in opts:
-        if opt in kwargs:
-            return kwargs[opt]
-    return default
-
-
 def try_it_n_times(operation, expected_error_codes, custom_error='operation failed', n=10):
     """
     Try a given operation (API call) n times.
