@@ -23,11 +23,10 @@ def tag_post_callback(request):
     if 'description' in request_body['tag']:
         assert isinstance(request_body['tag']['description'], str)
 
-    return(201, {}, json.dumps(request_body))
+    return (201, {}, json.dumps(request_body))
 
 
 class TestTags:
-
     @responses.activate
     def test_get_tag(self, manager):
         Mock.mock_get('tag/TheTestTag')
@@ -56,7 +55,7 @@ class TestTags:
                 responses.POST,
                 Mock.base_url + '/tag',
                 content_type='application/json',
-                callback=tag_post_callback
+                callback=tag_post_callback,
             )
 
         tag1 = manager.create_tag('Tag1')
@@ -79,7 +78,7 @@ class TestTags:
             responses.PUT,
             Mock.base_url + '/tag/TheTestTag',
             content_type='application/json',
-            callback=tag_post_callback
+            callback=tag_post_callback,
         )
 
         tag.name = 'AnotherTestTag'
@@ -100,7 +99,7 @@ class TestTags:
             Mock.base_url + '/server/00798b85-efdc-41ca-8021-f6ef457b8531/tag/tag1,tag2',
             body=json.dumps({'foo': 'bar'}),
             content_type='application/json',
-            status=200
+            status=200,
         )
         server.add_tags(['tag1', Tag('tag2')])
 
@@ -117,7 +116,7 @@ class TestTags:
             Mock.base_url + '/server/00798b85-efdc-41ca-8021-f6ef457b8531/untag/tag1,tag2',
             body=json.dumps({'foo': 'bar'}),
             content_type='application/json',
-            status=200
+            status=200,
         )
         server.remove_tags(['tag1', Tag('tag2')])
 

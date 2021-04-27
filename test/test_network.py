@@ -34,7 +34,7 @@ class TestNetwork:
             dhcp_default_route='no',
             dhcp_dns=["172.16.0.10", "172.16.1.10"],
             dhcp_bootfile_url='tftp://172.16.0.253/pxelinux.0',
-            gateway='172.16.0.1'
+            gateway='172.16.0.1',
         )
 
         assert type(network).__name__ == "Network"
@@ -44,7 +44,9 @@ class TestNetwork:
 
     @responses.activate
     def test_modify_network(self, manager):
-        data = Mock.mock_put('network/036df3d0-8629-4549-984e-dc86fc3fa1b0', ignore_data_field=True)
+        data = Mock.mock_put(
+            'network/036df3d0-8629-4549-984e-dc86fc3fa1b0', ignore_data_field=True
+        )
         network = manager.modify_network(
             network='036df3d0-8629-4549-984e-dc86fc3fa1b0',
             dhcp='yes',
@@ -54,7 +56,7 @@ class TestNetwork:
             dhcp_default_route='no',
             dhcp_dns=["172.16.0.10", "172.16.1.10"],
             dhcp_bootfile_url='tftp://172.16.0.253/pxelinux.0',
-            gateway='172.16.0.1'
+            gateway='172.16.0.1',
         )
 
         assert type(network).__name__ == "Network"
@@ -73,7 +75,10 @@ class TestNetwork:
 
     @responses.activate
     def test_create_network_interface(self, manager):
-        data = Mock.mock_post('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface', ignore_data_field=True)
+        data = Mock.mock_post(
+            'server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface',
+            ignore_data_field=True,
+        )
         network_interface = manager.create_network_interface(
             server='0082c083-9847-4f9f-ae04-811251309b35',
             network='036df3d0-8629-4549-984e-dc86fc3fa1b0',
@@ -81,26 +86,31 @@ class TestNetwork:
             ip_addresses=[{'family': 'IPv4', 'address': '172.16.1.10'}],
             index=7,
             source_ip_filtering='yes',
-            bootable='yes'
+            bootable='yes',
         )
-        assert type(network_interface).__name__=="Interface"
+        assert type(network_interface).__name__ == "Interface"
 
     @responses.activate
     def test_modify_network_interface(self, manager):
-        data = Mock.mock_put('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/7', ignore_data_field=True)
+        data = Mock.mock_put(
+            'server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/7',
+            ignore_data_field=True,
+        )
         network_interface = manager.modify_network_interface(
             server='0082c083-9847-4f9f-ae04-811251309b35',
             index_in_path=7,
             index_in_body=8,
             ip_addresses=[{'family': 'IPv4', 'address': '172.16.1.10'}],
             source_ip_filtering='no',
-            bootable='no'
+            bootable='no',
         )
-        assert type(network_interface).__name__=="Interface"
+        assert type(network_interface).__name__ == "Interface"
 
     @responses.activate
     def test_delete_network_interface(self, manager):
-        data = Mock.mock_delete('server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/8')
+        data = Mock.mock_delete(
+            'server/0082c083-9847-4f9f-ae04-811251309b35/networking/interface/8'
+        )
         res = manager.delete_network_interface('0082c083-9847-4f9f-ae04-811251309b35', 8)
 
         assert res == {}
@@ -141,7 +151,9 @@ class TestNetwork:
     @responses.activate
     def test_modify_router(self, manager):
         data = Mock.mock_patch('router/04da7f97-dc03-4df0-868f-239f304ba72f')
-        router = manager.modify_router('04da7f97-dc03-4df0-868f-239f304ba72f', 'test router modify')
+        router = manager.modify_router(
+            '04da7f97-dc03-4df0-868f-239f304ba72f', 'test router modify'
+        )
 
         assert type(router).__name__ == "Router"
         assert router.type == "normal"

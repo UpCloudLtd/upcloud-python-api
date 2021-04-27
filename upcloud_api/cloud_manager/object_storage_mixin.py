@@ -13,10 +13,14 @@ class ObjectStorageManager:
         """
         url = '/object-storage'
         res = self.get_request(url)
-        object_storages = [ObjectStorage(**o_s) for o_s in res['object_storages']['object_storage']]
+        object_storages = [
+            ObjectStorage(**o_s) for o_s in res['object_storages']['object_storage']
+        ]
         return object_storages
 
-    def create_object_storage(self, zone, access_key, secret_key, size, name=None, description=None):
+    def create_object_storage(
+        self, zone, access_key, secret_key, size, name=None, description=None
+    ):
         """
         Used to create a new Object Storage device with a given name, size and location.
         """
@@ -26,13 +30,13 @@ class ObjectStorageManager:
                 'zone': zone,
                 'access_key': access_key,
                 'secret_key': secret_key,
-                'size': size
+                'size': size,
             }
         }
         if name:
             body['object_storage']['name'] = name
         if description:
-            body['object_storage']['description']= description
+            body['object_storage']['description'] = description
         res = self.post_request(url, body)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
@@ -44,14 +48,14 @@ class ObjectStorageManager:
         res = self.get_request(url)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
-    def modify_object_storage(self, object_storage, access_key=None, secret_key=None, description=None, size=None):
+    def modify_object_storage(
+        self, object_storage, access_key=None, secret_key=None, description=None, size=None
+    ):
         """
         Modify requests can be used to update the details of an Object Storage including description, access_key and secret_key.
         """
         url = f'/object-storage/{object_storage}'
-        body = {
-            'object_storage': {}
-        }
+        body = {'object_storage': {}}
         if access_key and secret_key:
             body['object_storage']['access_key'] = access_key
             body['object_storage']['secret_key'] = secret_key
@@ -74,19 +78,19 @@ class ObjectStorageManager:
         return res
 
     def get_object_storage_network_statistics(
-            self,
-            object_storage,
-            datetime_from,
-            datetime_to=None,
-            interval=None,
-            bucket=[],
-            filename=[],
-            method=[],
-            status=[],
-            group_by=[],
-            order_by=[],
-            limit=None
-            ):
+        self,
+        object_storage,
+        datetime_from,
+        datetime_to=None,
+        interval=None,
+        bucket=[],
+        filename=[],
+        method=[],
+        status=[],
+        group_by=[],
+        order_by=[],
+        limit=None,
+    ):
         """
         The network usage of an Object Storage device is metered and can be reviewed using the statistics request.
         """

@@ -59,7 +59,7 @@ class ServerManager:
             ip_addresses=IPAddresses,
             storage_devices=storages,
             populated=True,
-            cloud_manager=self
+            cloud_manager=self,
         )
 
     def get_server_by_ip(self, ip_address):
@@ -113,11 +113,7 @@ class ServerManager:
         res = self.post_request('/server', body)
 
         server_to_return = server
-        server_to_return._reset(
-            res['server'],
-            cloud_manager=self,
-            populated=True
-        )
+        server_to_return._reset(res['server'], cloud_manager=self, populated=True)
         return server_to_return
 
     def modify_server(self, UUID, **kwargs):
@@ -137,18 +133,18 @@ class ServerManager:
         server = res['server']
 
         # Populate subobjects
-        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
-                                                          cloud_manager=self)
+        IPAddresses = IPAddress._create_ip_address_objs(
+            server.pop('ip_addresses'), cloud_manager=self
+        )
 
-        storages = Storage._create_storage_objs(server.pop('storage_devices'),
-                                                cloud_manager=self)
+        storages = Storage._create_storage_objs(server.pop('storage_devices'), cloud_manager=self)
 
         return Server(
             server,
             ip_addresses=IPAddresses,
             storage_devices=storages,
             populated=True,
-            cloud_manager=self
+            cloud_manager=self,
         )
 
     def delete_server(self, UUID):
@@ -171,10 +167,10 @@ class ServerManager:
         server = data['server']
 
         # Populate subobjects
-        IPAddresses = IPAddress._create_ip_address_objs(server.pop('ip_addresses'),
-                                                          cloud_manager=self)
+        IPAddresses = IPAddress._create_ip_address_objs(
+            server.pop('ip_addresses'), cloud_manager=self
+        )
 
-        storages = Storage._create_storage_objs(server.pop('storage_devices'),
-                                                cloud_manager=self)
+        storages = Storage._create_storage_objs(server.pop('storage_devices'), cloud_manager=self)
 
         return server, IPAddresses, storages

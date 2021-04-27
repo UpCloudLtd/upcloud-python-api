@@ -22,5 +22,5 @@ class StorageImport(UpCloudResource):
         'state': None,
         'uuid': None,
         'written_bytes': None,
-        'direct_upload_url': None
+        'direct_upload_url': None,
     }

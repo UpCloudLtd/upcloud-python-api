@@ -1,10 +1,12 @@
 from upcloud_api import FirewallRule, Server
 
+
 def uuid_and_instance(server):
     """server => uuid, instance"""
     if isinstance(server, Server):
         return server.uuid, server
     return server, None
+
 
 class FirewallManager:
     """
@@ -64,7 +66,4 @@ class FirewallManager:
         """
         server_uuid, server_instance = uuid_and_instance(server)
 
-        return [
-            self.create_firewall_rule(server_uuid, rule)
-            for rule in firewall_rule_bodies
-        ]
+        return [self.create_firewall_rule(server_uuid, rule) for rule in firewall_rule_bodies]

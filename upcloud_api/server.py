@@ -12,9 +12,7 @@ def login_user_block(username, ssh_keys, create_password=True):
     """
     block = {
         'create_password': 'yes' if create_password is True else 'no',
-        'ssh_keys': {
-            'ssh_key': ssh_keys
-        }
+        'ssh_keys': {'ssh_key': ssh_keys},
     }
 
     if username:
@@ -36,14 +34,34 @@ class Server:
     #
 
     updateable_fields = [
-        'boot_order', 'core_number', 'firewall', 'hostname', 'memory_amount', 'nic_model',
-        'title', 'timezone', 'video_model', 'vnc', 'vnc_password', 'plan'
+        'boot_order',
+        'core_number',
+        'firewall',
+        'hostname',
+        'memory_amount',
+        'nic_model',
+        'title',
+        'timezone',
+        'video_model',
+        'vnc',
+        'vnc_password',
+        'plan',
     ]
 
     optional_fields = [
-        'plan', 'core_number', 'memory_amount', 'boot_order', 'firewall', 'nic_model',
-        'timezone', 'video_model', 'vnc_password', 'password_delivery', 'avoid_host',
-        'login_user', 'user_data'
+        'plan',
+        'core_number',
+        'memory_amount',
+        'boot_order',
+        'firewall',
+        'nic_model',
+        'timezone',
+        'video_model',
+        'vnc_password',
+        'password_delivery',
+        'avoid_host',
+        'login_user',
+        'user_data',
     ]
 
     def __init__(self, server=None, **kwargs):
@@ -95,12 +113,7 @@ class Server:
         Note: syncs ip_addresses and storage_devices too (/server/uuid endpoint)
         """
         server, IPAddresses, storages = self.cloud_manager.get_server_data(self.uuid)
-        self._reset(
-            server,
-            ip_addresses=IPAddresses,
-            storage_devices=storages,
-            populated=True
-        )
+        self._reset(server, ip_addresses=IPAddresses, storage_devices=storages, populated=True)
         return self
 
     def __str__(self):
@@ -120,9 +133,7 @@ class Server:
         # dict comprehension that also works with 2.6
         # http://stackoverflow.com/questions/21069668/alternative-to-dict-comprehension-prior-to-python-2-7
         kwargs = {
-            field: getattr(self, field)
-            for field in self.updateable_fields
-            if hasattr(self, field)
+            field: getattr(self, field) for field in self.updateable_fields if hasattr(self, field)
         }
 
         self.cloud_manager.modify_server(self.uuid, **kwargs)
@@ -142,10 +153,7 @@ class Server:
         started nor stopped.
         """
         body = dict()
-        body['stop_server'] = {
-            'stop_type': 'hard' if hard else 'soft',
-            'timeout': f'{timeout}'
-        }
+        body['stop_server'] = {'stop_type': 'hard' if hard else 'soft', 'timeout': f'{timeout}'}
 
         path = f'/server/{self.uuid}/stop'
         self.cloud_manager.post_request(path, body)
@@ -182,7 +190,7 @@ class Server:
         body['restart_server'] = {
             'stop_type': 'hard' if hard else 'soft',
             'timeout': f'{timeout}',
-            'timeout_action': 'destroy' if force else 'ignore'
+            'timeout_action': 'destroy' if force else 'ignore',
         }
 
         path = f'/server/{self.uuid}/restart'
@@ -210,10 +218,9 @@ class Server:
 
         Default address is next available.
         """
-        self.cloud_manager.attach_storage(server=self.uuid,
-                                          storage=storage.uuid,
-                                          storage_type=type,
-                                          address=address)
+        self.cloud_manager.attach_storage(
+            server=self.uuid, storage=storage.uuid, storage_type=type, address=address
+        )
         storage.address = address
         storage.type = type
         self.storage_devices.append(storage)
@@ -230,9 +237,9 @@ class Server:
         if not hasattr(storage, 'address'):
             raise Exception(
                 'Storage does not have an address. '
-                 'Access the Storage via Server.storage_devices '
-                 'so they include an address. '
-                 '(This is due how the API handles Storages)'
+                'Access the Storage via Server.storage_devices '
+                'so they include an address. '
+                '(This is due how the API handles Storages)'
             )
 
         self.cloud_manager.detach_storage(server=self.uuid, address=storage.address)
@@ -283,10 +290,7 @@ class Server:
         """
         Helper function for automatically adding several FirewallRules in series.
         """
-        firewall_rule_bodies = [
-            FirewallRule.to_dict()
-            for FirewallRule in FirewallRules
-        ]
+        firewall_rule_bodies = [FirewallRule.to_dict() for FirewallRule in FirewallRules]
         return self.cloud_manager.configure_firewall(self, firewall_rule_bodies)
 
     def prepare_post_body(self):
@@ -301,7 +305,7 @@ class Server:
             'hostname': self.hostname,
             'zone': self.zone,
             'title': self.title,
-            'storage_devices': {}
+            'storage_devices': {},
         }
 
         # optional fields
@@ -318,9 +322,7 @@ class Server:
         # collect storage devices and create a unique title (see: Storage.title in API doc)
         # for each of them
 
-        body['server']['storage_devices'] = {
-            'storage_device': []
-        }
+        body['server']['storage_devices'] = {'storage_device': []}
 
         storage_title_id = 0  # running number for unique storage titles
         for storage in self.storage_devices:
@@ -334,8 +336,9 @@ class Server:
                 if hasattr(storage, 'os') and storage.os:
                     storage_body['title'] = self.hostname + ' OS disk'
                 else:
-                    storage_body['title'] = self.hostname + ' storage disk ' + str(storage_title_id)
-
+                    storage_body['title'] = (
+                        self.hostname + ' storage disk ' + str(storage_title_id)
+                    )
 
             # figure out the storage `action` parameter
             # public template
@@ -356,11 +359,8 @@ class Server:
 
         if hasattr(self, 'ip_addresses') and self.ip_addresses:
             body['server']['ip_addresses'] = {
-                'ip_address': [
-                    ip.to_dict() for ip in self.ip_addresses
-                ]
+                'ip_address': [ip.to_dict() for ip in self.ip_addresses]
             }
-
 
         return body
 
@@ -377,20 +377,20 @@ class Server:
             fields['ip_addresses'] = []
             fields['storage_devices'] = []
             for ip in self.ip_addresses:
-                fields['ip_addresses'].append({
-                    'address': ip.address,
-                    'access': ip.access,
-                    'family': ip.family
-                })
+                fields['ip_addresses'].append(
+                    {'address': ip.address, 'access': ip.access, 'family': ip.family}
+                )
 
             for storage in self.storage_devices:
-                fields['storage_devices'].append({
-                    'address': storage.address,
-                    'storage': storage.uuid,
-                    'storage_size': storage.size,
-                    'storage_title': storage.title,
-                    'type': storage.type,
-                })
+                fields['storage_devices'].append(
+                    {
+                        'address': storage.address,
+                        'storage': storage.uuid,
+                        'storage_size': storage.size,
+                        'storage_title': storage.title,
+                        'type': storage.type,
+                    }
+                )
 
         del fields['populated']
         del fields['cloud_manager']
@@ -415,10 +415,7 @@ class Server:
             self.populate()
 
         # server can have several public or private IPs
-        ip_addrs = [
-            ip_addr for ip_addr in self.ip_addresses
-            if ip_addr.access == access
-        ]
+        ip_addrs = [ip_addr for ip_addr in self.ip_addresses if ip_addr.access == access]
 
         # prefer addr_family (or IPv4 if none given)
         preferred_family = addr_family if addr_family else 'IPv4'
@@ -475,6 +472,7 @@ class Server:
 
         Syncs the server state from the API, use sync=False to disable.
         """
+
         def _self_destruct():
             """destroy the server and all storages attached to it."""
 
@@ -484,15 +482,19 @@ class Server:
             # destroying infrastructure.
 
             # first destroy server
-            try_it_n_times(operation=self.destroy,
-                           expected_error_codes=['SERVER_STATE_ILLEGAL'],
-                           custom_error='destroying server failed')
+            try_it_n_times(
+                operation=self.destroy,
+                expected_error_codes=['SERVER_STATE_ILLEGAL'],
+                custom_error='destroying server failed',
+            )
 
             # storages may be deleted instantly after server DELETE
             for storage in self.storage_devices:
-                try_it_n_times(operation=storage.destroy,
-                               expected_error_codes=['STORAGE_STATE_ILLEGAL'],
-                               custom_error='destroying storage failed')
+                try_it_n_times(
+                    operation=storage.destroy,
+                    expected_error_codes=['STORAGE_STATE_ILLEGAL'],
+                    custom_error='destroying storage failed',
+                )
 
         if sync:
             self.populate()
@@ -502,9 +504,11 @@ class Server:
             self._wait_for_state_change(['stopped', 'started'])
 
         if self.state == 'started':
-            try_it_n_times(operation=self.stop,
-                           expected_error_codes=['SERVER_STATE_ILLEGAL'],
-                           custom_error='stopping server failed')
+            try_it_n_times(
+                operation=self.stop,
+                expected_error_codes=['SERVER_STATE_ILLEGAL'],
+                custom_error='stopping server failed',
+            )
 
             self._wait_for_state_change(['stopped'])
 

@@ -11,7 +11,7 @@ def assignIfExists(opts, default=None, **kwargs):
     Helper for assigning object attributes from API responses.
     """
     for opt in opts:
-        if(opt in kwargs):
+        if opt in kwargs:
             return kwargs[opt]
     return default
 
@@ -44,6 +44,7 @@ def get_raw_data_from_file(file):
         data = file.read()
     file.close()
     return data
+
 
 def convert_datetime_string_to_object(datetime_string):
     """

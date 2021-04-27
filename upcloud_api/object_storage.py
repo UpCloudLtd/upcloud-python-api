@@ -14,7 +14,7 @@ class ObjectStorage(UpCloudResource):
         'size': None,
         'state': None,
         'url': None,
-        'zone': None
+        'zone': None,
     }
 
     def __str__(self):

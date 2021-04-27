@@ -47,8 +47,4 @@ class UpCloudResource:
         """
         Return a dict that can be serialised to JSON and sent to UpCloud's API.
         """
-        return {
-            attr: getattr(self, attr)
-            for attr in self.ATTRIBUTES
-            if hasattr(self, attr)
-        }
+        return {attr: getattr(self, attr) for attr in self.ATTRIBUTES if hasattr(self, attr)}

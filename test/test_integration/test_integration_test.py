@@ -5,12 +5,7 @@ import multiprocessing
 from upcloud_api import CloudManager
 
 from infra import CLUSTER, TAGS, FIREWALL_RULES
-from infra_helpers import (
-    create_cluster,
-    firewall_test,
-    server_test,
-    tag_servers_test
-)
+from infra_helpers import create_cluster, firewall_test, server_test, tag_servers_test
 
 
 USERNAME = os.environ.get('UPCLOUD_API_USER')
@@ -19,7 +14,7 @@ PASSWORD = os.environ.get('UPCLOUD_API_PASSWD')
 
 integration_test = pytest.mark.skipif(
     True,  # TODO: not pytest.request.getoption('--integration-tests'),
-    reason='need --integration-tests option to run'
+    reason='need --integration-tests option to run',
 )
 
 

@@ -14,5 +14,5 @@ class Interface(UpCloudResource):
         'network': None,
         'source_ip_filtering': None,
         'type': None,
-        'bootable': None
+        'bootable': None,
     }

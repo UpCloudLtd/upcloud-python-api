@@ -11,9 +11,9 @@ CLUSTER = {
         password_delivery='none',
         storage_devices=[
             Storage(os='01000000-0000-4000-8000-000030060200', size=10),
-            Storage(size=10, tier='maxiops')
-        ]),
-
+            Storage(size=10, tier='maxiops'),
+        ],
+    ),
     'web2': Server(
         core_number=1,
         memory_amount=1024,
@@ -24,10 +24,8 @@ CLUSTER = {
             Storage(os='01000000-0000-4000-8000-000030060200', size=10),
             Storage(size=10, tier='maxiops'),
         ],
-        ip_addresses=[
-            IPAddress(family='IPv6', access='public')
-        ]),
-
+        ip_addresses=[IPAddress(family='IPv6', access='public')],
+    ),
     'db': Server(
         core_number=1,
         memory_amount=1024,
@@ -38,20 +36,20 @@ CLUSTER = {
             Storage(os='01000000-0000-4000-8000-000050010300', size=10),
             Storage(size=10),
         ],
-        login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
+        login_user=login_user_block(
+            'testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True
         ),
-
-
+    ),
     'lb': Server(
-        plan= '1xCPU-1GB',
+        plan='1xCPU-1GB',
         hostname='balancer.example.com',
         zone='uk-lon1',
         password_delivery='none',
-        storage_devices=[
-            Storage(os='Debian 10.0', size=30)
-        ],
-        login_user=login_user_block('testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True),
-        )
+        storage_devices=[Storage(os='Debian 10.0', size=30)],
+        login_user=login_user_block(
+            'testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True
+        ),
+    ),
 }
 
 
@@ -65,7 +63,7 @@ FIREWALL_RULES = [
         source_address_end='192.168.1.255',
         destination_port_start='22',
         destination_port_end='22',
-        action='accept'
+        action='accept',
     ),
     FirewallRule(
         position='2',
@@ -76,13 +74,9 @@ FIREWALL_RULES = [
         source_address_end='192.168.1.255',
         destination_port_start='21',
         destination_port_end='21',
-        action='accept'
-    )
+        action='accept',
+    ),
 ]
 
 
-TAGS = [
-    Tag('testlb'),
-    Tag('testdb'),
-    Tag('testweb')
-]
+TAGS = [Tag('testlb'), Tag('testdb'), Tag('testweb')]

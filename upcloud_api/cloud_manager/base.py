@@ -26,12 +26,11 @@ class BaseAPI:
             raise Exception('Invalid/Forbidden HTTP method')
 
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
-        headers = {
-            'Authorization': self.token,
-            'User-Agent': f'upcloud-python-api/{__version__}'
-        }
+        headers = {'Authorization': self.token, 'User-Agent': f'upcloud-python-api/{__version__}'}
 
-        headers['Content-Type'] = 'application/json' if request_to_api else 'application/octet-stream'
+        headers['Content-Type'] = (
+            'application/json' if request_to_api else 'application/octet-stream'
+        )
 
         if body and request_to_api:
             data = json.dumps(body)
@@ -43,11 +42,7 @@ class BaseAPI:
         call_timeout = timeout if timeout != -1 else self.timeout
 
         APIcall = getattr(requests, method.lower())
-        res = APIcall(url,
-                      data=data,
-                      params=params,
-                      headers=headers,
-                      timeout=call_timeout)
+        res = APIcall(url, data=data, params=params, headers=headers, timeout=call_timeout)
 
         if res.text:
             res_json = res.json()
@@ -72,7 +67,9 @@ class BaseAPI:
         """
         Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
         """
-        return self.request('PUT', endpoint, body=body, timeout=timeout, request_to_api=request_to_api)
+        return self.request(
+            'PUT', endpoint, body=body, timeout=timeout, request_to_api=request_to_api
+        )
 
     def patch_request(self, endpoint, body=None, timeout=-1):
         """
@@ -90,9 +87,10 @@ class BaseAPI:
         """
         Middleware that raises an exception when HTTP statuscode is an error code.
         """
-        if(res.status_code in [400, 401, 402, 403, 404, 405, 406, 409]):
+        if res.status_code in [400, 401, 402, 403, 404, 405, 406, 409]:
             err_dict = res_json.get('error', {})
-            raise UpCloudAPIError(error_code=err_dict.get('error_code'),
-                                  error_message=err_dict.get('error_message'))
+            raise UpCloudAPIError(
+                error_code=err_dict.get('error_code'), error_message=err_dict.get('error_message')
+            )
 
         return res_json

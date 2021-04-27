@@ -13,5 +13,5 @@ class IpNetwork(UpCloudResource):
         'dhcp_default_route': None,
         'dhcp_dns': [],
         'family': None,
-        'gateway': None
+        'gateway': None,
     }

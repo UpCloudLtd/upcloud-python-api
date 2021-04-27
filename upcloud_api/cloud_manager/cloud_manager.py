@@ -9,11 +9,21 @@ from upcloud_api.cloud_manager import (
     TagManager,
     NetworkManager,
     HostManager,
-    ObjectStorageManager
+    ObjectStorageManager,
 )
 
 
-class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallManager, TagManager, NetworkManager, HostManager, ObjectStorageManager):
+class CloudManager(
+    BaseAPI,
+    ServerManager,
+    IPManager,
+    StorageManager,
+    FirewallManager,
+    TagManager,
+    NetworkManager,
+    HostManager,
+    ObjectStorageManager,
+):
     """
     CloudManager contains the core functionality of the upcloud API library.
 
@@ -28,8 +38,7 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallMa
         `None` means that there is no timeout.
         """
         if not username or not password:
-            raise Exception(
-                'Invalid credentials, please provide a username and password')
+            raise Exception('Invalid credentials, please provide a username and password')
 
         credentials = f'{username}:{password}'.encode()
         encoded_credentials = base64.b64encode(credentials).decode()
