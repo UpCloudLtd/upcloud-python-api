@@ -1,3 +1,4 @@
+black~=21.4b1; platform_python_implementation != "PyPy"
 flake8
 flake8-docstrings
 hacking
