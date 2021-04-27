@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api.cloud_manager.base import BaseAPI
 from upcloud_api.cloud_manager.firewall_mixin import FirewallManager
 from upcloud_api.cloud_manager.ip_address_mixin import IPManager

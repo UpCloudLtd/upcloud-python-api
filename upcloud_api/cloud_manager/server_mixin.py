@@ -1,13 +1,8 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import IPAddress, Server, Storage
 from upcloud_api.utils import assignIfExists
 
 
-class ServerManager(object):
+class ServerManager:
     """
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
     """
@@ -34,12 +29,12 @@ class ServerManager(object):
         if tags_has_all:
             tags_has_all = [str(tag) for tag in tags_has_all]
             taglist = ':'.join(tags_has_all)
-            request = '/server/tag/{0}'.format(taglist)
+            request = f'/server/tag/{taglist}'
 
         if tags_has_one:
             tags_has_one = [str(tag) for tag in tags_has_one]
             taglist = ','.join(tags_has_one)
-            request = '/server/tag/{0}'.format(taglist)
+            request = f'/server/tag/{taglist}'
 
         servers = self.get_request(request)['servers']['server']
 
@@ -73,7 +68,7 @@ class ServerManager(object):
 
         Uses GET '/ip_address/x.x.x.x' to retrieve machine UUID using IP-address.
         """
-        data = self.get_request('/ip_address/{0}'.format(ip_address))
+        data = self.get_request(f'/ip_address/{ip_address}')
         UUID = data['ip_address']['server']
         return self.get_server(UUID)
 
@@ -135,10 +130,10 @@ class ServerManager(object):
         body['server'] = {}
         for arg in kwargs:
             if arg not in Server.updateable_fields:
-                Exception('{0} is not an updateable field'.format(arg))
+                Exception(f'{arg} is not an updateable field')
             body['server'][arg] = kwargs[arg]
 
-        res = self.put_request('/server/{0}'.format(UUID), body)
+        res = self.put_request(f'/server/{UUID}', body)
         server = res['server']
 
         # Populate subobjects
@@ -164,7 +159,7 @@ class ServerManager(object):
 
         Returns an empty object.
         """
-        return self.delete_request('/server/{0}'.format(UUID))
+        return self.delete_request(f'/server/{UUID}')
 
     def get_server_data(self, UUID):
         """
@@ -172,7 +167,7 @@ class ServerManager(object):
 
         Creates object representations of any IP-address and Storage.
         """
-        data = self.get_request('/server/{0}'.format(UUID))
+        data = self.get_request(f'/server/{UUID}')
         server = data['server']
 
         # Populate subobjects

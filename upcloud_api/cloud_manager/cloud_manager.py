@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import
 import base64
 
 from upcloud_api.cloud_manager import (
@@ -33,10 +31,10 @@ class CloudManager(BaseAPI, ServerManager, IPManager, StorageManager, FirewallMa
             raise Exception(
                 'Invalid credentials, please provide a username and password')
 
-        credentials = '{0}:{1}'.format(username, password).encode()
+        credentials = f'{username}:{password}'.encode()
         encoded_credentials = base64.b64encode(credentials).decode()
 
-        self.token = 'Basic {0}'.format(encoded_credentials)
+        self.token = f'Basic {encoded_credentials}'
         self.timeout = timeout
 
     def authenticate(self):

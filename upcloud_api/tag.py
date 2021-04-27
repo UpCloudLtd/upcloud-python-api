@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 import six
 
 from upcloud_api import Server, UpCloudResource
@@ -25,7 +22,7 @@ class Tag(UpCloudResource):
 
     def __init__(self, name, description=None, servers=[], **kwargs):
         """Init with Tag('tagname', 'description', [servers]) syntax."""
-        super(Tag, self).__init__(name=name, description=description, servers=servers, **kwargs)
+        super().__init__(name=name, description=description, servers=servers, **kwargs)
 
     def _reset(self, **kwargs):
         """
@@ -33,7 +30,7 @@ class Tag(UpCloudResource):
 
         Accepts servers as either unflattened or flattened UUID strings or Server objects.
         """
-        super(Tag, self)._reset(**kwargs)
+        super()._reset(**kwargs)
 
         # backup name for changing it (look: Tag.save)
         self._api_name = self.name
@@ -43,7 +40,7 @@ class Tag(UpCloudResource):
             self.servers = kwargs['servers']['server']
 
         # convert UUIDs into server objects
-        if self.servers and isinstance(self.servers[0], six.string_types):
+        if self.servers and isinstance(self.servers[0], str):
             self.servers = [Server(uuid=server, populated=False) for server in self.servers]
 
     @property

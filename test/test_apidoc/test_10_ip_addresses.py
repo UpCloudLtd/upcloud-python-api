@@ -1,15 +1,9 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-
 from upcloud_api import IPAddress, Server
 from conftest import Mock, read_from_file
 import json
 import responses
 
-class TestIP(object):
+class TestIP:
 
     def test_ip_in_server_creation(self):
         """IPAddress in server creation.
@@ -36,7 +30,7 @@ class TestIP(object):
         data = read_from_file('server_00798b85-efdc-41ca-8021-f6ef457b8531.json')
         s = Server(**json.loads(data))
         for ip in s.ip_addresses:
-            assert set(ip.to_dict().keys()) == set(['address', 'family', 'access'])
+            assert set(ip.to_dict().keys()) == {'address', 'family', 'access'}
 
     def test_ip_details(self):
         """IPAdress LIST/GET.

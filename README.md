@@ -16,32 +16,13 @@ Alternatively, if you want the newest master or a devel branch - clone the proje
 python setup.py install
 ```
 
-**!! SSL security update for python 2 !!**
-* short story: `pip install requests[security]` should solve all of your problems.
-* long story:
-	* upcloud-python-api uses [requests](http://docs.python-requests.org/en/latest/)
-	  for HTTP(S) that in turn uses [urllib3](https://urllib3.readthedocs.org/en/latest/)
-	* urllib3 may detect that your python2.x's SSL is lacking as described
-	  [here](https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning) and
-	  [here](https://urllib3.readthedocs.org/en/latest/security.html#pyopenssl).
-	* you may also be interested in (especially if `requests[security]` did not work for you on Ubuntu)
-	  [http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package]
-	  (http://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package)
+### Supported Python
 
-
-**Supported versions in the next release** (offline tests pass with tox):
-
-* <del>python 2.6</del> removed due to deprecation
-* python 2.7 supported but not recommended, especially when upcloud-ansible will be ported to python3
-* <del>python 3.2</del> removed due to python2/3 support
-* <del>python 3.3</del> removed due to python2/3 support
-* <del>python 3.4</del> removed due to python2/3 support
-* <del>python 3.5</del> removed due to python2/3 support
-* python 3.6
-* python 3.7
-* python 3.8
-* python 3.9
-* pypi3
+* Python 3.6
+* Python 3.7
+* Python 3.8
+* Python 3.9
+* PyPy3
 
 **Changelog:**
 * See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)

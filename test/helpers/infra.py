@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import CloudManager, Storage, FirewallRule, Tag, IPAddress
 from upcloud_api.server import Server, login_user_block
 

@@ -1,7 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
 import json
 import os
 import pytest
@@ -27,11 +23,11 @@ def manager():
 def read_from_file(filename):
     filename = filename.replace("/", "_")
     cwd = os.path.dirname(__file__)
-    f = open(cwd + '/json_data/'+filename, 'r')
+    f = open(cwd + '/json_data/'+filename)
     return f.read()
 
 
-class Mock(object):
+class Mock:
     base_url = 'https://api.upcloud.com/1.3'
 
     @staticmethod

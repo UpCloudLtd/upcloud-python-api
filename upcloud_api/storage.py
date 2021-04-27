@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import UpCloudResource
 from upcloud_api.utils import assignIfExists
 
@@ -51,12 +46,12 @@ class Storage(UpCloudResource):
 
         # send the rest to super._reset
 
-        filtered_kwargs = dict(
-            (key, val)
+        filtered_kwargs = {
+            key: val
             for key, val in kwargs.items()
             if key not in ['uuid', 'storage', 'title', 'storage_title', 'size', 'storage_size']
-        )
-        super(Storage, self)._reset(**filtered_kwargs)
+        }
+        super()._reset(**filtered_kwargs)
 
     def destroy(self):
         """

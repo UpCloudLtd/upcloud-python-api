@@ -1,4 +1,3 @@
-
 class UpCloudClientError(Exception):
     """
     Base exception for UpCloud API client.
@@ -19,4 +18,4 @@ class UpCloudAPIError(UpCloudClientError):
         self.error_message = error_message
 
     def __str__(self):
-        return '{0} {1}'.format(self.error_code, self.error_message)
+        return f'{self.error_code} {self.error_message}'

@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from upcloud_api import FirewallRule, Server
 
 def uuid_and_instance(server):
@@ -9,7 +6,7 @@ def uuid_and_instance(server):
         return server.uuid, server
     return server, None
 
-class FirewallManager(object):
+class FirewallManager:
     """
     Provides get / list / create / delete functionality for firewall rules.
 
@@ -21,7 +18,7 @@ class FirewallManager(object):
         """
         Return a FirewallRule object based on server uuid and rule position.
         """
-        url = '/server/{0}/firewall_rule/{1}'.format(server_uuid, firewall_rule_position)
+        url = f'/server/{server_uuid}/firewall_rule/{firewall_rule_position}'
         res = self.get_request(url)
         return FirewallRule(**res['firewall_rule'])
 
@@ -31,7 +28,7 @@ class FirewallManager(object):
         """
         server_uuid, server_instance = uuid_and_instance(server)
 
-        url = '/server/{0}/firewall_rule'.format(server_uuid)
+        url = f'/server/{server_uuid}/firewall_rule'
         res = self.get_request(url)
 
         return [
@@ -48,7 +45,7 @@ class FirewallManager(object):
         """
         server_uuid, server_instance = uuid_and_instance(server)
 
-        url = '/server/{0}/firewall_rule'.format(server_uuid)
+        url = f'/server/{server_uuid}/firewall_rule'
         body = {'firewall_rule': firewall_rule_body}
         res = self.post_request(url, body)
 
@@ -58,7 +55,7 @@ class FirewallManager(object):
         """
         Delete a firewall rule based on a server uuid and rule position.
         """
-        url = '/server/{0}/firewall_rule/{1}'.format(server_uuid, firewall_rule_position)
+        url = f'/server/{server_uuid}/firewall_rule/{firewall_rule_position}'
         return self.delete_request(url)
 
     def configure_firewall(self, server, firewall_rule_bodies):

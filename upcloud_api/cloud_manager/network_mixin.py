@@ -1,12 +1,7 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import Network, Interface, Router, IpNetwork
 
 
-class NetworkManager(object):
+class NetworkManager:
     """
     Functions for managing networks. Intended to be used as a mixin for CloudManager.
     """
@@ -16,7 +11,7 @@ class NetworkManager(object):
         Get a list of all networks.
         Zone can be passed to return networks in a specific zone
         """
-        url = '/network/?zone={0}'.format(zone) if zone else '/network'
+        url = f'/network/?zone={zone}' if zone else '/network'
         res = self.get_request(url)
         networks = [Network(**network) for network in res['networks']['network']]
         for network in networks:
@@ -27,7 +22,7 @@ class NetworkManager(object):
         """
         Retrieves the details of a specific network.
         """
-        url = '/network/{0}'.format(uuid)
+        url = f'/network/{uuid}'
         res = self.get_request(url)
         network = Network(**res['network'])
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
@@ -71,7 +66,7 @@ class NetworkManager(object):
         """
         Modifies the details of a specific SDN private network. The Utility and public networks cannot be modified.
         """
-        url = '/network/{}'.format(network)
+        url = f'/network/{network}'
         body = {
             'network': {
                 'ip_networks': {
@@ -102,7 +97,7 @@ class NetworkManager(object):
         """
         Deletes an SDN private network. All attached cloud servers must first be detached before SDN private networks can be deleted.
         """
-        url = '/network/{0}'.format(network)
+        url = f'/network/{network}'
         res = self.delete_request(url)
         return res
 
@@ -110,7 +105,7 @@ class NetworkManager(object):
         """
         List all networks the specific cloud server is connected to.
         """
-        url = '/server/{0}/networking'.format(server)
+        url = f'/server/{server}/networking'
         res = self.get_request(url)
         return [Interface(**interface) for interface in res['networking']['interfaces']['interface']]
 
@@ -118,7 +113,7 @@ class NetworkManager(object):
         """
         Creates a new network interface on the specific cloud server and attaches the specified SDN private network to the new interface.
         """
-        url = '/server/{0}/networking/interface'.format(server)
+        url = f'/server/{server}/networking/interface'
         body = {'interface': {'network': network, 'type': type, 'ip_addresses': {'ip_address': ip_addresses}}}
         if index:
             body['interface']['index'] = index
@@ -133,7 +128,7 @@ class NetworkManager(object):
         """
         Modifies the network interface at the selected index on the specific cloud server.
         """
-        url = '/server/{0}/networking/interface/{1}'.format(server, str(index_in_path))
+        url = f'/server/{server}/networking/interface/{str(index_in_path)}'
         body = {'interface': {'ip_addresses': {'ip_address': None}}}
         if index_in_body:
             body['interface']['index'] = index_in_body
@@ -150,7 +145,7 @@ class NetworkManager(object):
         """
         Detaches an SDN private network from a cloud server by deleting the network interface at the selected index on the specific cloud server.
         """
-        url = '/server/{0}/networking/interface/{1}'.format(server, str(index))
+        url = f'/server/{server}/networking/interface/{str(index)}'
         res = self.delete_request(url)
         return res
 
@@ -166,7 +161,7 @@ class NetworkManager(object):
         """
         Returns detailed information about a specific router.
         """
-        url = '/router/{0}'.format(uuid)
+        url = f'/router/{uuid}'
         res = self.get_request(url)
         return Router(**res['router'])
 
@@ -183,7 +178,7 @@ class NetworkManager(object):
         """
         Modify an existing router.
         """
-        url = '/router/{0}'.format(router)
+        url = f'/router/{router}'
         body = {'router': {'name': name}}
         res = self.patch_request(url, body)
         return Router(**res['router'])
@@ -192,6 +187,6 @@ class NetworkManager(object):
         """
         Delete an existing router.
         """
-        url = '/router/{0}'.format(router)
+        url = f'/router/{router}'
         res = self.delete_request(url)
         return res

@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
 from upcloud_api import FirewallRule
 
 from conftest import Mock
@@ -30,7 +25,7 @@ def firewall_rule_callback(request):
         """
         for field in required_fields:
             if field not in request_body['firewall_rule']:
-                raise Exception('missing required field: {0}. Body was:{1}'.format(field, request_body))
+                raise Exception(f'missing required field: {field}. Body was:{request_body}')
 
     if isinstance(request_body, list):
         for body in request_body:
@@ -42,7 +37,7 @@ def firewall_rule_callback(request):
 
 
 
-class TestFirewall(object):
+class TestFirewall:
     @responses.activate
     def test_add_firewall_rule(self, manager):
         Mock.mock_get('server/00798b85-efdc-41ca-8021-f6ef457b8531')
