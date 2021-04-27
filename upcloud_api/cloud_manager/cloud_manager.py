@@ -47,19 +47,37 @@ class CloudManager(
         self.timeout = timeout
 
     def authenticate(self):
+        """
+        Authenticate.
+        """
         return self.get_account()
 
     def get_account(self):
+        """
+        Returns information on the user's account and resource limits.
+        """
         return self.get_request('/account')
 
     def get_zones(self):
+        """
+        Returns a list of available zones.
+        """
         return self.get_request('/zone')
 
     def get_timezones(self):
+        """
+        Returns a list of available timezones.
+        """
         return self.get_request('/timezone')
 
     def get_prices(self):
+        """
+        Returns a list of resource prices.
+        """
         return self.get_request('/price')
 
     def get_server_sizes(self):
+        """
+        Returns a list of available server configurations.
+        """
         return self.get_request('/server_size')
