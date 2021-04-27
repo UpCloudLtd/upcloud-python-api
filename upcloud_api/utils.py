@@ -4,7 +4,7 @@ from time import sleep
 
 from dateutil import tz
 
-from upcloud_api import UpCloudAPIError, UpCloudClientError
+from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
 
 
 def try_it_n_times(operation, expected_error_codes, custom_error='operation failed', n=10):

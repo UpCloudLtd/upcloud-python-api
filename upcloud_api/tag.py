@@ -1,4 +1,5 @@
-from upcloud_api import Server, UpCloudResource
+from upcloud_api.server import Server
+from upcloud_api.upcloud_resource import UpCloudResource
 
 
 class Tag(UpCloudResource):

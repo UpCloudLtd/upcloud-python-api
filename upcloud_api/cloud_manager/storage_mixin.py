@@ -1,4 +1,7 @@
-from upcloud_api import Storage, StorageImport
+from typing import Optional
+
+from upcloud_api.storage import Storage
+from upcloud_api.storage_import import StorageImport
 from upcloud_api.utils import get_raw_data_from_file
 
 

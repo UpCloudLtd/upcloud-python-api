@@ -1,6 +1,7 @@
 from time import sleep
 
-from upcloud_api import IPAddress, Storage
+from upcloud_api.ip_address import IPAddress
+from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
 
 

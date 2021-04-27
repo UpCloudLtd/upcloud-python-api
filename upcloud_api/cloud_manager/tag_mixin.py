@@ -1,4 +1,4 @@
-from upcloud_api import Tag
+from upcloud_api.tag import Tag
 
 
 class TagManager:

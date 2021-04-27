@@ -1,4 +1,6 @@
-from upcloud_api import IPAddress, Server, Storage
+from upcloud_api.ip_address import IPAddress
+from upcloud_api.server import Server
+from upcloud_api.storage import Storage
 
 
 class ServerManager:

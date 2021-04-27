@@ -1,4 +1,5 @@
-from upcloud_api import FirewallRule, Server
+from upcloud_api.firewall import FirewallRule
+from upcloud_api.server import Server
 
 
 def uuid_and_instance(server):
