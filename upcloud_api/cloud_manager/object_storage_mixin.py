@@ -11,7 +11,7 @@ class ObjectStorageManager:
 
     def get_object_storages(self):
         """
-        List all Object Storage devices on the account or those which the subaccount has permissions.
+        List all Object Storage devices on the account or those which the sub-account has permissions.
         """
         url = '/object-storage'
         res = self.get_request(url)

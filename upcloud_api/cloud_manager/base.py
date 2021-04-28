@@ -29,6 +29,7 @@ class BaseAPI:
         if method not in {'GET', 'POST', 'PUT', 'PATCH', 'DELETE'}:
             raise Exception('Invalid/Forbidden HTTP method')
 
+        # TODO: revise the semantics of `request_to_api` and where it is set to False
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
         headers = {'Authorization': self.token, 'User-Agent': self._get_user_agent()}
 
@@ -45,8 +46,9 @@ class BaseAPI:
 
         call_timeout = timeout if timeout != -1 else self.timeout
 
-        APIcall = getattr(requests, method.lower())
-        res = APIcall(url, data=data, params=params, headers=headers, timeout=call_timeout)
+        res = requests.request(
+            method=method, url=url, data=data, params=params, headers=headers, timeout=call_timeout
+        )
 
         if res.text:
             res_json = res.json()

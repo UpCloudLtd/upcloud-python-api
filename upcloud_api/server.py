@@ -211,12 +211,12 @@ class Server:
         self.ip_addresses.append(IP)
         return IP
 
-    def remove_ip(self, IPAddress: IPAddress) -> None:
+    def remove_ip(self, ip_address: IPAddress) -> None:
         """
         Release the specified IP-address from the server.
         """
-        self.cloud_manager.release_ip(IPAddress.address)
-        self.ip_addresses.remove(IPAddress)
+        self.cloud_manager.release_ip(ip_address.address)
+        self.ip_addresses.remove(ip_address)
 
     def add_storage(
         self,
@@ -410,6 +410,7 @@ class Server:
         del fields['cloud_manager']
         return fields
 
+    # TODO: strict is unused?
     def get_ip(self, access='public', addr_family=None, strict=None):
         """
         Return the server's IP address.
