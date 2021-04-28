@@ -1,33 +1,43 @@
-[![Build Status](https://travis-ci.org/UpCloudLtd/upcloud-python-api.svg?branch=master)](https://travis-ci.org/UpCloudLtd/upcloud-python-api) [![Code Health](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master/landscape.svg?style=flat)](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master) [![PyPI version](https://badge.fury.io/py/upcloud-api.svg)](https://badge.fury.io/py/upcloud-api) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/master/LICENSE)
-
 # UpCloud's Python API Client
+
+[![test](https://github.com/UpCloudLtd/upcloud-python-api/actions/workflows/main.yml/badge.svg)](https://github.com/UpCloudLtd/upcloud-python-api/actions/workflows/main.yml)
+[![Code Health](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master/landscape.svg?style=flat)](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master)
+[![PyPI version](https://badge.fury.io/py/upcloud-api.svg)](https://badge.fury.io/py/upcloud-api)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/master/LICENSE)
+
 OOP-based api client for [UpCloud's API](https://developers.upcloud.com/1.3/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
 
 Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
 
 ## Installation
 
-```
+``` bash
 pip install upcloud-api
 ```
 
 Alternatively, if you want the newest master or a devel branch - clone the project and run:
-```
+
+``` bash
 python setup.py install
 ```
 
-### Supported Python
+### Supported Python in API v2.0.0
 
-* Python 3.6
-* Python 3.7
-* Python 3.8
-* Python 3.9
-* PyPy3
+- Python 3.6
+- Python 3.7
+- Python 3.8
+- Python 3.9
+- PyPy3
+
+**We don't recomend using Python 2:**
+
+- Python 2.7 is supported in API < v2.0.0
 
 **Changelog:**
-* See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 
-## Examples
+- See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
+
+## Usage
 
 Note that the API finishes the request before the server is shutdown. Poll the server details to monitor server status.
 You must take this into account in your automations.
@@ -56,9 +66,10 @@ cluster = {
         hostname='web1.example.com',
         zone='uk-lon1', # All available zones with ids can be retrieved by using manager.get_zones()
         storage_devices=[
-            # OS: 01000000-0000-4000-8000-000030060200, all available os templates can be retrieved by calling manager.get_templates()
+            # OS: 01000000-0000-4000-8000-000030200200, all available os templates can be retrieved by calling manager.get_templates()
+            # Note: the storage os template uuid:s will change when OS is updated. So check that the UUID is correct
             # default tier: maxIOPS, the 100k IOPS storage backend
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
             # secondary storage, hdd for reduced cost
             Storage(size=100, tier='hdd')
         ],
@@ -70,7 +81,7 @@ cluster = {
         hostname='web2.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
             Storage(size=100, tier='hdd'),
         ],
         login_user=login_user
@@ -80,7 +91,7 @@ cluster = {
         hostname='db.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
             Storage(size=100),
         ],
         login_user=login_user
@@ -91,7 +102,7 @@ cluster = {
         hostname='balancer.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10)
+            Storage(os='01000000-0000-4000-8000-000030200200', size=10)
         ],
         login_user=login_user
     )
@@ -106,10 +117,9 @@ Servers can be defined as dicts without using Server or Storage classes.
 The syntax/attributes are exactly like above and under the hood they are converted to Server and Storage classes.
 This feature is mainly for easier usage of the module from Ansible, but may provide useful elsewhere.
 
-
 ### Stop / Start / Destroy Servers
-```python
 
+```python
 for server in cluster:
 	server.shutdown()
 	# OR:
@@ -134,6 +144,7 @@ server.ensure_started()
 ```
 
 ### Upgrade a Server
+
 ```python
 
 server = cluster['web1']
@@ -144,7 +155,6 @@ server.save()
 server.start()
 
 ```
-
 
 ### Clone a server
 
@@ -168,7 +178,8 @@ clone = Server(
 manager.create_server(clone)
 ```
 
-### Easy access to servers and their information:
+### Easy access to servers and their information
+
 ```python
 
 # returns a public IPv4 (preferred) IPv6 (no public IPv4 was attached) address
@@ -179,23 +190,24 @@ server.to_dict()
 
 ```
 
-### GET resources:
+### GET resources
+
 ```python
 
 servers     = manager.get_servers()
 server1     = manager.get_server(UUID) # e.g servers[0].uuid
 storages    = manager.get_storages()
-storage1    = manager.get_storage(UUID) # e.g sever1.storage_devices[0].uuid
+storage1    = manager.get_storage(UUID) # e.g server1.storage_devices[0].uuid
 ip_addrs    = manager.get_ips()
 ip_addr     = manager.get_ip(address) # e.g server1.ip_addresses[0].address
 
 ```
 
-## Tests
+## Testing
 
 Set up environment and install dependencies:
 
-```
+``` bash
 # run at project root, python3 and virtualenv must be installed
 virtualenv ENV
 source ENV/bin/activate
