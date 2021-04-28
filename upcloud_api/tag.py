@@ -15,13 +15,13 @@ class Tag(UpCloudResource):
 
     ATTRIBUTES = {'name': None, 'description': None, 'servers': []}
 
-    def __init__(self, name, description=None, servers=None, **kwargs):
+    def __init__(self, name: str, description=None, servers=None, **kwargs) -> None:
         """Init with Tag('tagname', 'description', [servers]) syntax."""
         if servers is None:
             servers = []
         super().__init__(name=name, description=description, servers=servers, **kwargs)
 
-    def _reset(self, **kwargs):
+    def _reset(self, **kwargs) -> None:
         """
         Reset the objects attributes.
 
@@ -48,7 +48,7 @@ class Tag(UpCloudResource):
         """
         return [server.uuid for server in self.servers]
 
-    def save(self):
+    def save(self) -> None:
         """
         Save any changes made to the tag.
         """
@@ -73,7 +73,7 @@ class Tag(UpCloudResource):
             'servers': {'server': self.server_uuids},
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         String representation of Tag.
         Can be used to add tags into API requests: str(tag).

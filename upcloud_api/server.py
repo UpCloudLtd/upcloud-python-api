@@ -1,5 +1,7 @@
 from time import sleep
+from typing import Any, Optional
 
+from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
@@ -65,7 +67,7 @@ class Server:
         'user_data',
     ]
 
-    def __init__(self, server=None, **kwargs):
+    def __init__(self, server=None, **kwargs) -> None:
         """
         Initialize Server.
 
@@ -78,7 +80,7 @@ class Server:
         if not hasattr(self, 'title') and hasattr(self, 'hostname'):
             self.title = self.hostname
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         """
         Override to prevent updating readonly fields.
         """
@@ -87,7 +89,7 @@ class Server:
         else:
             object.__setattr__(self, name, value)
 
-    def _reset(self, server, **kwargs):
+    def _reset(self, server, **kwargs) -> None:
         """
         Reset the server object with new values given as params.
 
@@ -107,7 +109,7 @@ class Server:
         for key in kwargs:
             object.__setattr__(self, key, kwargs[key])
 
-    def populate(self):
+    def populate(self) -> 'Server':
         """
         Sync changes from the API to the local object.
 
@@ -117,14 +119,14 @@ class Server:
         self._reset(server, ip_addresses=IPAddresses, storage_devices=storages, populated=True)
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.uuid
 
     #
     # Main functionality, 1:1 with UpCloud's API
     #
 
-    def save(self):
+    def save(self) -> None:
         """
         Sync local changes in server's attributes to the API.
 
@@ -146,7 +148,7 @@ class Server:
         """
         self.cloud_manager.delete_server(self.uuid)
 
-    def shutdown(self, hard=False, timeout=30):
+    def shutdown(self, hard: bool = False, timeout: int = 30) -> None:
         """
         Shutdown/stop the server. By default, issue a soft shutdown with a timeout of 30s.
 
@@ -163,13 +165,13 @@ class Server:
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Alias for shutdown.
         """
         self.shutdown()
 
-    def start(self, timeout=120):
+    def start(self, timeout: int = 120) -> None:
         """
         Start the server. Note: slow and blocking request.
 
@@ -179,7 +181,7 @@ class Server:
         self.cloud_manager.post_request(path, timeout=timeout)
         object.__setattr__(self, 'state', 'started')
 
-    def restart(self, hard=False, timeout=30, force=True):
+    def restart(self, hard: bool = False, timeout: int = 30, force: bool = True) -> None:
         """
         Restart the server. By default, issue a soft restart with a timeout of 30s
         and a hard restart after the timeout.
@@ -201,7 +203,7 @@ class Server:
         self.cloud_manager.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
-    def add_ip(self, family='IPv4'):
+    def add_ip(self, family: str = 'IPv4') -> IPAddress:
         """
         Allocate a new (random) IP-address to the Server.
         """
@@ -209,14 +211,19 @@ class Server:
         self.ip_addresses.append(IP)
         return IP
 
-    def remove_ip(self, IPAddress):
+    def remove_ip(self, IPAddress: IPAddress) -> None:
         """
         Release the specified IP-address from the server.
         """
         self.cloud_manager.release_ip(IPAddress.address)
         self.ip_addresses.remove(IPAddress)
 
-    def add_storage(self, storage=None, type='disk', address=None):
+    def add_storage(
+        self,
+        storage: Optional[Storage] = None,  # TODO: this probably shouldn't be optional
+        type: str = 'disk',
+        address=None,
+    ) -> None:
         """
         Attach the given storage to the Server.
 
@@ -229,7 +236,7 @@ class Server:
         storage.type = type
         self.storage_devices.append(storage)
 
-    def remove_storage(self, storage):
+    def remove_storage(self, storage: Storage) -> None:
         """
         Remove Storage from a Server.
 
@@ -249,7 +256,7 @@ class Server:
         self.cloud_manager.detach_storage(server=self.uuid, address=storage.address)
         self.storage_devices.remove(storage)
 
-    def add_firewall_rule(self, FirewallRule):
+    def add_firewall_rule(self, firewall_rule: FirewallRule) -> FirewallRule:
         """
         Add the specified FirewallRule to this server.
 
@@ -258,13 +265,13 @@ class Server:
         Instantly calls the API, no need to call .save(). This is because firewall can not
         be configured with the same request as the rest of the Server.
         """
-        return self.cloud_manager.create_firewall_rule(self, FirewallRule.to_dict())
+        return self.cloud_manager.create_firewall_rule(self, firewall_rule.to_dict())
 
-    def remove_firewall_rule(self, FirewallRule):
+    def remove_firewall_rule(self, firewall_rule):
         """
         Remove a firewall rule.
         """
-        return FirewallRule.destroy()
+        return firewall_rule.destroy()
 
     def get_firewall_rules(self):
         """

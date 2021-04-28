@@ -30,7 +30,7 @@ class CloudManager(
     All other managers are mixed in so code can be organized in corresponding submanager classes.
     """
 
-    def __init__(self, username, password, timeout=60):
+    def __init__(self, username: str, password: str, timeout: int = 60) -> None:
         """
         Initiates CloudManager that handles all HTTP conections with UpCloud's API.
 

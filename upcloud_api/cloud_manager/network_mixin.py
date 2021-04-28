@@ -21,7 +21,7 @@ class NetworkManager:
             network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return networks
 
-    def get_network(self, uuid):
+    def get_network(self, uuid: str) -> Network:
         """
         Retrieves the details of a specific network.
         """
@@ -198,7 +198,7 @@ class NetworkManager:
         res = self.get_request(url)
         return [Router(**router) for router in res['routers']['router']]
 
-    def get_router(self, uuid):
+    def get_router(self, uuid: str) -> Router:
         """
         Returns detailed information about a specific router.
         """
@@ -206,7 +206,7 @@ class NetworkManager:
         res = self.get_request(url)
         return Router(**res['router'])
 
-    def create_router(self, name):
+    def create_router(self, name: str) -> Router:
         """
         Creates a new router.
         """
@@ -215,7 +215,7 @@ class NetworkManager:
         res = self.post_request(url, body)
         return Router(**res['router'])
 
-    def modify_router(self, router, name):
+    def modify_router(self, router: str, name: str) -> Router:
         """
         Modify an existing router.
         """

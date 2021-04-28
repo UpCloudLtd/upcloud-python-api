@@ -28,7 +28,7 @@ class IPAddress(UpCloudResource):
         'server': None,
     }
 
-    def save(self):
+    def save(self) -> None:
         """
         IPAddress can only change its PTR record. Saves the current state, PUT /ip_address/uuid.
         """

@@ -15,12 +15,14 @@ class TagManager:
         res = self.get_request('/tag')
         return [Tag(cloud_manager=self, **tag) for tag in res['tags']['tag']]
 
-    def get_tag(self, name):
+    def get_tag(self, name: str) -> Tag:
         """Return the tag as Tag object."""
         res = self.get_request('/tag/' + name)
         return Tag(cloud_manager=self, **res['tag'])
 
-    def create_tag(self, name, description=None, servers: Optional[list] = None):
+    def create_tag(
+        self, name: str, description: Optional[str] = None, servers: Optional[list] = None
+    ) -> Tag:
         """
         Create a new Tag. Only name is mandatory.
 

@@ -19,7 +19,7 @@ class Storage(UpCloudResource):
         'zone': None,
     }
 
-    def _reset(self, **kwargs):
+    def _reset(self, **kwargs) -> None:
         """
         Reset after repopulating from API.
         """
@@ -51,13 +51,13 @@ class Storage(UpCloudResource):
         }
         super()._reset(**filtered_kwargs)
 
-    def destroy(self):
+    def destroy(self) -> None:
         """
         Destroy the storage via the API.
         """
         self.cloud_manager.delete_storage(self.uuid)
 
-    def save(self):
+    def save(self) -> None:
         """
         Save (modify) the storage to the API.
         Note: only size and title are updateable fields.
@@ -73,7 +73,7 @@ class Storage(UpCloudResource):
         self.title = title
         self.save()
 
-    def clone(self, title, zone, tier=None):
+    def clone(self, title: str, zone: str, tier=None) -> 'Storage':
         """
         Clone the storage using StorageManager.
         Returns an object based on the API's response.
@@ -87,7 +87,7 @@ class Storage(UpCloudResource):
         """
         return self.cloud_manager.cancel_clone_storage(self.uuid)
 
-    def create_backup(self, title):
+    def create_backup(self, title: str) -> 'Storage':
         """
         Creates a point-in-time backup of a storage resource using StorageManager.
         """
@@ -100,13 +100,13 @@ class Storage(UpCloudResource):
         """
         return self.cloud_manager.restore_storage_backup(self.uuid)
 
-    def templatize(self, title):
+    def templatize(self, title: str) -> 'Storage':
         """
         Creates an exact copy of an existing storage resource which can be used as a template for creating new servers using StorageManager.
         """
         return self.cloud_manager.templatize_storage(self.uuid, title)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         String representation of Storage.
         Can be used to add tags into API requests: str(storage).

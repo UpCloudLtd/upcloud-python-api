@@ -21,8 +21,14 @@ class ObjectStorageManager:
         return object_storages
 
     def create_object_storage(
-        self, zone, access_key, secret_key, size, name=None, description=None
-    ):
+        self,
+        zone: str,
+        access_key: str,
+        secret_key: str,
+        size: int,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> ObjectStorage:
         """
         Used to create a new Object Storage device with a given name, size and location.
         """
@@ -42,7 +48,7 @@ class ObjectStorageManager:
         res = self.post_request(url, body)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
-    def get_object_storage(self, uuid):
+    def get_object_storage(self, uuid: str) -> ObjectStorage:
         """
         A request to get details about a specific Object Storage device by the given uuid.
         """
@@ -51,8 +57,13 @@ class ObjectStorageManager:
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
     def modify_object_storage(
-        self, object_storage, access_key=None, secret_key=None, description=None, size=None
-    ):
+        self,
+        object_storage: str,
+        access_key: Optional[str] = None,
+        secret_key: Optional[str] = None,
+        description: Optional[str] = None,
+        size: Optional[int] = None,
+    ) -> ObjectStorage:
         """
         Modify requests can be used to update the details of an Object Storage including description, access_key and secret_key.
         """

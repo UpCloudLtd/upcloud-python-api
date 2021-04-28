@@ -15,7 +15,7 @@ class UpCloudResource:
 
     ATTRIBUTES = {}  # subclass should define this
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         Create a resource object from a dict.
 
@@ -23,7 +23,7 @@ class UpCloudResource:
         """
         self._reset(**kwargs)
 
-    def _reset(self, **kwargs):
+    def _reset(self, **kwargs) -> None:
         """
         Reset after repopulating from API (or when initializing).
         """
