@@ -17,6 +17,7 @@ class FirewallManager:
     directly.
     """
 
+    # TODO: server_instance is unused?
     def get_firewall_rule(self, server_uuid, firewall_rule_position, server_instance=None):
         """
         Return a FirewallRule object based on server uuid and rule position.

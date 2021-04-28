@@ -57,7 +57,7 @@ class NetworkManager:
                 },
             }
         }
-
+        # TODO: fix duplication c.f. modify_network
         if router:
             body['network']['router'] = router
         if dhcp_default_route:

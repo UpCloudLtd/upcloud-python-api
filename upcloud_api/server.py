@@ -410,6 +410,7 @@ class Server:
         del fields['cloud_manager']
         return fields
 
+    # TODO: strict is unused?
     def get_ip(self, access='public', addr_family=None, strict=None):
         """
         Return the server's IP address.

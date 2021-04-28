@@ -29,12 +29,13 @@ class BaseAPI:
         if method not in {'GET', 'POST', 'PUT', 'PATCH', 'DELETE'}:
             raise Exception('Invalid/Forbidden HTTP method')
 
+        # TODO: revise the semantics of `request_to_api` and where it is set to False
         url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
-        headers = {
-            'Authorization': self.token,
-            'User-Agent': self._get_user_agent(),
-            'Content-Type': ('application/json' if request_to_api else 'application/octet-stream'),
-        }
+        headers = {'Authorization': self.token, 'User-Agent': self._get_user_agent()}
+
+        headers['Content-Type'] = (
+            'application/json' if request_to_api else 'application/octet-stream'
+        )
 
         if body and request_to_api:
             data = json.dumps(body)
