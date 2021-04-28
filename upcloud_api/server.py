@@ -162,7 +162,7 @@ class Server:
         body['stop_server'] = {'stop_type': 'hard' if hard else 'soft', 'timeout': f'{timeout}'}
 
         path = f'/server/{self.uuid}/stop'
-        self.cloud_manager.post_request(path, body)
+        self.cloud_manager.api.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
     def stop(self) -> None:
@@ -178,7 +178,7 @@ class Server:
         The API waits for confirmation from UpCloud's IaaS backend before responding.
         """
         path = f'/server/{self.uuid}/start'
-        self.cloud_manager.post_request(path, timeout=timeout)
+        self.cloud_manager.api.post_request(path, timeout=timeout)
         object.__setattr__(self, 'state', 'started')
 
     def restart(self, hard: bool = False, timeout: int = 30, force: bool = True) -> None:
@@ -200,7 +200,7 @@ class Server:
         }
 
         path = f'/server/{self.uuid}/restart'
-        self.cloud_manager.post_request(path, body)
+        self.cloud_manager.api.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
     def add_ip(self, family: str = 'IPv4') -> IPAddress:

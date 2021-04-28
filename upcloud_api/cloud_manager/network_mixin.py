@@ -1,3 +1,4 @@
+from upcloud_api.api import API
 from upcloud_api.interface import Interface
 from upcloud_api.ip_network import IpNetwork
 from upcloud_api.network import Network
@@ -9,13 +10,15 @@ class NetworkManager:
     Functions for managing networks. Intended to be used as a mixin for CloudManager.
     """
 
+    api: API
+
     def get_networks(self, zone=None):
         """
         Get a list of all networks.
         Zone can be passed to return networks in a specific zone
         """
         url = f'/network/?zone={zone}' if zone else '/network'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         networks = [Network(**network) for network in res['networks']['network']]
         for network in networks:
             network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
@@ -26,7 +29,7 @@ class NetworkManager:
         Retrieves the details of a specific network.
         """
         url = f'/network/{uuid}'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         network = Network(**res['network'])
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
@@ -68,7 +71,7 @@ class NetworkManager:
             body['network']['ip_networks']['ip_network']['dhcp_bootfile_url'] = dhcp_bootfile_url
         if gateway:
             body['network']['ip_networks']['ip_network']['gateway'] = gateway
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         network = Network(**res['network'])
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
@@ -104,7 +107,7 @@ class NetworkManager:
             body['network']['ip_networks']['ip_network']['dhcp_bootfile_url'] = dhcp_bootfile_url
         if gateway:
             body['network']['ip_networks']['ip_network']['gateway'] = gateway
-        res = self.put_request(url, body)
+        res = self.api.put_request(url, body)
         network = Network(**res['network'])
         network.ip_networks = [IpNetwork(**n) for n in network.ip_networks.get('ip_network')]
         return network
@@ -114,7 +117,7 @@ class NetworkManager:
         Deletes an SDN private network. All attached cloud servers must first be detached before SDN private networks can be deleted.
         """
         url = f'/network/{network}'
-        res = self.delete_request(url)
+        res = self.api.delete_request(url)
         return res
 
     def get_server_networks(self, server):
@@ -122,7 +125,7 @@ class NetworkManager:
         List all networks the specific cloud server is connected to.
         """
         url = f'/server/{server}/networking'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return [
             Interface(**interface) for interface in res['networking']['interfaces']['interface']
         ]
@@ -154,7 +157,7 @@ class NetworkManager:
             body['interface']['source_ip_filtering'] = source_ip_filtering
         if bootable:
             body['interface']['bootable'] = bootable
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Interface(**res['interface'])
 
     def modify_network_interface(
@@ -179,7 +182,7 @@ class NetworkManager:
             body['interface']['source_ip_filtering'] = source_ip_filtering
         if bootable:
             body['interface']['bootable'] = bootable
-        res = self.put_request(url, body)
+        res = self.api.put_request(url, body)
         return Interface(**res['interface'])
 
     def delete_network_interface(self, server, index):
@@ -187,7 +190,7 @@ class NetworkManager:
         Detaches an SDN private network from a cloud server by deleting the network interface at the selected index on the specific cloud server.
         """
         url = f'/server/{server}/networking/interface/{str(index)}'
-        res = self.delete_request(url)
+        res = self.api.delete_request(url)
         return res
 
     def get_routers(self):
@@ -195,7 +198,7 @@ class NetworkManager:
         Returns a list of all available routers associated with the current account.
         """
         url = '/router'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return [Router(**router) for router in res['routers']['router']]
 
     def get_router(self, uuid: str) -> Router:
@@ -203,7 +206,7 @@ class NetworkManager:
         Returns detailed information about a specific router.
         """
         url = f'/router/{uuid}'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return Router(**res['router'])
 
     def create_router(self, name: str) -> Router:
@@ -212,7 +215,7 @@ class NetworkManager:
         """
         url = '/router'
         body = {'router': {'name': name}}
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Router(**res['router'])
 
     def modify_router(self, router: str, name: str) -> Router:
@@ -221,7 +224,7 @@ class NetworkManager:
         """
         url = f'/router/{router}'
         body = {'router': {'name': name}}
-        res = self.patch_request(url, body)
+        res = self.api.patch_request(url, body)
         return Router(**res['router'])
 
     def delete_router(self, router):
@@ -229,5 +232,5 @@ class NetworkManager:
         Delete an existing router.
         """
         url = f'/router/{router}'
-        res = self.delete_request(url)
+        res = self.api.delete_request(url)
         return res

@@ -5,9 +5,9 @@ import requests
 from upcloud_api.errors import UpCloudAPIError
 
 
-class BaseAPI:
+class API:
     """
-    CloudManager base that handles basic HTTP communication with API.
+    Handles basic HTTP communication with API.
     """
 
     api = 'api.upcloud.com'

@@ -1,5 +1,6 @@
 from typing import Optional, Union
 
+from upcloud_api.api import API
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
 from upcloud_api.utils import get_raw_data_from_file
@@ -10,13 +11,15 @@ class StorageManager:
     Functions for managing Storage disks. Intended to be used as a mixin for CloudManager.
     """
 
+    api: API
+
     def get_storages(self, storage_type='normal'):
         """
         Return a list of Storage objects from the API.
 
         Storage types: public, private, normal, backup, cdrom, template, favorite
         """
-        res = self.get_request('/storage/' + storage_type)
+        res = self.api.get_request('/storage/' + storage_type)
         return Storage._create_storage_objs(res['storages'], cloud_manager=self)
 
     def get_templates(self):
@@ -24,7 +27,7 @@ class StorageManager:
         Return a list of Storages that are templates in a dict with title as key and uuid as value.
         """
         templates = []
-        res = self.get_request('/storage/template')
+        res = self.api.get_request('/storage/template')
         for item in res.get('storages').get('storage'):
             templates.append({item.get('title'): item.get('uuid')})
         return templates
@@ -33,7 +36,7 @@ class StorageManager:
         """
         Return a Storage object from the API.
         """
-        res = self.get_request('/storage/' + str(storage))
+        res = self.api.get_request('/storage/' + str(storage))
         return Storage(cloud_manager=self, **res['storage'])
 
     def create_storage(
@@ -58,7 +61,7 @@ class StorageManager:
                 'backup_rule': backup_rule,
             }
         }
-        res = self.post_request('/storage', body)
+        res = self.api.post_request('/storage', body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def _modify_storage(self, storage, size, title, backup_rule: Optional[dict] = None):
@@ -69,7 +72,7 @@ class StorageManager:
             body['storage']['title'] = title
         if backup_rule:
             body['storage']['backup_rule'] = backup_rule
-        return self.put_request('/storage/' + str(storage), body)
+        return self.api.put_request('/storage/' + str(storage), body)
 
     def modify_storage(
         self, storage: str, size: int, title: str, backup_rule: Optional[dict] = None
@@ -84,7 +87,7 @@ class StorageManager:
         """
         Destroy a Storage object.
         """
-        return self.delete_request('/storage/' + UUID)
+        return self.api.delete_request('/storage/' + UUID)
 
     def clone_storage(
         self, storage: Union[Storage, str], title: str, zone: str, tier=None
@@ -96,14 +99,14 @@ class StorageManager:
         if tier:
             body['storage']['tier'] = tier
         # TODO: `str(storage)` seems unsafe
-        res = self.post_request(f'/storage/{str(storage)}/clone', body)
+        res = self.api.post_request(f'/storage/{str(storage)}/clone', body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def cancel_clone_storage(self, storage):
         """
         Cancels a running cloning operation and deletes the incomplete copy.
         """
-        return self.post_request(f'/storage/{str(storage)}/cancel')
+        return self.api.post_request(f'/storage/{str(storage)}/cancel')
 
     def attach_storage(self, server, storage, storage_type, address):
         """
@@ -120,7 +123,7 @@ class StorageManager:
             body['storage_device']['address'] = address
 
         url = f'/server/{server}/storage/attach'
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
     def detach_storage(self, server, address):
@@ -129,7 +132,7 @@ class StorageManager:
         """
         body = {'storage_device': {'address': address}}
         url = f'/server/{server}/storage/detach'
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
     def load_cd_rom(self, server, address):
@@ -138,7 +141,7 @@ class StorageManager:
         """
         body = {'storage_device': {'storage': address}}
         url = f'/server/{server}/cdrom/load'
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
     def eject_cd_rom(self, server):
@@ -146,7 +149,7 @@ class StorageManager:
         Ejects the storage from the CD-ROM device of a server.
         """
         url = f'/server/{server}/cdrom/eject'
-        res = self.post_request(url)
+        res = self.api.post_request(url)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
     def create_storage_backup(self, storage: str, title: str) -> Storage:
@@ -155,7 +158,7 @@ class StorageManager:
         """
         url = f'/storage/{storage}/backup'
         body = {'storage': {'title': title}}
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def restore_storage_backup(self, storage):
@@ -163,7 +166,7 @@ class StorageManager:
         Restores the origin storage with data from the specified backup storage.
         """
         url = f'/storage/{storage}/restore'
-        return self.post_request(url)
+        return self.api.post_request(url)
 
     def templatize_storage(self, storage: str, title: str) -> Storage:
         """
@@ -171,7 +174,7 @@ class StorageManager:
         """
         url = f'/storage/{storage}/templatize'
         body = {'storage': {'title': title}}
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
 
     def create_storage_import(
@@ -185,7 +188,7 @@ class StorageManager:
         body = {'storage_import': {'source': source}}
         if source_location:
             body['storage_import']['source_location'] = source_location
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return StorageImport(**res['storage_import'])
 
     def upload_file_for_storage_import(self, storage_import, file):
@@ -195,14 +198,14 @@ class StorageManager:
         url = storage_import.direct_upload_url
         data = get_raw_data_from_file(file)
         body = {'data': data}
-        return self.put_request(url, body, timeout=600, request_to_api=False)
+        return self.api.put_request(url, body, timeout=600, request_to_api=False)
 
     def get_storage_import_details(self, storage: str) -> StorageImport:
         """
         Returns detailed information of an ongoing or finished import task.
         """
         url = f'/storage/{storage}/import'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return StorageImport(**res['storage_import'])
 
     def cancel_storage_import(self, storage: str) -> StorageImport:
@@ -210,5 +213,5 @@ class StorageManager:
         Cancels an ongoing import task.
         """
         url = f'/storage/{storage}/import/cancel'
-        res = self.post_request(url)
+        res = self.api.post_request(url)
         return StorageImport(**res['storage_import'])

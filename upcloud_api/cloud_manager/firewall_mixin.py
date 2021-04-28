@@ -1,3 +1,4 @@
+from upcloud_api.api import API
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.server import Server
 
@@ -17,13 +18,15 @@ class FirewallManager:
     directly.
     """
 
+    api: API
+
     # TODO: server_instance is unused?
     def get_firewall_rule(self, server_uuid, firewall_rule_position, server_instance=None):
         """
         Return a FirewallRule object based on server uuid and rule position.
         """
         url = f'/server/{server_uuid}/firewall_rule/{firewall_rule_position}'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return FirewallRule(**res['firewall_rule'])
 
     def get_firewall_rules(self, server):
@@ -33,7 +36,7 @@ class FirewallManager:
         server_uuid, server_instance = uuid_and_instance(server)
 
         url = f'/server/{server_uuid}/firewall_rule'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
 
         return [
             FirewallRule(server=server_instance, **firewall_rule)
@@ -51,7 +54,7 @@ class FirewallManager:
 
         url = f'/server/{server_uuid}/firewall_rule'
         body = {'firewall_rule': firewall_rule_body}
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
 
         return FirewallRule(server=server_instance, **res['firewall_rule'])
 
@@ -60,7 +63,7 @@ class FirewallManager:
         Delete a firewall rule based on a server uuid and rule position.
         """
         url = f'/server/{server_uuid}/firewall_rule/{firewall_rule_position}'
-        return self.delete_request(url)
+        return self.api.delete_request(url)
 
     def configure_firewall(self, server, firewall_rule_bodies):
         """

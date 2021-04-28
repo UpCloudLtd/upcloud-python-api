@@ -10,7 +10,7 @@ __maintainer_email__ = 'hello@upcloud.com'
 __license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2015 UpCloud'
 
-from upcloud_api.cloud_manager.cloud_manager import CloudManager
+from upcloud_api.cloud_manager import CloudManager
 from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.host import Host
