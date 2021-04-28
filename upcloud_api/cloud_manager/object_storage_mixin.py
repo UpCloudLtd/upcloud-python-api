@@ -1,6 +1,7 @@
 import datetime
 from typing import List, Optional
 
+from upcloud_api.api import API
 from upcloud_api.object_storage import ObjectStorage
 
 
@@ -9,12 +10,14 @@ class ObjectStorageManager:
     Functions for managing Object Storages. Intended to be used as a mixin for CloudManager.
     """
 
+    api: API
+
     def get_object_storages(self):
         """
         List all Object Storage devices on the account or those which the sub-account has permissions.
         """
         url = '/object-storage'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         object_storages = [
             ObjectStorage(**o_s) for o_s in res['object_storages']['object_storage']
         ]
@@ -45,7 +48,7 @@ class ObjectStorageManager:
             body['object_storage']['name'] = name
         if description:
             body['object_storage']['description'] = description
-        res = self.post_request(url, body)
+        res = self.api.post_request(url, body)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
     def get_object_storage(self, uuid: str) -> ObjectStorage:
@@ -53,7 +56,7 @@ class ObjectStorageManager:
         A request to get details about a specific Object Storage device by the given uuid.
         """
         url = f'/object-storage/{uuid}'
-        res = self.get_request(url)
+        res = self.api.get_request(url)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
     def modify_object_storage(
@@ -79,7 +82,7 @@ class ObjectStorageManager:
             body['object_storage']['description'] = description
         if size:
             body['object_storage']['size'] = size
-        res = self.patch_request(url, body)
+        res = self.api.patch_request(url, body)
         return ObjectStorage(cloud_manager=self, **res['object_storage'])
 
     def delete_object_storage(self, object_storage):
@@ -87,7 +90,7 @@ class ObjectStorageManager:
         Object Storage devices can be deleted using the following API request.
         """
         url = f'/object-storage/{object_storage}'
-        res = self.delete_request(url)
+        res = self.api.delete_request(url)
         return res
 
     def get_object_storage_network_statistics(
@@ -128,5 +131,5 @@ class ObjectStorageManager:
             key_dict['order_by'] = order_by
         if limit:
             key_dict['limit'] = limit
-        res = self.get_request(url, params=key_dict)
+        res = self.api.get_request(url, params=key_dict)
         return res

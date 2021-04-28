@@ -1,5 +1,6 @@
 from typing import Optional
 
+from upcloud_api.api import API
 from upcloud_api.tag import Tag
 
 
@@ -10,14 +11,16 @@ class TagManager:
     Intended to be used as a mixin for CloudManager.
     """
 
+    api: API
+
     def get_tags(self):
         """List all tags as Tag objects."""
-        res = self.get_request('/tag')
+        res = self.api.get_request('/tag')
         return [Tag(cloud_manager=self, **tag) for tag in res['tags']['tag']]
 
     def get_tag(self, name: str) -> Tag:
         """Return the tag as Tag object."""
-        res = self.get_request('/tag/' + name)
+        res = self.api.get_request('/tag/' + name)
         return Tag(cloud_manager=self, **res['tag'])
 
     def create_tag(
@@ -32,7 +35,7 @@ class TagManager:
             servers = []
         servers = [str(server) for server in servers]
         body = {'tag': Tag(name, description, servers).to_dict()}
-        res = self.post_request('/tag', body)
+        res = self.api.post_request('/tag', body)
 
         return Tag(cloud_manager=self, **res['tag'])
 
@@ -43,7 +46,7 @@ class TagManager:
         Private method used by the Tag class and TagManager.modify_tag.
         """
         body = {'tag': Tag(new_name, description, servers).to_dict()}
-        res = self.put_request('/tag/' + name, body)
+        res = self.api.put_request('/tag/' + name, body)
         return res['tag']
 
     def modify_tag(self, name, description=None, servers=None, new_name=None):
@@ -64,7 +67,7 @@ class TagManager:
         tags = [str(tag) for tag in tags]
 
         url = f"/server/{uuid}/tag/{','.join(tags)}"
-        return self.post_request(url)
+        return self.api.post_request(url)
 
     def remove_tags(self, server, tags):
         """
@@ -77,8 +80,8 @@ class TagManager:
         tags = [str(tag) for tag in tags]
 
         url = f"/server/{uuid}/untag/{','.join(tags)}"
-        return self.post_request(url)
+        return self.api.post_request(url)
 
     def delete_tag(self, tag):
         """Delete the Tag. Returns and empty object."""
-        return self.delete_request('/tag/' + str(tag))
+        return self.api.delete_request('/tag/' + str(tag))

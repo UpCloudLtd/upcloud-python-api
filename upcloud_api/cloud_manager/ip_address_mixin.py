@@ -1,3 +1,4 @@
+from upcloud_api.api import API
 from upcloud_api.ip_address import IPAddress
 
 
@@ -6,20 +7,22 @@ class IPManager:
     Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
     """
 
+    api: API
+
     def get_ip(self, address: str) -> IPAddress:
         """
         Get an IPAddress object with the IP address (string) from the API.
 
         e.g manager.get_ip('80.69.175.210')
         """
-        res = self.get_request('/ip_address/' + address)
+        res = self.api.get_request('/ip_address/' + address)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def get_ips(self, ignore_ips_without_server=False):
         """
         Get all IPAddress objects from the API.
         """
-        res = self.get_request('/ip_address')
+        res = self.api.get_request('/ip_address')
         IPs = IPAddress._create_ip_address_objs(
             res['ip_addresses'], self, ignore_ips_without_server
         )
@@ -31,7 +34,7 @@ class IPManager:
         """
         body = {'ip_address': {'server': str(server), 'family': family}}
 
-        res = self.post_request('/ip_address', body)
+        res = self.api.post_request('/ip_address', body)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def modify_ip(self, ip_addr: str, ptr_record: str) -> IPAddress:
@@ -42,7 +45,7 @@ class IPManager:
         """
         body = {'ip_address': {'ptr_record': ptr_record}}
 
-        res = self.put_request('/ip_address/' + str(ip_addr), body)
+        res = self.api.put_request('/ip_address/' + str(ip_addr), body)
         return IPAddress(cloud_manager=self, **res['ip_address'])
 
     def release_ip(self, ip_addr):
@@ -51,4 +54,4 @@ class IPManager:
 
         Accepts an IPAddress instance (object) or its address (string).
         """
-        return self.delete_request('/ip_address/' + str(ip_addr))
+        return self.api.delete_request('/ip_address/' + str(ip_addr))

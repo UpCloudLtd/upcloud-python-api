@@ -1,10 +1,13 @@
 from time import sleep
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
+
+if TYPE_CHECKING:
+    from upcloud_api import CloudManager
 
 
 def login_user_block(username, ssh_keys, create_password=True):
@@ -24,6 +27,7 @@ def login_user_block(username, ssh_keys, create_password=True):
     return block
 
 
+# TODO: should this inherit from UpcloudResource too?
 class Server:
     """
     Class representation of UpCloud Server instance.
@@ -31,6 +35,8 @@ class Server:
     Partially immutable class; only fields that are persisted with the `.save()` method may be set
     with the server.field=value syntax. See __setattr__ override.
     """
+
+    cloud_manager: 'CloudManager'
 
     #
     # Functionality for partial immutability and repopulating the object from API.
@@ -162,7 +168,7 @@ class Server:
         body['stop_server'] = {'stop_type': 'hard' if hard else 'soft', 'timeout': f'{timeout}'}
 
         path = f'/server/{self.uuid}/stop'
-        self.cloud_manager.post_request(path, body)
+        self.cloud_manager.api.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
     def stop(self) -> None:
@@ -178,7 +184,7 @@ class Server:
         The API waits for confirmation from UpCloud's IaaS backend before responding.
         """
         path = f'/server/{self.uuid}/start'
-        self.cloud_manager.post_request(path, timeout=timeout)
+        self.cloud_manager.api.post_request(path, timeout=timeout)
         object.__setattr__(self, 'state', 'started')
 
     def restart(self, hard: bool = False, timeout: int = 30, force: bool = True) -> None:
@@ -200,7 +206,7 @@ class Server:
         }
 
         path = f'/server/{self.uuid}/restart'
-        self.cloud_manager.post_request(path, body)
+        self.cloud_manager.api.post_request(path, body)
         object.__setattr__(self, 'state', 'maintenance')
 
     def add_ip(self, family: str = 'IPv4') -> IPAddress:
