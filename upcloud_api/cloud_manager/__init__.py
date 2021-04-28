@@ -29,7 +29,14 @@ class CloudManager(
 
     api: API
 
-    def __init__(self, username: str, password: str, timeout: int = 60) -> None:
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        timeout: int = 60,
+        api_base_url: str = 'https://api.upcloud.com/1.3',
+        custom_user_agent: str = '',
+    ) -> None:
         """
         Initiates CloudManager that handles all HTTP connections with UpCloud's API.
 
@@ -45,6 +52,8 @@ class CloudManager(
         self.api = API(
             token=f'Basic {encoded_credentials}',
             timeout=timeout,
+            api_root=api_base_url,
+            custom_user_agent=custom_user_agent,
         )
 
     def authenticate(self):

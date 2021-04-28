@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from upcloud_api import __version__
 from upcloud_api.errors import UpCloudAPIError
 
 
@@ -10,14 +11,19 @@ class API:
     Handles basic HTTP communication with API.
     """
 
-    api_root = 'https://api.upcloud.com/1.3'
+    user_agent = f'upcloud-python-api/{__version__}'
 
-    def __init__(self, token, timeout=None):
+    def __init__(
+        self, token, timeout=None, api_root='https://api.upcloud.com/1.3', custom_user_agent=''
+    ):
         """
         Initialize the API with a given Authorization token and default timeout.
         """
         self.token = token
         self.timeout = timeout
+        self.api_root = api_root
+        if custom_user_agent:
+            self.user_agent = custom_user_agent
 
     def api_request(self, method, endpoint, body=None, params=None, timeout=-1):
         """
@@ -29,7 +35,7 @@ class API:
             raise Exception('Invalid/Forbidden HTTP method')
 
         url = f'{self.api_root}{endpoint}'
-        headers = {'Authorization': self.token, 'User-Agent': self._get_user_agent()}
+        headers = {'Authorization': self.token, 'User-Agent': self.user_agent}
 
         if body:
             data = json.dumps(body)
@@ -91,8 +97,3 @@ class API:
             )
 
         return res_json
-
-    def _get_user_agent(self) -> str:
-        from upcloud_api import __version__
-
-        return f'upcloud-python-api/{__version__}'
