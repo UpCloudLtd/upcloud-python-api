@@ -43,8 +43,10 @@ class CloudManager(
         credentials = f'{username}:{password}'.encode()
         encoded_credentials = base64.b64encode(credentials).decode()
 
-        self.token = f'Basic {encoded_credentials}'
-        self.timeout = timeout
+        super().__init__(
+            token=f'Basic {encoded_credentials}',
+            timeout=timeout,
+        )
 
     def authenticate(self):
         """
