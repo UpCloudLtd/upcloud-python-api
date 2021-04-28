@@ -1,9 +1,9 @@
 from typing import Optional, Union
+from pathlib import Path
 
 from upcloud_api.api import API
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
-from upcloud_api.utils import get_raw_data_from_file
 
 
 class StorageManager:
@@ -41,10 +41,10 @@ class StorageManager:
 
     def create_storage(
         self,
+        zone: str,
         size: int = 10,
         tier: str = 'maxiops',
         title: str = 'Storage disk',
-        zone: str = 'fi-hel1',
         backup_rule: Optional[dict] = None,
     ) -> Storage:
         """
@@ -184,6 +184,9 @@ class StorageManager:
         Creates an import task to import data into an existing storage.
         Source types: http_import or direct_upload.
         """
+        if source not in ["http_import", "direct_upload"]:
+            raise Exception("invalid storage import source: %s", source)
+
         url = f'/storage/{storage}/import'
         body = {'storage_import': {'source': source}}
         if source_location:
@@ -191,26 +194,27 @@ class StorageManager:
         res = self.api.post_request(url, body)
         return StorageImport(**res['storage_import'])
 
-    def upload_file_for_storage_import(self, storage_import, file):
+    def upload_file_for_storage_import(self, storage_import: StorageImport, file: Path, timeout: int = 600):
         """
         Uploads a file directly to UpCloud's uploader session.
         """
-        # TODO: this should not buffer the entire `file` into memory
-
-        # This is importing and using `requests` directly since there doesn't
-        # seem to be a point in adding a `.api.raw_request()` call to the `API` class.
-        # That could be changed.
 
         import requests
 
-        resp = requests.put(
-            url=storage_import.direct_upload_url,
-            data=get_raw_data_from_file(file),
-            headers={'Content-type': 'application/octet-stream'},
-            timeout=600,
-        )
-        resp.raise_for_status()
-        return resp.json()
+        # This is importing and using `requests` directly since there doesn't
+        # seem to be a point in adding a `.api.raw_request()` call to the `API` class.
+        # That could be changed if there starts to be more of these cases.
+
+        with open(file, 'rb') as f:
+            resp = requests.put(
+                url=storage_import.direct_upload_url,
+                data=f,
+                headers={'Content-type': 'application/octet-stream'},
+                timeout=timeout,
+            )
+
+            resp.raise_for_status()
+            return resp.json()
 
     def get_storage_import_details(self, storage: str) -> StorageImport:
         """
