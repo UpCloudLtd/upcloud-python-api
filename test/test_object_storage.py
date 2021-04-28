@@ -1,3 +1,5 @@
+import datetime
+
 import responses
 from conftest import Mock
 
@@ -63,12 +65,13 @@ class TestObjectStorage:
 
     @responses.activate
     def test_get_object_storage_network_statistics(self, manager):
-        data = Mock.mock_get(
+        Mock.mock_get(
             'object-storage/06b0e4fc-d74b-455e-a373-60cd6ca84022/stats/network/',
             response_file='object-storage_06b0e4fc-d74b-455e-a373-60cd6ca84022_stats_network.json',
         )
         res = manager.get_object_storage_network_statistics(
-            '06b0e4fc-d74b-455e-a373-60cd6ca84022', '2020-11-03 00:00:00'
+            object_storage='06b0e4fc-d74b-455e-a373-60cd6ca84022',
+            datetime_from=datetime.datetime(2020, 11, 3),
         )
 
         assert 'stats' in res

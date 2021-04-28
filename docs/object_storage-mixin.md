@@ -66,8 +66,8 @@ def get_object_storage_network_statistics(
 	"""
 	The network usage of an Object Storage device is metered and can be reviewed using the statistics request.
 	Object_storage is mandatory and can be a uuid or a ObjectStorage object.
-  Datetime_from is mandatory and needs to be a string example: 2020-11-03 00:00:00
-  Datetime_to is optional and needs to be a string example: 2020-11-04 00:00:00
+  Datetime_from is mandatory and needs to be a Datetime.
+  Datetime_to is optional and needs to be a Datetime.
   Interval is optional and needs to be an integer
   Bucket is optional and needs to be a list of bucket name strings
   Filename is optional and needs to be a list of filename strings

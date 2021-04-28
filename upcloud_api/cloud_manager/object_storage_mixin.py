@@ -1,7 +1,7 @@
+import datetime
 from typing import List, Optional
 
 from upcloud_api.object_storage import ObjectStorage
-from upcloud_api.utils import convert_datetime_string_to_object
 
 
 class ObjectStorageManager:
@@ -82,8 +82,8 @@ class ObjectStorageManager:
     def get_object_storage_network_statistics(
         self,
         object_storage,
-        datetime_from,
-        datetime_to=None,
+        datetime_from: datetime.datetime,
+        datetime_to: Optional[datetime.datetime] = None,
         interval: Optional[int] = None,
         bucket: Optional[List[str]] = None,
         filename: Optional[List[str]] = None,
@@ -96,11 +96,11 @@ class ObjectStorageManager:
         """
         The network usage of an Object Storage device is metered and can be reviewed using the statistics request.
         """
-        key_dict = {'from': convert_datetime_string_to_object(datetime_from)}
+        key_dict = {'from': datetime_from.isoformat(timespec='seconds')}
         url = f'/object-storage/{object_storage}/stats/network/?'
 
         if datetime_to:
-            key_dict['to'] = convert_datetime_string_to_object(datetime_to)
+            key_dict['to'] = datetime_to.isoformat(timespec='seconds')
         if interval:
             key_dict['interval'] = interval
         if bucket:
