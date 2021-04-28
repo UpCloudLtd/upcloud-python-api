@@ -49,7 +49,7 @@ class ServerManager:
 
         return server_list
 
-    def get_server(self, UUID):
+    def get_server(self, UUID: str) -> Server:
         """
         Return a (populated) Server instance.
         """
@@ -73,7 +73,7 @@ class ServerManager:
         UUID = data['ip_address']['server']
         return self.get_server(UUID)
 
-    def create_server(self, server):
+    def create_server(self, server: Server) -> Server:
         """
         Create a server and its storages based on a (locally created) Server object.
 
@@ -117,7 +117,7 @@ class ServerManager:
         server_to_return._reset(res['server'], cloud_manager=self, populated=True)
         return server_to_return
 
-    def modify_server(self, UUID, **kwargs):
+    def modify_server(self, uuid: str, **kwargs) -> Server:
         """
         modify_server allows updating the server's updateable_fields.
 
@@ -130,7 +130,7 @@ class ServerManager:
                 Exception(f'{arg} is not an updateable field')
             body['server'][arg] = kwargs[arg]
 
-        res = self.put_request(f'/server/{UUID}', body)
+        res = self.put_request(f'/server/{uuid}', body)
         server = res['server']
 
         # Populate subobjects
@@ -148,7 +148,7 @@ class ServerManager:
             cloud_manager=self,
         )
 
-    def delete_server(self, UUID):
+    def delete_server(self, uuid):
         """
         DELETE '/server/UUID'. Permanently destroys the virtual machine.
 
@@ -156,7 +156,7 @@ class ServerManager:
 
         Returns an empty object.
         """
-        return self.delete_request(f'/server/{UUID}')
+        return self.delete_request(f'/server/{uuid}')
 
     def get_server_data(self, UUID):
         """

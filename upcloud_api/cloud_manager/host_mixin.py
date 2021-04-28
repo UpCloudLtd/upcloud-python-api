@@ -14,7 +14,7 @@ class HostManager:
         res = self.get_request(url)
         return [Host(**host) for host in res['hosts']['host']]
 
-    def get_host(self, id):
+    def get_host(self, id: str) -> Host:
         """
         Returns detailed information about a specific host.
         """
@@ -22,7 +22,7 @@ class HostManager:
         res = self.get_request(url)
         return Host(**res['host'])
 
-    def modify_host(self, host, description):
+    def modify_host(self, host: str, description: str) -> Host:
         """
         Modifies description of a specific host.
         """

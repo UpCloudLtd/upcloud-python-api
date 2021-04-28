@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
@@ -29,7 +29,7 @@ class StorageManager:
             templates.append({item.get('title'): item.get('uuid')})
         return templates
 
-    def get_storage(self, storage):
+    def get_storage(self, storage: str) -> Storage:
         """
         Return a Storage object from the API.
         """
@@ -38,12 +38,12 @@ class StorageManager:
 
     def create_storage(
         self,
-        size=10,
-        tier='maxiops',
-        title='Storage disk',
-        zone='fi-hel1',
+        size: int = 10,
+        tier: str = 'maxiops',
+        title: str = 'Storage disk',
+        zone: str = 'fi-hel1',
         backup_rule: Optional[dict] = None,
-    ):
+    ) -> Storage:
         """
         Create a Storage object. Returns an object based on the API's response.
         """
@@ -71,7 +71,9 @@ class StorageManager:
             body['storage']['backup_rule'] = backup_rule
         return self.put_request('/storage/' + str(storage), body)
 
-    def modify_storage(self, storage, size, title, backup_rule: Optional[dict] = None):
+    def modify_storage(
+        self, storage: str, size: int, title: str, backup_rule: Optional[dict] = None
+    ) -> Storage:
         """
         Modify a Storage object. Returns an object based on the API's response.
         """
@@ -84,13 +86,16 @@ class StorageManager:
         """
         return self.delete_request('/storage/' + UUID)
 
-    def clone_storage(self, storage, title, zone, tier=None):
+    def clone_storage(
+        self, storage: Union[Storage, str], title: str, zone: str, tier=None
+    ) -> Storage:
         """
         Clones a Storage object. Returns an object based on the API's response.
         """
         body = {'storage': {'title': title, 'zone': zone}}
         if tier:
             body['storage']['tier'] = tier
+        # TODO: `str(storage)` seems unsafe
         res = self.post_request(f'/storage/{str(storage)}/clone', body)
         return Storage(cloud_manager=self, **res['storage'])
 
@@ -144,7 +149,7 @@ class StorageManager:
         res = self.post_request(url)
         return Storage._create_storage_objs(res['server']['storage_devices'], cloud_manager=self)
 
-    def create_storage_backup(self, storage, title):
+    def create_storage_backup(self, storage: str, title: str) -> Storage:
         """
         Creates a point-in-time backup of a storage resource.
         """
@@ -160,7 +165,7 @@ class StorageManager:
         url = f'/storage/{storage}/restore'
         return self.post_request(url)
 
-    def templatize_storage(self, storage, title):
+    def templatize_storage(self, storage: str, title: str) -> Storage:
         """
         Creates an exact copy of an existing storage resource which can be used as a template for creating new servers.
         """
@@ -169,7 +174,9 @@ class StorageManager:
         res = self.post_request(url, body)
         return Storage(cloud_manager=self, **res['storage'])
 
-    def create_storage_import(self, storage, source, source_location=None):
+    def create_storage_import(
+        self, storage: str, source: str, source_location=None
+    ) -> StorageImport:
         """
         Creates an import task to import data into an existing storage.
         Source types: http_import or direct_upload.
@@ -190,7 +197,7 @@ class StorageManager:
         body = {'data': data}
         return self.put_request(url, body, timeout=600, request_to_api=False)
 
-    def get_storage_import_details(self, storage):
+    def get_storage_import_details(self, storage: str) -> StorageImport:
         """
         Returns detailed information of an ongoing or finished import task.
         """
@@ -198,7 +205,7 @@ class StorageManager:
         res = self.get_request(url)
         return StorageImport(**res['storage_import'])
 
-    def cancel_storage_import(self, storage):
+    def cancel_storage_import(self, storage: str) -> StorageImport:
         """
         Cancels an ongoing import task.
         """
