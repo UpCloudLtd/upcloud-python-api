@@ -29,11 +29,11 @@ python setup.py install
 - Python 3.9
 - PyPy3
 
-**We don't recomend using Python 2:**
+**We don't recommend using Python 2:**
 
 - Python 2.7 is supported in API < v2.0.0
 
-**Changelog:**
+## Changelog
 
 - See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
 
