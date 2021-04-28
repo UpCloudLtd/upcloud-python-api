@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from upcloud_api import CloudManager
+
+
 class UpCloudResource:
     """
     Base class for all API resources.
@@ -14,6 +20,8 @@ class UpCloudResource:
     """
 
     ATTRIBUTES = {}  # subclass should define this
+
+    cloud_manager: 'CloudManager'
 
     def __init__(self, **kwargs) -> None:
         """

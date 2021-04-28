@@ -1,10 +1,13 @@
 from time import sleep
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
+
+if TYPE_CHECKING:
+    from upcloud_api import CloudManager
 
 
 def login_user_block(username, ssh_keys, create_password=True):
@@ -24,6 +27,7 @@ def login_user_block(username, ssh_keys, create_password=True):
     return block
 
 
+# TODO: should this inherit from UpcloudResource too?
 class Server:
     """
     Class representation of UpCloud Server instance.
@@ -31,6 +35,8 @@ class Server:
     Partially immutable class; only fields that are persisted with the `.save()` method may be set
     with the server.field=value syntax. See __setattr__ override.
     """
+
+    cloud_manager: 'CloudManager'
 
     #
     # Functionality for partial immutability and repopulating the object from API.
