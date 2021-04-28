@@ -195,10 +195,22 @@ class StorageManager:
         """
         Uploads a file directly to UpCloud's uploader session.
         """
-        url = storage_import.direct_upload_url
-        data = get_raw_data_from_file(file)
-        body = {'data': data}
-        return self.api.put_request(url, body, timeout=600, request_to_api=False)
+        # TODO: this should not buffer the entire `file` into memory
+
+        # This is importing and using `requests` directly since there doesn't
+        # seem to be a point in adding a `.api.raw_request()` call to the `API` class.
+        # That could be changed.
+
+        import requests
+
+        resp = requests.put(
+            url=storage_import.direct_upload_url,
+            data=get_raw_data_from_file(file),
+            headers={'Content-type': 'application/octet-stream'},
+            timeout=600,
+        )
+        resp.raise_for_status()
+        return resp.json()
 
     def get_storage_import_details(self, storage: str) -> StorageImport:
         """

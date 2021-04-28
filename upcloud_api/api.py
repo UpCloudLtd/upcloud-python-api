@@ -10,8 +10,7 @@ class API:
     Handles basic HTTP communication with API.
     """
 
-    api = 'api.upcloud.com'
-    api_v = '1.3'
+    api_root = 'https://api.upcloud.com/1.3'
 
     def __init__(self, token, timeout=None):
         """
@@ -20,27 +19,21 @@ class API:
         self.token = token
         self.timeout = timeout
 
-    def request(self, method, endpoint, body=None, params=None, timeout=-1, request_to_api=True):
+    def api_request(self, method, endpoint, body=None, params=None, timeout=-1):
         """
-        Perform a request with a given body to a given endpoint in UpCloud's API or UpCloud's uploader session.
+        Perform a request with a given JSON body to a given endpoint in UpCloud's API.
 
         Handles errors with __error_middleware.
         """
         if method not in {'GET', 'POST', 'PUT', 'PATCH', 'DELETE'}:
             raise Exception('Invalid/Forbidden HTTP method')
 
-        # TODO: revise the semantics of `request_to_api` and where it is set to False
-        url = 'https://api.upcloud.com/' + self.api_v + endpoint if request_to_api else endpoint
+        url = f'{self.api_root}{endpoint}'
         headers = {'Authorization': self.token, 'User-Agent': self._get_user_agent()}
 
-        headers['Content-Type'] = (
-            'application/json' if request_to_api else 'application/octet-stream'
-        )
-
-        if body and request_to_api:
+        if body:
             data = json.dumps(body)
-        elif body and not request_to_api:
-            data = body
+            headers['Content-Type'] = 'application/json'
         else:
             data = None
 
@@ -61,33 +54,31 @@ class API:
         """
         Perform a GET request to a given endpoint in UpCloud's API.
         """
-        return self.request('GET', endpoint, params=params, timeout=timeout)
+        return self.api_request('GET', endpoint, params=params, timeout=timeout)
 
     def post_request(self, endpoint, body=None, timeout=-1):
         """
         Perform a POST request to a given endpoint in UpCloud's API.
         """
-        return self.request('POST', endpoint, body=body, timeout=timeout)
+        return self.api_request('POST', endpoint, body=body, timeout=timeout)
 
-    def put_request(self, endpoint, body=None, timeout=-1, request_to_api=True):
+    def put_request(self, endpoint, body=None, timeout=-1):
         """
-        Perform a PUT request to a given endpoint in UpCloud's API or UpCloud's uploader session.
+        Perform a PUT request to a given endpoint in UpCloud's API.
         """
-        return self.request(
-            'PUT', endpoint, body=body, timeout=timeout, request_to_api=request_to_api
-        )
+        return self.api_request('PUT', endpoint, body=body, timeout=timeout)
 
     def patch_request(self, endpoint, body=None, timeout=-1):
         """
         Perform a PATCH request to a given endpoint in UpCloud's API.
         """
-        return self.request('PATCH', endpoint, body=body, timeout=timeout)
+        return self.api_request('PATCH', endpoint, body=body, timeout=timeout)
 
     def delete_request(self, endpoint, timeout=-1):
         """
         Perform a DELETE request to a given endpoint in UpCloud's API.
         """
-        return self.request('DELETE', endpoint, timeout=timeout)
+        return self.api_request('DELETE', endpoint, timeout=timeout)
 
     def __error_middleware(self, res, res_json):
         """
