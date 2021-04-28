@@ -59,7 +59,7 @@ class IPManager:
     def create_floating_ip(self, zone: str, mac: str = '', family: str = 'IPv4') -> IPAddress:
         """
         Create a floating IP and returns an IPAddress object.
-        Specifiy MAC address of network interface to attach the floating IP when it is created
+        Specify MAC address of network interface to attach the floating IP when it is created
         """
         body = {'ip_address': {'family': family, 'floating': 'yes', 'zone': zone}}
         if mac:
