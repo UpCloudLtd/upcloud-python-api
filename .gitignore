@@ -2,8 +2,7 @@
 __pycache__
 ENV/
 .DS_Store
-UpCloud.egg-info/
-*.pyc
+*.py[cod]
 build/
 dist/
 *.egg-info
@@ -12,6 +11,10 @@ docs/html/
 .tox
 .cache
 .vscode/
+
+# coverage
+.coverage
+htmlcov
 
 # pyenv
 .python-version

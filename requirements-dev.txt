@@ -25,6 +25,8 @@ click==7.1.2
     #   black
     #   pip-tools
     #   safety
+coverage==5.5
+    # via pytest-cov
 dparse==0.5.1
     # via safety
 flake8-bandit==2.1.2
@@ -99,8 +101,12 @@ pyflakes==2.2.0
     # via flake8
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.3
+pytest-cov==2.11.1
     # via -r requirements-dev.in
+pytest==6.2.3
+    # via
+    #   -r requirements-dev.in
+    #   pytest-cov
 pyyaml==5.4.1
     # via
     #   bandit

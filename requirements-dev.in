@@ -11,5 +11,6 @@ isort
 mock
 pip-tools
 pytest
+pytest-cov
 responses
 safety
