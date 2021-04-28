@@ -24,7 +24,7 @@ class Storage(UpCloudResource):
         Reset after repopulating from API.
         """
 
-        # there are some inconsistenciens in the API regarding these
+        # there are some inconsistencies in the API regarding these
         # note: this could be written in fancier ways, but this way is simpler
 
         if 'uuid' in kwargs:

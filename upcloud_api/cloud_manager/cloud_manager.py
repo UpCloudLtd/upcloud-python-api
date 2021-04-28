@@ -27,12 +27,12 @@ class CloudManager(
     """
     CloudManager contains the core functionality of the upcloud API library.
 
-    All other managers are mixed in so code can be organized in corresponding submanager classes.
+    All other managers are mixed in so code can be organized in corresponding sub-manager classes.
     """
 
     def __init__(self, username: str, password: str, timeout: int = 60) -> None:
         """
-        Initiates CloudManager that handles all HTTP conections with UpCloud's API.
+        Initiates CloudManager that handles all HTTP connections with UpCloud's API.
 
         Optionally determine a timeout for API connections (in seconds). A timeout with the value
         `None` means that there is no timeout.

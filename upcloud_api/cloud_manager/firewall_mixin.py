@@ -43,7 +43,7 @@ class FirewallManager:
         """
         Create a new firewall rule for a given server uuid.
 
-        The rule can begiven as a dict or with FirewallRule.prepare_post_body().
+        The rule can be given as a dict or with FirewallRule.prepare_post_body().
         Returns a FirewallRule object.
         """
         server_uuid, server_instance = uuid_and_instance(server)

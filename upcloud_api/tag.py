@@ -25,7 +25,7 @@ class Tag(UpCloudResource):
         """
         Reset the objects attributes.
 
-        Accepts servers as either unflattened or flattened UUID strings or Server objects.
+        Accepts servers as either un-flattened or flattened UUID strings or Server objects.
         """
         super()._reset(**kwargs)
 

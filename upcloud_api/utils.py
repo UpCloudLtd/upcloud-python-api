@@ -10,7 +10,7 @@ def try_it_n_times(operation, expected_error_codes, custom_error='operation fail
 
     Raises if the API call fails with an error_code that is not expected.
     Raises if the API call has not succeeded within n attempts.
-    Waits 3 seconds betwee each attempt.
+    Waits 3 seconds between each attempt.
     """
     for i in itertools.count():
         try:

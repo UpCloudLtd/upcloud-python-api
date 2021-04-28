@@ -13,7 +13,7 @@ class IPAddress(UpCloudResource):
     ptr_record -- the reverse DNS name (string)
     server -- the UUID of the server this IP is attached to (string)
 
-    The only updateable field is the ptr_record.
+    The only updatable field is the ptr_record.
 
     Note that all of the fields are not always available depending on the API call,
     consult the official API docs for details.
