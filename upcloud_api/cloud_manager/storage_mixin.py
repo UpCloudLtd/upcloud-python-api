@@ -198,7 +198,7 @@ class StorageManager:
         self,
         storage_import: StorageImport,
         file: 'PathLike[str]',
-        timeout: int = 600,
+        timeout: int = 30,
         content_type: str = 'application/octet-stream',
     ):
         """
