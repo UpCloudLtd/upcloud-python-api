@@ -46,8 +46,9 @@ class BaseAPI:
 
         call_timeout = timeout if timeout != -1 else self.timeout
 
-        APIcall = getattr(requests, method.lower())
-        res = APIcall(url, data=data, params=params, headers=headers, timeout=call_timeout)
+        res = requests.request(
+            method=method, url=url, data=data, params=params, headers=headers, timeout=call_timeout
+        )
 
         if res.text:
             res_json = res.json()
