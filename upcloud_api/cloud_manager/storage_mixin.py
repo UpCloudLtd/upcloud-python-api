@@ -1,5 +1,5 @@
+from os import PathLike
 from typing import Optional, Union
-from pathlib import Path
 
 from upcloud_api.api import API
 from upcloud_api.storage import Storage
@@ -194,7 +194,13 @@ class StorageManager:
         res = self.api.post_request(url, body)
         return StorageImport(**res['storage_import'])
 
-    def upload_file_for_storage_import(self, storage_import: StorageImport, file: Path, timeout: int = 600):
+    def upload_file_for_storage_import(
+        self,
+        storage_import: StorageImport,
+        file: 'PathLike[str]',
+        timeout: int = 600,
+        content_type: str = 'application/octet-stream',
+    ):
         """
         Uploads a file directly to UpCloud's uploader session.
         """
@@ -209,7 +215,7 @@ class StorageManager:
             resp = requests.put(
                 url=storage_import.direct_upload_url,
                 data=f,
-                headers={'Content-type': 'application/octet-stream'},
+                headers={'Content-type': content_type},
                 timeout=timeout,
             )
 

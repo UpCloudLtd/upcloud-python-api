@@ -22,4 +22,3 @@ def try_it_n_times(operation, expected_error_codes, custom_error='operation fail
             sleep(3)
         if i >= n - 1:
             raise UpCloudClientError(custom_error)
-

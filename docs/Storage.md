@@ -88,6 +88,10 @@ storage.destroy()
 Storages can be imported either by passing a URL or by uploading the file. Currently .iso, .raw and .img formats
 are supported. Other formats like qcow2 or vmdk should be converted before uploading.
 
+Uploaded storage is expected to be uncompressed. It is possible to upload zip (`application/gzip`)
+or gzip (`application/x-xz`) compressed files, but you need to specify a separate `content_type`
+when calling the `upload_file_for_storage_import` function.
+
 Warning: size of the import cannot exceed the size of the storage. The data will be written starting from
 the beginning of the storage, and the storage will not be truncated before starting to write.
 
@@ -109,14 +113,12 @@ Other way is to upload a storage directly. Note that unlike with URLs, file uplo
 fully uploaded.
 ```python
 
-from pathlib import Path
-
 new_storage = manager.create_storage(size=20, zone='de-fra1', title='New imported storage')
 storage_import = manager.create_storage_import(storage=new_storage.uuid, source='direct_upload')
 
 manager.upload_file_for_storage_import(
     storage_import=storage_import,
-    file=Path('/path/to/your/storage.img'),
+    file='/path/to/your/storage.img',
 )
 
 import_details = manager.get_storage_import_details(new_storage.uuid)

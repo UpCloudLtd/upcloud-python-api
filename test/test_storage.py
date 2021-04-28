@@ -30,7 +30,9 @@ class TestStorage:
     @responses.activate
     def test_storage_create(self, manager):
         Mock.mock_post("storage")
-        storage = manager.create_storage(zone="fi-hel1", size=666, tier="maxiops", title="My data collection")
+        storage = manager.create_storage(
+            zone="fi-hel1", size=666, tier="maxiops", title="My data collection"
+        )
         assert type(storage).__name__ == "Storage"
         assert storage.size == 666
         assert storage.tier == "maxiops"
