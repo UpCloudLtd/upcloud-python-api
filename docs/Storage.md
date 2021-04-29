@@ -53,8 +53,8 @@ Storage can be created with the CloudManager's `.create_storage(size=10, tier="m
 storage1 = manager.create_storage(
     zone='fi-hel1',
     size=10,
-	tier="maxiops",
-	title="my storage disk"
+    tier="maxiops",
+    title="my storage disk"
 )
 
 storage2 = manager.create_storage(zone='de-fra1', size=100)
@@ -86,16 +86,20 @@ storage.destroy()
 ## Import
 
 Storages can be imported either by passing a URL or by uploading the file. Currently .iso, .raw and .img formats
-are supported. Other formats like qcow2 or vmdk should be converted before uploading.
+are supported. Other formats like QCOW2 or VMDK should be converted before uploading
+(with e.g. [`qemu-img convert`](https://linux.die.net/man/1/qemu-img)).
 
-Uploaded storage is expected to be uncompressed. It is possible to upload zip (`application/gzip`)
-or gzip (`application/x-xz`) compressed files, but you need to specify a separate `content_type`
+Uploaded storage is expected to be uncompressed. It is possible to upload gzip (`application/gzip`)
+or LZMA2 (`application/x-xz`) compressed files, but you need to specify a separate `content_type`
 when calling the `upload_file_for_storage_import` function.
 
-Warning: size of the import cannot exceed the size of the storage. The data will be written starting from
-the beginning of the storage, and the storage will not be truncated before starting to write.
+Warning: the size of the import cannot exceed the size of the storage.
+The data will be written starting from the beginning of the storage,
+and the storage will not be truncated before starting to write.
 
-Storages can be uploaded by providing a URL.
+Storages can be uploaded by providing a URL. Note that the upload is not
+done by the time `create_storage_import` returns, and you need to poll its
+status with `get_storage_import_details`.
 ```python
 
 new_storage = manager.create_storage(size=20, zone='nl-ams1')
@@ -109,8 +113,8 @@ import_details = manager.get_storage_import_details(new_storage.uuid)
 
 ```
 
-Other way is to upload a storage directly. Note that unlike with URLs, file upload will block until it has been
-fully uploaded.
+Other way is to upload a storage directly. After finishing, you should confirm
+that the storage has been processed with `get_storage_import_details`.
 ```python
 
 new_storage = manager.create_storage(size=20, zone='de-fra1', title='New imported storage')

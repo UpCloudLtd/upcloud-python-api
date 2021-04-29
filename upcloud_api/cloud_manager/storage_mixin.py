@@ -45,6 +45,7 @@ class StorageManager:
         size: int = 10,
         tier: str = 'maxiops',
         title: str = 'Storage disk',
+        *,
         backup_rule: Optional[dict] = None,
     ) -> Storage:
         """
@@ -184,8 +185,8 @@ class StorageManager:
         Creates an import task to import data into an existing storage.
         Source types: http_import or direct_upload.
         """
-        if source not in ["http_import", "direct_upload"]:
-            raise Exception("invalid storage import source: %s", source)
+        if source not in ("http_import", "direct_upload"):
+            raise Exception(f"invalid storage import source: {source}")
 
         url = f'/storage/{storage}/import'
         body = {'storage_import': {'source': source}}
@@ -197,7 +198,7 @@ class StorageManager:
     def upload_file_for_storage_import(
         self,
         storage_import: StorageImport,
-        file: 'PathLike[str]',
+        file: Union[str, PathLike],
         timeout: int = 30,
         content_type: str = 'application/octet-stream',
     ):
