@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import Optional, Union
+from typing import BinaryIO, Optional, Union
 
 from upcloud_api.api import API
 from upcloud_api.storage import Storage
@@ -198,7 +198,7 @@ class StorageManager:
     def upload_file_for_storage_import(
         self,
         storage_import: StorageImport,
-        file: Union[str, PathLike],
+        file: Union[str, PathLike, BinaryIO],
         timeout: int = 30,
         content_type: str = 'application/octet-stream',
     ):
@@ -212,7 +212,13 @@ class StorageManager:
         # seem to be a point in adding a `.api.raw_request()` call to the `API` class.
         # That could be changed if there starts to be more of these cases.
 
-        with open(file, 'rb') as f:
+        f = file
+        needs_closing = False
+        if not hasattr(file, 'read'):
+            f = open(file, 'rb')
+            needs_closing = True
+
+        try:
             resp = requests.put(
                 url=storage_import.direct_upload_url,
                 data=f,
@@ -222,6 +228,9 @@ class StorageManager:
 
             resp.raise_for_status()
             return resp.json()
+        finally:
+            if needs_closing:
+                f.close()
 
     def get_storage_import_details(self, storage: str) -> StorageImport:
         """
