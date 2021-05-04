@@ -2,13 +2,13 @@
 Python Interface to UpCloud's API.
 """
 
-__version__ = '1.0.1'
-__author__ = 'Elias Nygren'
-__author_email__ = 'elias.nygren@upcloud.com'
+__version__ = '2.0.0'
+__author__ = 'Developers from UpCloud & elsewhere'
+__author_email__ = 'hello@upcloud.com'
 __maintainer__ = 'UpCloud'
 __maintainer_email__ = 'hello@upcloud.com'
 __license__ = 'MIT'
-__copyright__ = 'Copyright (c) 2015 UpCloud'
+__copyright__ = 'Copyright (c) 2015- UpCloud'
 
 from upcloud_api.cloud_manager import CloudManager
 from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
