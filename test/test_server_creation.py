@@ -124,7 +124,7 @@ class TestCreateServer:
             assert body['server']['password_delivery'] == 'email'
             assert body['server']['login_user'] == {
                 'username': 'upclouduser',
-                'create_password': 'yes',
+                'create_password': 'no',
                 'ssh_keys': {'ssh_key': ['this-is-a-SSH-key']},
             }
             assert body['server']['avoid_host'] == '12345678'

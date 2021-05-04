@@ -91,7 +91,7 @@ class ServerManager:
               hostname = "my.example.1",
               zone = "uk-lon1",
               storage_devices = [
-                Storage(os = "01000000-0000-4000-8000-000030060200", size=10, tier=maxiops, title='The OS drive'),
+                Storage(os = "01000000-0000-4000-8000-000030200200", size=10, tier=maxiops, title='Example OS disk'),
                 Storage(size=10),
                 Storage()
               title = "My Example Server"
@@ -103,10 +103,11 @@ class ServerManager:
         - title defaults to hostname + " OS disk" and hostname + " storage disk id"
           (id is a running starting from 1)
         - tier defaults to maxiops
-        - valid operating systems are:
-          "CentOS 6.10", "CentOS 7.6"
-          "Ubuntu 12.04", "01000000-0000-4000-8000-000030060200"
-          "Windows 2012", "Windows 2016"
+        - valid operating systems are for example:
+          * CentOS 8: 01000000-0000-4000-8000-000050010400
+          * Debian 10: 01000000-0000-4000-8000-000020050100
+          * Ubuntu 20.04: 01000000-0000-4000-8000-000030200200
+          * Windows 2019: 01000000-0000-4000-8000-000010070300
         """
         if isinstance(server, Server):
             body = server.prepare_post_body()
