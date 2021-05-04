@@ -1,11 +1,4 @@
-The examples use the following:
-```python
-import upcloud_api
-from upcloud_api import Server
-from upcloud_api import Storage
 
-manager = upcloud_api.CloudManager("username", "password")
-```
 
 # Start / Stop / Restart
 
@@ -54,7 +47,7 @@ server = Server(
 			hostname = "web1.example.com",
 			zone = 'uk-lon1',
 			storage_devices = [
-				Storage(os = "01000000-0000-4000-8000-000030060200", size=10),
+				Storage(os = "01000000-0000-4000-8000-000030200200", size=10),
 				Storage(size=10, tier="hdd")
 			])
 
@@ -62,8 +55,7 @@ manager.create_server( server )
 
 ```
 
-Currently available Storage operating systems are the following UpCloud public templates:
-Valid Operating Systems cam be retrieved with 'manager.get_templates()'. More information on this method can be found in storage_mixin documentation.
+Currently available operating system templates can be retrieved with 'manager.get_templates()'. More information on this method can be found in storage_mixin documentation.
 
 Please refer to the [API documentation](https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf) for the allowed Server attributes.
 
@@ -124,7 +116,7 @@ server.remove_ip(IP)
 
 ## Destroy
 
-Destroys the Server instance and its IP-addresses. However, does not destroy the Storages.
+Destroys the Server instance and its IP addresses. However, it does not destroy the Storages.
 
 ```python
 

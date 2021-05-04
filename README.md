@@ -5,9 +5,11 @@
 [![PyPI version](https://badge.fury.io/py/upcloud-api.svg)](https://badge.fury.io/py/upcloud-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/master/LICENSE)
 
-OOP-based api client for [UpCloud's API](https://developers.upcloud.com/1.3/). Features most of the API's functionality and some convenience functions that combine several API endpoints and logic.
+OOP-based API client for [UpCloud's API](https://developers.upcloud.com/1.3/). Includes most of the API
+functionality and some convenience functions that combine several API endpoints and logic.
 
-Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for testing / developing the client is recommended.
+Please test all of your use cases thoroughly before actual production use. Using a separate UpCloud account for
+testing / developing the client is recommended.
 
 ## Installation
 
@@ -15,13 +17,13 @@ Please test all of your use cases thoroughly before actual production use. Using
 pip install upcloud-api
 ```
 
-Alternatively, if you want the newest master or a devel branch - clone the project and run:
+Alternatively, if you want the newest (possibly not yet released) stuff, clone the project and run:
 
 ``` bash
 python setup.py install
 ```
 
-### Supported Python in API v2.0.0
+### Supported Python versions in API v2.0.0
 
 - Python 3.6
 - Python 3.7
@@ -29,20 +31,20 @@ python setup.py install
 - Python 3.9
 - PyPy3
 
-**We don't recommend using Python 2:**
+**Python 2 has been deprecated**
 
-- Python 2.7 is supported in API < v2.0.0
+- Python 2.7 is supported in older API versions (< v2.0.0), still available in [PyPI](https://pypi.org/project/upcloud-api/1.0.1/).
 
 ## Changelog
 
-- See the [Releases page](https://github.com/UpCloudLtd/upcloud-python-api/releases)
+- Changelog is available [in its own file](CHANGELOG.md), starting from version 2.0.0.
 
 ## Usage
 
-Note that the API finishes the request before the server is shutdown. Poll the server details to monitor server status.
-You must take this into account in your automations.
+More usage examples are available under [docs/]. If there's a specific thing you're interested in,
+but are not able to get working, please [contact UpCloud support](https://upcloud.com/contact/).
 
-### Defining and creating Servers
+### Defining and creating servers
 
 ```python
 
@@ -61,22 +63,21 @@ login_user = login_user_block(
 
 cluster = {
     'web1': Server(
-        core_number=1, # CPU cores
-        memory_amount=1024, # RAM in MB
+        plan='2xCPU-4GB',
         hostname='web1.example.com',
         zone='uk-lon1', # All available zones with ids can be retrieved by using manager.get_zones()
         storage_devices=[
-            # OS: 01000000-0000-4000-8000-000030200200, all available os templates can be retrieved by calling manager.get_templates()
+            # OS: template storage UUID, all available os templates can be retrieved by calling manager.get_templates()
             # Note: the storage os template uuid:s will change when OS is updated. So check that the UUID is correct
             # default tier: maxIOPS, the 100k IOPS storage backend
             Storage(os='01000000-0000-4000-8000-000030200200', size=10),
-            # secondary storage, hdd for reduced cost
+            # secondary storage, hdd for reduced speed & cost
             Storage(size=100, tier='hdd')
         ],
         login_user=login_user  # user and ssh-keys
     ),
     'web2': Server(
-        core_number=1,
+        plan='2xCPU-4GB',
         memory_amount=1024,
         hostname='web2.example.com',
         zone='uk-lon1',
@@ -87,7 +88,9 @@ cluster = {
         login_user=login_user
     ),
     'db': Server(
-        plan='2xCPU-4GB', # use a preconfigured plan, instead of custom
+        # use custom resources, instead of a plan
+        core_number=12, # CPU cores
+        memory_amount=49152, # RAM in MB
         hostname='db.example.com',
         zone='uk-lon1',
         storage_devices=[
@@ -97,8 +100,7 @@ cluster = {
         login_user=login_user
     ),
     'lb': Server(
-        core_number=2,
-        memory_amount=1024,
+        plan='2xCPU-4GB',
         hostname='balancer.example.com',
         zone='uk-lon1',
         storage_devices=[
@@ -109,7 +111,7 @@ cluster = {
 }
 
 for server in cluster:
-    manager.create_server(cluster[server]) # automatically populates the Server objects with data from API
+    manager.create_server(cluster[server]) # creates all server objects defined in cluster
 
 ```
 
@@ -156,20 +158,19 @@ server.start()
 
 ```
 
-### Clone a server
+### Clone a new server from existing storage
 
 Cloning is done by giving existing storage uuid to storage_devices. Note that size of the storage
-must be defined and must be at least same size than storage being cloned.
+must be defined and must be at least the same size as the storage being cloned.
 
 ```python
 clone = Server(
-    core_number=1,
-    memory_amount=1024,
+    plan='2xCPU-4GB',
     hostname='cloned.server',
     zone='fi-hel1',
     storage_devices=[
         Storage(
-            uuid='012bea57-0f70-4194-82d0-b3d25f4a018b',
+            uuid='012bea57-0f70-4154-84d0-b3d25f4a018b',
             size=50  # size must be defined and it has to be at least same size than storage being cloned
         ),
     ]
@@ -190,14 +191,14 @@ server.to_dict()
 
 ```
 
-### GET resources
+### Get resources
 
 ```python
 
 servers     = manager.get_servers()
-server1     = manager.get_server(UUID) # e.g servers[0].uuid
+server1     = manager.get_server(uuid) # e.g servers[0].uuid
 storages    = manager.get_storages()
-storage1    = manager.get_storage(UUID) # e.g server1.storage_devices[0].uuid
+storage1    = manager.get_storage(uuid) # e.g server1.storage_devices[0].uuid
 ip_addrs    = manager.get_ips()
 ip_addr     = manager.get_ip(address) # e.g server1.ip_addresses[0].address
 
@@ -209,39 +210,36 @@ Set up environment and install dependencies:
 
 ``` bash
 # run at project root, python3 and virtualenv must be installed
-virtualenv ENV
-source ENV/bin/activate
-pip install -r requirements-dev.txt
+virtualenv venv
+source venv/bin/activate
 ```
 
-Install the package in editable mode, as mentioned in
-[https://docs.pytest.org/en/stable/goodpractices.html](https://docs.pytest.org/en/stable/goodpractices.html)
+Install the package in editable mode.
 
-```python
+```bash
 # run at project root
 pip install -e .
 ```
 
-Tests located in `project_root/test/` directory. Run with:
+Tests are located under `test/`. Run with:
 
-```python
+```bash
 py.test test/
 ```
 
 To test against all supported python versions, run:
 
-```python
+```bash
 tox
 ```
 
-To check for possible vulnerabilities in python packages, run:
 
-```python
-safety check
-```
-
-The project also supplies a small test suite to test against the live API at `test/live_test.py`. This suite is NOT run with `py.test` as it will permanently remove all resources related to an account. It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with PyPI releases. See source code on how to run the live tests.
+The project also supplies a small test suite to test against the live API at `test/live_test.py`.
+This suite is NOT run with `py.test` as it will permanently remove all resources related to an account.
+It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with
+PyPI releases. See source code on how to run the live test.
 
 ## Bugs, Issues, Problems, Ideas
 
-Feel free to open a new issue : )
+Please report issues and features requests through
+[the issues page](https://github.com/UpCloudLtd/upcloud-python-api/issues).

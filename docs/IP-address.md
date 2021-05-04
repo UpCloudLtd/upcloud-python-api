@@ -17,7 +17,7 @@ The only updateable attribute is the `ptr_record`.
 
 ## List / Get
 
-CloudManager returns IP-address objects.
+CloudManager returns IPAddress objects.
 
 ```python
 
@@ -28,7 +28,7 @@ manager.get_ip("185.20.31.125")
 
 ## Create
 
-The new IP-address must be attached to a server and has a random address.
+A new IPAddress must be attached to a server and has a random address.
 
 ```python
 
@@ -51,7 +51,7 @@ server.add_ip("IPv6")
 
 ## Update
 
-At the moment only the ptr_record (reverse DNS) of an IP can be changed.
+At the moment only the ptr_record (reverse DNS) of an IP address can be changed.
 
 ```python
 

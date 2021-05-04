@@ -5,7 +5,7 @@ class NetworkManager():
 	Functions for managing networks. Intended to be used as a mixin for CloudManager.
 	"""
 ```
-`NetworkManager` is a mixed into `CloudManager` and the following methods are available by
+`NetworkManager` is a mixed into `CloudManager` and the following methods are available through it.
 
 ```python
 manager = CloudManager("api-username", "password")

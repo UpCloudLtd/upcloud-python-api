@@ -1,4 +1,7 @@
 ## About
+
+Server hosts are only available for private cloud users. To get access, [contact UpCloud sales](https://upcloud.com/contact/).
+
 ```python
 class HostManager():
 	"""
