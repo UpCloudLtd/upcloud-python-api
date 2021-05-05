@@ -37,7 +37,7 @@ python setup.py install
 
 ## Changelog
 
-- Changelog is available [in its own file](CHANGELOG.md), starting from version 2.0.0.
+- Changelog is available [in its own file](CHANGELOG.md)
 
 ## Usage
 
