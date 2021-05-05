@@ -1,11 +1,4 @@
-The code examples use the following:
 
-```python
-import upcloud_api
-from upcloud_api import FirewallRule
-
-manager = upcloud_api.CloudManager("username", "password")
-```
 
 # About
 

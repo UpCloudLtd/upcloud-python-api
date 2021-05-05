@@ -10,14 +10,14 @@ if TYPE_CHECKING:
     from upcloud_api import CloudManager
 
 
-def login_user_block(username, ssh_keys, create_password=True):
+def login_user_block(username, ssh_keys, create_password=False):
     """
     Helper function for creating Server.login_user blocks.
 
     (see: https://www.upcloud.com/api/8-servers/#create-server)
     """
     block = {
-        'create_password': 'yes' if create_password is True else 'no',
+        'create_password': 'yes' if create_password else 'no',
         'ssh_keys': {'ssh_key': ssh_keys},
     }
 

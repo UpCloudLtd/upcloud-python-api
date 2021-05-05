@@ -5,7 +5,7 @@ class ObjectStorageManager():
 	Functions for managing Object Storages. Intended to be used as a mixin for CloudManager.
 	"""
 ```
-`ObjectStorageManager` is a mixed into `CloudManager` and the following methods are available by
+`ObjectStorageManager` is a mixed into `CloudManager` and the following methods are available through it.
 
 ```python
 manager = CloudManager("api-username", "password")

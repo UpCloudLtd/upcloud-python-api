@@ -10,7 +10,7 @@ Default timeout is 10.
 ```python
 
 # create manager and form a token
-manager = CloudManager("api-username", "password", timeout=15) # default timeout is 10
+manager = CloudManager("api-username", "password")
 
 ```
 
@@ -18,7 +18,6 @@ manager = CloudManager("api-username", "password", timeout=15) # default timeout
 
 ```python
 
-# test token
 manager.authenticate() # alias: get_account()
 manager.get_account()
 
@@ -58,6 +57,6 @@ List the possible server CPU-ram configurations.
 
 ```python
 
-manager.get_server_sizes
+manager.get_server_sizes()
 
 ```
