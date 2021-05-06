@@ -1,4 +1,16 @@
+from enum import Enum
+
 from upcloud_api.upcloud_resource import UpCloudResource
+
+
+class BackupDeletionPolicy(Enum):
+    """
+    Class representation of backup deletion policies used on storage deletions.
+    """
+
+    KEEP = 'keep'
+    KEEP_LATEST = 'keep_latest'
+    DELETE = 'delete'
 
 
 class Storage(UpCloudResource):

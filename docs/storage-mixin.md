@@ -12,6 +12,9 @@ manager = CloudManager("api-username", "password")
 manager.method()
 ```
 
+`BackupDeletionPolicy` describes wanted action on backups when deleting a storage or a server with its storages.
+Available policies are `KEEP`, `KEEP_LATEST` and `DELETE`.
+
 ## Methods
 
 ```python

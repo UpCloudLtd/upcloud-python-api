@@ -2,7 +2,7 @@ from os import PathLike
 from typing import BinaryIO, Optional, Union
 
 from upcloud_api.api import API
-from upcloud_api.storage import Storage
+from upcloud_api.storage import BackupDeletionPolicy, Storage
 from upcloud_api.storage_import import StorageImport
 
 
@@ -84,11 +84,11 @@ class StorageManager:
         res = self._modify_storage(str(storage), size, title, backup_rule)
         return Storage(cloud_manager=self, **res['storage'])
 
-    def delete_storage(self, UUID):
+    def delete_storage(self, uuid: str, backups: BackupDeletionPolicy = BackupDeletionPolicy.KEEP):
         """
-        Destroy a Storage object.
+        Destroy a Storage object, and possibly some or all of its backups.
         """
-        return self.api.delete_request('/storage/' + UUID)
+        return self.api.delete_request(f'/storage/{uuid}?backups={backups.value}')
 
     def clone_storage(
         self, storage: Union[Storage, str], title: str, zone: str, tier=None

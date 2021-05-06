@@ -145,6 +145,21 @@ server.stop_and_destroy()
 server.ensure_started()
 ```
 
+CloudManager offers mode fine-grained deletion options for servers as you can choose to delete storages and
+choose what happens to their backups when deleting the server. By default the storage and their backups are
+always preserved.
+
+Following example would delete all storages attached to a server, but would keep the latest backup
+of each storage if backups exist.
+
+```python
+
+from upcloud_api.storage import BackupDeletionPolicy
+
+manager.delete_server(uuid, delete_storages=True, backups=BackupDeletionPolicy.KEEP_LATEST)
+
+```
+
 ### Upgrade a Server
 
 ```python
