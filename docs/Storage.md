@@ -71,13 +71,30 @@ storage.update(size=100, title="new title")
 
 ```
 
-## Destroy
+## Delete
 
 Warning: data loss is permanent.
 
 ```python
 
 storage.destroy()
+
+```
+
+## Delete with backups
+
+Backup deletion policy can be specified when deleting a storage through CloudManager. Default policy is
+`KEEP`, so no backups are deleted, but `KEEP_LATEST` and `DELETE` are also supported. Options are configured
+through BackupDeletionPolicy enum under storage. Default behaviour for backups is always to keep them.
+
+Following example deletes the storage, but keeps the latest existing backup. If no backup exists for the storage,
+nothing is left behind.
+
+```python
+
+from upcloud_api.storage import BackupDeletionPolicy
+
+manager.delete_storage(uuid, backups=BackupDeletionPolicy.KEEP_LATEST)
 
 ```
 

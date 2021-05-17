@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Server deletion now support deleting attached storages in CloudManager.
+- Backup deletion policies can be given when deleting servers and storages.
+
+----
+
 ## [2.0.0] - 2021-05-05
 
 Python 2 is no longer supported. This is a maintenance release without
@@ -90,7 +96,7 @@ Template updates.
 
 ----
 
-## [0.4.2] - 22 Feb 2018
+## [0.4.2] - 22 Feb 2018
 
 - Added missing zones and missing templates.
 - Also removed old template windows 2008, which is not supported any more.
@@ -248,7 +254,7 @@ Major update with new features related to UpCloud's API v1.2
 Move to X.Y.Z versioning and bump version from 0.1(.0) to 0.1.1
 
 - minor enchancement: Storage OS param can now take a UUID of a OS template. Useful if using custom OS templates.
-- bugfix: add cloud_manager to Server object during create_server. 
+- bugfix: add cloud_manager to Server object during create_server.
 - added MANIFEST.in, tox.in, setup.cfg and removed docs/html from git (built by mkdocs from md sources)
 - sublime project file and some readme.md improvements
 

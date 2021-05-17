@@ -114,12 +114,30 @@ server.remove_ip(IP)
 
 ```
 
-## Destroy
+## Delete
 
 Destroys the Server instance and its IP addresses. However, it does not destroy the Storages.
 
 ```python
 
 server.destroy()
+
+```
+
+## Delete with storages
+
+Storages attached to the server and storage backups can also be deleted when deleting the server through CloudManager.
+Backups can be deleted only when attached storages are also deleted. Default policy for backup deletions is
+`KEEP`, but `KEEP_LATEST` and `DELETE` are also supported. Options are configured through BackupDeletionPolicy enum
+under storage. Default behaviour for backups and storages is always to keep them.
+
+Following example deletes the storages, but keeps the latest existing backup(s). If no backup exists for the storage(s),
+nothing is left behind.
+
+```python
+
+from upcloud_api.storage import BackupDeletionPolicy
+
+manager.delete_server(uuid, delete_storages=True, backups=BackupDeletionPolicy.KEEP_LATEST)
 
 ```

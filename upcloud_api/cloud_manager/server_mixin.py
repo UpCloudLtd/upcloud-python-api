@@ -1,12 +1,12 @@
 from upcloud_api.api import API
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server
-from upcloud_api.storage import Storage
+from upcloud_api.storage import BackupDeletionPolicy, Storage
 
 
 class ServerManager:
     """
-    Functions for managing IP-addresses. Intended to be used as a mixin for CloudManager.
+    Functions for managing servers. Intended to be used as a mixin for CloudManager.
     """
 
     api: API
@@ -32,13 +32,13 @@ class ServerManager:
         request = '/server'
         if tags_has_all:
             tags_has_all = [str(tag) for tag in tags_has_all]
-            taglist = ':'.join(tags_has_all)
-            request = f'/server/tag/{taglist}'
+            tag_list = ':'.join(tags_has_all)
+            request = f'/server/tag/{tag_list}'
 
         if tags_has_one:
             tags_has_one = [str(tag) for tag in tags_has_one]
-            taglist = ','.join(tags_has_one)
-            request = f'/server/tag/{taglist}'
+            tag_list = ','.join(tags_has_one)
+            request = f'/server/tag/{tag_list}'
 
         servers = self.api.get_request(request)['servers']['server']
 
@@ -52,21 +52,21 @@ class ServerManager:
 
         return server_list
 
-    def get_server(self, UUID: str) -> Server:
+    def get_server(self, uuid: str) -> Server:
         """
         Return a (populated) Server instance.
         """
-        server, IPAddresses, storages = self.get_server_data(UUID)
+        server, ip_addresses, storages = self.get_server_data(uuid)
 
         return Server(
             server,
-            ip_addresses=IPAddresses,
+            ip_addresses=ip_addresses,
             storage_devices=storages,
             populated=True,
             cloud_manager=self,
         )
 
-    def get_server_by_ip(self, ip_address):
+    def get_server_by_ip(self, ip_address: str):
         """
         Return a (populated) Server instance by its IP.
 
@@ -152,23 +152,34 @@ class ServerManager:
             cloud_manager=self,
         )
 
-    def delete_server(self, uuid):
+    def delete_server(
+        self,
+        uuid: str,
+        delete_storages: bool = False,
+        backups: BackupDeletionPolicy = BackupDeletionPolicy.KEEP,
+    ):
         """
         DELETE '/server/UUID'. Permanently destroys the virtual machine.
 
-        DOES NOT remove the storage disks.
+        Does remove storage disks if delete_storages is defined as True.
+
+        Does remove backups of the attached storages if
 
         Returns an empty object.
         """
-        return self.api.delete_request(f'/server/{uuid}')
+        storages = '1' if delete_storages else '0'
 
-    def get_server_data(self, UUID):
+        return self.api.delete_request(
+            f'/server/{uuid}?storages={storages}&backups={backups.value}'
+        )
+
+    def get_server_data(self, uuid: str):
         """
         Return '/server/uuid' data in Python dict.
 
         Creates object representations of any IP-address and Storage.
         """
-        data = self.api.get_request(f'/server/{UUID}')
+        data = self.api.get_request(f'/server/{uuid}')
         server = data['server']
 
         # Populate subobjects
