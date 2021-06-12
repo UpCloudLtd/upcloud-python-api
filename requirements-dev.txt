@@ -139,7 +139,7 @@ toml==0.10.2
     #   dparse
     #   pep517
     #   pytest
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   requests
     #   responses
