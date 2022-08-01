@@ -1,9 +1,8 @@
 # UpCloud's Python API Client
 
 [![test](https://github.com/UpCloudLtd/upcloud-python-api/actions/workflows/main.yml/badge.svg)](https://github.com/UpCloudLtd/upcloud-python-api/actions/workflows/main.yml)
-[![Code Health](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master/landscape.svg?style=flat)](https://landscape.io/github/UpCloudLtd/upcloud-python-api/master)
 [![PyPI version](https://badge.fury.io/py/upcloud-api.svg)](https://badge.fury.io/py/upcloud-api)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/UpCloudLtd/upcloud-python-api/blob/main/LICENSE.txt)
 
 OOP-based API client for [UpCloud's API](https://developers.upcloud.com/1.3/). Includes most of the API
 functionality and some convenience functions that combine several API endpoints and logic.
