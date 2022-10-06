@@ -27,8 +27,19 @@ click==7.1.2
     #   safety
 coverage==5.5
     # via pytest-cov
-dparse==0.5.1
+dparse==0.5.2
     # via safety
+flake8==3.8.4
+    # via
+    #   -r requirements-dev.in
+    #   flake8-bandit
+    #   flake8-black
+    #   flake8-bugbear
+    #   flake8-docstrings
+    #   flake8-isort
+    #   flake8-polyfill
+    #   flake8-pytest
+    #   hacking
 flake8-bandit==2.1.2
     # via -r requirements-dev.in
 flake8-black==0.2.1 ; platform_python_implementation != "PyPy"
@@ -43,17 +54,6 @@ flake8-polyfill==1.0.2
     # via flake8-bandit
 flake8-pytest==1.3
     # via -r requirements-dev.in
-flake8==3.8.4
-    # via
-    #   -r requirements-dev.in
-    #   flake8-bandit
-    #   flake8-black
-    #   flake8-bugbear
-    #   flake8-docstrings
-    #   flake8-isort
-    #   flake8-polyfill
-    #   flake8-pytest
-    #   hacking
 gitdb==4.0.7
     # via gitpython
 gitpython==3.1.14
@@ -101,16 +101,14 @@ pyflakes==2.2.0
     # via flake8
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.11.1
-    # via -r requirements-dev.in
 pytest==6.2.3
     # via
     #   -r requirements-dev.in
     #   pytest-cov
+pytest-cov==2.11.1
+    # via -r requirements-dev.in
 pyyaml==5.4.1
-    # via
-    #   bandit
-    #   dparse
+    # via bandit
 regex==2021.4.4
     # via black
 requests==2.25.1
