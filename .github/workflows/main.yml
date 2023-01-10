@@ -63,6 +63,8 @@ jobs:
           WS_PRODUCTNAME: ${{github.event.repository.name}}
           WS_PROJECTNAME: ${{github.event.repository.name}}_${{github.ref_name}}
           WS_GENERATEPROJECTDETAILSJSON: false
+          WS_PYTHON_REQUIREMENTSFILEINCLUDES: "*.txt"
+          WS_PYTHON_RESOLVESETUPFILES: true
         run: |
           echo Downloading Mend Unified Agent
           curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
