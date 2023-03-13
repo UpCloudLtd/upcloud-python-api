@@ -325,6 +325,7 @@ class Server:
             'hostname': self.hostname,
             'zone': self.zone,
             'title': self.title,
+            'metadata': self.metadata,
             'storage_devices': {},
         }
 
