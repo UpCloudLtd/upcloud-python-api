@@ -71,6 +71,7 @@ class Server:
         'avoid_host',
         'login_user',
         'user_data',
+        'metadata',
     ]
 
     def __init__(self, server=None, **kwargs) -> None:
