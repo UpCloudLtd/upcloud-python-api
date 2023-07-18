@@ -10,7 +10,8 @@ class UpCloudClientError(Exception):
 
 
 class UpCloudAPIError(UpCloudClientError):
-    """Custom Error class for UpCloud API error responses.
+    """
+    Custom Error class for UpCloud API error responses.
 
     Each API call returns an `error_code` and `error_message` that
     are available as attributes via instances of this class.

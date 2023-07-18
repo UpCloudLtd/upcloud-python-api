@@ -338,7 +338,8 @@ class Server:
         # set password_delivery default as 'none' to prevent API from sending
         # emails (with credentials) about each created server
         if not hasattr(self, 'password_delivery'):
-            body['server']['password_delivery'] = 'none'
+            # noqa reason: no, this is not a hard-coded password
+            body['server']['password_delivery'] = 'none'  # noqa: S105
 
         # collect storage devices and create a unique title (see: Storage.title in API doc)
         # for each of them

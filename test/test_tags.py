@@ -48,7 +48,6 @@ class TestTags:
 
     @responses.activate
     def test_create_new_tag(self, manager):
-
         for _ in range(1, 4):
             responses.add_callback(
                 responses.POST,
@@ -69,7 +68,6 @@ class TestTags:
 
     @responses.activate
     def test_edit_tag(self, manager):
-
         Mock.mock_get('tag/TheTestTag')
         tag = manager.get_tag('TheTestTag')
 

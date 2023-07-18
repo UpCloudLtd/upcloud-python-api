@@ -3,6 +3,47 @@ line-length = 99
 target-version = ['py36']
 skip-string-normalization = true
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+[tool.ruff]
+exclude = [
+    ".git",
+    "ENV",
+    "__pycache__",
+    "build",
+]
+ignore = [
+    "D100",
+    "D104",
+    "D105",
+    "D200",
+    "D202",
+    "D203",
+    "D205",
+    "D212",
+    "D400",
+    "D401",
+    "D403",
+    "D415",
+    "E501",
+]
+line-length = 99
+select = [
+    # NB: `hacking` rules aren't supported by ruff
+    "B",
+    "D",
+    "E",
+    "F",
+    "I",
+    "S",
+    "W",
+]
+
+[tool.ruff.per-file-ignores]
+"*/__init__.py" = ["F401"]
+"test/*" = [
+    "D",
+    "F841",
+    "S101",
+    "S105",
+    "S106",
+    "B011",
+]

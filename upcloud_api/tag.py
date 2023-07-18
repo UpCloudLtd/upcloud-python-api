@@ -6,7 +6,8 @@ class Tag(UpCloudResource):
     """
     Class representation of the API's tags. Extends UpCloudResource.
 
-    Attributes:
+    Attributes
+    ----------
     name -- unique name for the tag
     description -- optional description
     servers -- list of Server objects (with only uuid populated)

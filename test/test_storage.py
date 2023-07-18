@@ -172,7 +172,6 @@ class TestStorage:
 
     @responses.activate
     def test_storage_update(self, manager):
-
         Mock.mock_put("storage/01d4fcd4-e446-433b-8a9c-551a1284952e")
         storage = manager.modify_storage(
             "01d4fcd4-e446-433b-8a9c-551a1284952e", title="my bigger data collection", size=15
