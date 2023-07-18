@@ -86,6 +86,7 @@ class ServerManager:
         serialised into JSON. Refer to the REST API documentation for correct format.
 
         Example:
+        -------
         server1 = Server( core_number = 1,
               memory_amount = 1024,
               hostname = "my.example.1",

@@ -5,7 +5,8 @@ class IPAddress(UpCloudResource):
     """
     Class representation of the API's IP address. Extends UpCloudResource.
 
-    Attributes:
+    Attributes
+    ----------
     access -- "public" or "private"
     address -- the actual IPAddress (string)
     family -- IPv4 or IPv6

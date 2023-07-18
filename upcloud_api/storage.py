@@ -150,7 +150,6 @@ class Storage(UpCloudResource):
 
     @staticmethod
     def _create_storage_objs(storages, cloud_manager):
-
         # storages might be provided as a flat array or as a following dict:
         # {'storage_devices': {'storage_device': [...]}} || {'storage_device': [...]}
 

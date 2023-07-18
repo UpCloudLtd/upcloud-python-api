@@ -138,7 +138,6 @@ class TestCreateServer:
 
     @responses.activate
     def test_create_server(self, manager):
-
         responses.add(
             responses.POST,
             Mock.base_url + '/server',
@@ -213,7 +212,6 @@ class TestCreateServer:
 
     @responses.activate
     def test_create_server_from_template(self, manager):
-
         UUID = '01215a5a-c330-4565-81ca-0e0e22eac672'
 
         def _from_template_callback(request):
