@@ -8,21 +8,21 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
+          cache: pip
+          cache-dependency-path: |
+            requirements-dev.txt
+            setup.py
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements-dev.txt
       - name: Run flake8
         run: flake8
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -34,24 +34,24 @@ jobs:
           - py39
           - pypy3
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Fedora Tox with ${{ matrix.tox_env }}
-        uses: fedora-python/tox-github-action@v0.4
+        uses: fedora-python/tox-github-action@v37.0
         with:
           tox_env: ${{ matrix.tox_env }}
-      - uses: actions/setup-python@v2
-      - uses: actions/cache@v2
+      - uses: actions/setup-python@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip
-
+          cache: pip
+          cache-dependency-path: |
+            requirements-dev.txt
+            setup.py
   deploy:
     name: Build deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: casperdcl/deploy-pypi@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: casperdcl/deploy-pypi@v2.3.2
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           build: true
