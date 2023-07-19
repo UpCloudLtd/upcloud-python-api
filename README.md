@@ -24,7 +24,6 @@ python setup.py install
 
 ### Supported Python versions in API v2.0.1
 
-- Python 3.6
 - Python 3.7
 - Python 3.8
 - Python 3.9

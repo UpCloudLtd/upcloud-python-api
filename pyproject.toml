@@ -1,9 +1,10 @@
 [tool.black]
 line-length = 99
-target-version = ['py36']
+target-version = ['py37']
 skip-string-normalization = true
 
 [tool.ruff]
+target-version = "py37"
 exclude = [
     ".git",
     "ENV",
@@ -34,6 +35,7 @@ select = [
     "F",
     "I",
     "S",
+    "UP",
     "W",
 ]
 
