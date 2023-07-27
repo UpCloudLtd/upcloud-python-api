@@ -4,54 +4,62 @@
 #
 #    pip-compile requirements-dev.in
 #
-attrs==20.3.0
-    # via pytest
-certifi==2020.12.5
-    # via requests
-chardet==4.0.0
-    # via requests
-click==7.1.2
+build==0.10.0
     # via pip-tools
-coverage==5.5
+certifi==2023.7.22
+    # via requests
+charset-normalizer==3.2.0
+    # via requests
+click==8.1.6
+    # via pip-tools
+coverage[toml]==7.2.7
     # via pytest-cov
-idna==2.10
+exceptiongroup==1.1.2
+    # via pytest
+idna==3.4
     # via requests
-iniconfig==1.1.1
+iniconfig==2.0.0
     # via pytest
-mock==4.0.3
+mock==5.1.0
     # via -r requirements-dev.in
-packaging==20.9
-    # via pytest
-pep517==0.10.0
-    # via pip-tools
-pip-tools==6.1.0
+packaging==23.1
+    # via
+    #   build
+    #   pytest
+pip-tools==7.1.0
     # via -r requirements-dev.in
-pluggy==0.13.1
+pluggy==1.2.0
     # via pytest
-py==1.10.0
-    # via pytest
-pyparsing==2.4.7
-    # via packaging
-pytest==6.2.3
+pyproject-hooks==1.0.0
+    # via build
+pytest==7.4.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-pytest-cov==2.11.1
+pytest-cov==4.1.0
     # via -r requirements-dev.in
-requests==2.25.1
+pyyaml==6.0.1
     # via responses
-responses==0.13.2
+requests==2.31.0
+    # via responses
+responses==0.23.2
     # via -r requirements-dev.in
-six==1.15.0
-    # via responses
-toml==0.10.2
+tomli==2.0.1
     # via
-    #   pep517
+    #   build
+    #   coverage
+    #   pip-tools
+    #   pyproject-hooks
     #   pytest
-urllib3==1.26.5
+types-pyyaml==6.0.12.11
+    # via responses
+urllib3==2.0.4
     # via
     #   requests
     #   responses
+wheel==0.41.0
+    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
+# setuptools
