@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
+from upcloud_api.server_group import ServerGroup
 from upcloud_api.storage import Storage
 from upcloud_api.utils import try_it_n_times
 
@@ -47,31 +48,34 @@ class Server:
         'core_number',
         'firewall',
         'hostname',
+        'labels',
         'memory_amount',
         'nic_model',
+        'plan',
         'title',
         'timezone',
         'video_model',
         'vnc',
         'vnc_password',
-        'plan',
     ]
 
     optional_fields = [
-        'plan',
-        'core_number',
-        'memory_amount',
+        'avoid_host',
         'boot_order',
+        'core_number',
         'firewall',
+        'labels',
+        'login_user',
+        'memory_amount',
         'nic_model',
+        'password_delivery',
+        'plan',
+        'server_group',
         'timezone',
+        'metadata',
+        'user_data',
         'video_model',
         'vnc_password',
-        'password_delivery',
-        'avoid_host',
-        'login_user',
-        'user_data',
-        'metadata',
     ]
 
     def __init__(self, server=None, **kwargs) -> None:
@@ -149,11 +153,11 @@ class Server:
         self.cloud_manager.modify_server(self.uuid, **kwargs)
         self._reset(kwargs)
 
-    def destroy(self):
+    def destroy(self, delete_storages=False):
         """
         Destroy the server.
         """
-        self.cloud_manager.delete_server(self.uuid)
+        self.cloud_manager.delete_server(self.uuid, delete_storages=delete_storages)
 
     def shutdown(self, hard: bool = False, timeout: int = 30) -> None:
         """
@@ -334,6 +338,18 @@ class Server:
         for optional_field in self.optional_fields:
             if hasattr(self, optional_field):
                 body['server'][optional_field] = getattr(self, optional_field)
+
+        if hasattr(self, 'labels'):
+            dict_labels = {'label': []}
+            for label in self.labels:
+                dict_labels['label'].append(label.to_dict())
+            body['server']['labels'] = dict_labels
+
+        if hasattr(self, 'metadata') and isinstance(self.metadata, bool):
+            body['server']['metadata'] = "yes" if self.metadata else "no"
+
+        if hasattr(self, 'server_group') and isinstance(self.server_group, ServerGroup):
+            body['server']['server_group'] = f"{self.server_group.uuid}"
 
         # set password_delivery default as 'none' to prevent API from sending
         # emails (with credentials) about each created server

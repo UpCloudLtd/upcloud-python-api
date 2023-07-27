@@ -17,10 +17,12 @@ from upcloud_api.host import Host
 from upcloud_api.interface import Interface
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.ip_network import IpNetwork
+from upcloud_api.label import Label
 from upcloud_api.network import Network
 from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.router import Router
 from upcloud_api.server import Server, login_user_block
+from upcloud_api.server_group import ServerGroup, ServerGroupAffinityPolicy
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
 from upcloud_api.tag import Tag

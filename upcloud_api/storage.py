@@ -19,15 +19,16 @@ class Storage(UpCloudResource):
     """
 
     ATTRIBUTES = {
-        'uuid': None,
-        'tier': 'maxiops',
-        'size': 10,
         'access': None,
+        'address': None,
+        'labels': None,
         'license': None,
         'state': None,
+        'size': 10,
+        'tier': 'maxiops',
         'title': '',
         'type': None,
-        'address': None,
+        'uuid': None,
         'zone': None,
     }
 
@@ -145,6 +146,12 @@ class Storage(UpCloudResource):
 
         if hasattr(self, 'zone') and self.zone:
             body['zone'] = self.zone
+
+        if hasattr(self, 'labels'):
+            dict_labels = []
+            for label in self.labels:
+                dict_labels.append(label.to_dict())
+            body['labels'] = dict_labels
 
         return body
 
