@@ -7,6 +7,14 @@
 				"core_number" : "0",
 				"title" : "Helsinki server",
 				"hostname" : "fi.example.com",
+                "labels": {
+                    "label": [
+                        {
+                            "key": "test",
+                            "value": "example"
+                        }
+                    ]
+                },
 				"memory_amount" : "1024",
 				"uuid" : "00798b85-efdc-41ca-8021-f6ef457b8531",
 				"state" : "started",
@@ -22,6 +30,9 @@
 				"core_number" : "0",
 				"title" : "London server",
 				"hostname" : "uk.example.com",
+                "labels": {
+                    "label": []
+                },
 				"memory_amount" : "1024",
 				"uuid" : "009d64ef-31d1-4684-a26b-c86c955cbf46",
 				"state" : "stopped",

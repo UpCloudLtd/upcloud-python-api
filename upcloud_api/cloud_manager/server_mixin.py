@@ -198,12 +198,17 @@ class ServerManager:
         """
         Creates a new server group. Allows including servers and defining labels.
         """
-        if not isinstance(server_group, ServerGroup):
-            server_group = ServerGroup(server_group)
         body = server_group.to_dict()
 
         res = self.api.post_request('/server-group', body)
         return ServerGroup(cloud_manager=self, **res['server_group'])
+
+    def get_server_group(self, uuid: str) -> ServerGroup:
+        """
+        Fetches server group details and returns a ServerGroup object.
+        """
+        data = self.api.get_request(f'/server-group/{uuid}')
+        return ServerGroup(cloud_manager=self, **data['server_group'])
 
     def delete_server_group(self, uuid: str):
         """

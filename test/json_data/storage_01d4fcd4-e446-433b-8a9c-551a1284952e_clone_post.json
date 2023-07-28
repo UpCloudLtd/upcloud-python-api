@@ -4,7 +4,13 @@
 		"backup_rule": "",
 		"backups" : {
 			"backup" : []
-			},
+        },
+        "labels": [
+            {
+                "key": "role",
+                "value": "primary"
+            }
+        ],
 		"license" : 0,
 		"servers" : {
 			"server" : [

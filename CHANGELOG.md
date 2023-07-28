@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [2.5.0] - 2023-07-31
+
+### Added
+
+- Server group support
+- Support for labels in servers, storages and server groups
+
+## [2.0.1] - 2023-03-22
+
+### Added
+
+Support for metadata in server objects and server creation.
+
 ## [2.0.0] - 2021-05-05
 
 Python 2 is no longer supported. This is a maintenance release without

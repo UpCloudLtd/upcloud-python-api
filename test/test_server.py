@@ -11,6 +11,8 @@ class TestServer:
 
         assert type(server).__name__ == 'Server'
         assert server.uuid == '00798b85-efdc-41ca-8021-f6ef457b8531'
+        assert len(server.labels['label']) == 1
+        assert server.labels['label'][0]['value'] == "example"
 
     @responses.activate
     def test_get_unpopulated_servers(self, manager):

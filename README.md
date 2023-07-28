@@ -22,7 +22,7 @@ Alternatively, if you want the newest (possibly not yet released) stuff, clone t
 python setup.py install
 ```
 
-### Supported Python versions in API v2.0.1
+### Supported Python versions in API v2.5.0
 
 - Python 3.7
 - Python 3.8
@@ -31,7 +31,7 @@ python setup.py install
 
 **Python 2 has been deprecated**
 
-- Python 2.7 is supported in older API versions (< v2.0.0), still available in [PyPI](https://pypi.org/project/upcloud-api/1.0.1/).
+- Python 2.7 is no longer supported, but available in older API versions (< v2.0.0).
 
 ## Changelog
 
