@@ -21,7 +21,7 @@ from upcloud_api.label import Label
 from upcloud_api.network import Network
 from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.router import Router
-from upcloud_api.server import Server, login_user_block
+from upcloud_api.server import Server, ServerNetworkInterface, login_user_block
 from upcloud_api.server_group import ServerGroup, ServerGroupAffinityPolicy
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
