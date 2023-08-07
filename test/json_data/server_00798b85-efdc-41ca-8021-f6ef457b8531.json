@@ -29,6 +29,7 @@
 		"license" : 0,
 		"memory_amount" : "1024",
 		"nic_model" : "e1000",
+		"simple_backup": "0430,monthlies",
 		"state" : "started",
 		"storage_devices" : {
 			"storage_device" : [
