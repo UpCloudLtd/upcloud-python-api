@@ -23,7 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for labels in servers, storages and server groups
 - Server network interface support
 - Server simple backup rule support
+- Loadbalancer object support with labels included
 - Manager support for listing server plans
+- Manager support for load balancers with dictionary responses
 
 ## [2.0.1] - 2023-03-22
 

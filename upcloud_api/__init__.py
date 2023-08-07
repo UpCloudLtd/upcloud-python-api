@@ -18,6 +18,14 @@ from upcloud_api.interface import Interface
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.ip_network import IpNetwork
 from upcloud_api.label import Label
+from upcloud_api.load_balancer import (
+    LoadBalancer,
+    LoadBalancerBackend,
+    LoadBalancerBackendMember,
+    LoadBalancerFrontend,
+    LoadBalancerFrontEndRule,
+    LoadBalancerNetwork,
+)
 from upcloud_api.network import Network
 from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.router import Router
