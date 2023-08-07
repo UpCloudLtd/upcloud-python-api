@@ -82,3 +82,10 @@ class CloudManager(
         Returns a list of available server configurations.
         """
         return self.api.get_request('/server_size')
+
+    def get_server_plans(self):
+        """
+        Returns a list of available server plans
+        :return:
+        """
+        return self.api.get_request('/plan')
