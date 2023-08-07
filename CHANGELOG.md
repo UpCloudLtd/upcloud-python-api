@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Server group support
 - Support for labels in servers, storages and server groups
+- Server network interface support
+- Server simple backup rule support
+- Manager support for listing server plans
 
 ## [2.0.1] - 2023-03-22
 
