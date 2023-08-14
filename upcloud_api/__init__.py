@@ -2,7 +2,7 @@
 Python Interface to UpCloud's API.
 """
 
-__version__ = '2.0.1'
+__version__ = '2.5.0'
 __author__ = 'Developers from UpCloud & elsewhere'
 __author_email__ = 'hello@upcloud.com'
 __maintainer__ = 'UpCloud'
@@ -17,10 +17,20 @@ from upcloud_api.host import Host
 from upcloud_api.interface import Interface
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.ip_network import IpNetwork
+from upcloud_api.label import Label
+from upcloud_api.load_balancer import (
+    LoadBalancer,
+    LoadBalancerBackend,
+    LoadBalancerBackendMember,
+    LoadBalancerFrontend,
+    LoadBalancerFrontEndRule,
+    LoadBalancerNetwork,
+)
 from upcloud_api.network import Network
 from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.router import Router
-from upcloud_api.server import Server, login_user_block
+from upcloud_api.server import Server, ServerNetworkInterface, login_user_block
+from upcloud_api.server_group import ServerGroup, ServerGroupAffinityPolicy
 from upcloud_api.storage import Storage
 from upcloud_api.storage_import import StorageImport
 from upcloud_api.tag import Tag

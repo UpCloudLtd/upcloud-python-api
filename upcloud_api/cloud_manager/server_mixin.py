@@ -1,6 +1,7 @@
 from upcloud_api.api import API
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.server import Server
+from upcloud_api.server_group import ServerGroup
 from upcloud_api.storage import BackupDeletionPolicy, Storage
 
 
@@ -91,9 +92,10 @@ class ServerManager:
               memory_amount = 1024,
               hostname = "my.example.1",
               zone = "uk-lon1",
+              labels = [Label('role', 'example')],
               storage_devices = [
                 Storage(os = "01000000-0000-4000-8000-000030200200", size=10, tier=maxiops, title='Example OS disk'),
-                Storage(size=10),
+                Storage(size=10, labels=[Label('usage', 'data_disk')]),
                 Storage()
               title = "My Example Server"
             ])
@@ -191,3 +193,27 @@ class ServerManager:
         storages = Storage._create_storage_objs(server.pop('storage_devices'), cloud_manager=self)
 
         return server, IPAddresses, storages
+
+    def create_server_group(self, server_group: ServerGroup) -> ServerGroup:
+        """
+        Creates a new server group. Allows including servers and defining labels.
+        """
+        body = server_group.to_dict()
+
+        res = self.api.post_request('/server-group', body)
+        return ServerGroup(cloud_manager=self, **res['server_group'])
+
+    def get_server_group(self, uuid: str) -> ServerGroup:
+        """
+        Fetches server group details and returns a ServerGroup object.
+        """
+        data = self.api.get_request(f'/server-group/{uuid}')
+        return ServerGroup(cloud_manager=self, **data['server_group'])
+
+    def delete_server_group(self, uuid: str):
+        """
+        DELETE '/server-group/UUID'. Destroys the server group, but not attached servers.
+
+        Returns an empty object.
+        """
+        return self.api.delete_request(f'/server-group/{uuid}')

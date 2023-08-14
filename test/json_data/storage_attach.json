@@ -16,6 +16,14 @@
 				}
 			]
 		},
+        "labels": {
+            "label": [
+                {
+                    "key": "test",
+                    "value": "example"
+                }
+            ]
+        },
 		"license" : 0,
 		"memory_amount" : "1024",
 		"nic_model" : "e1000",
@@ -24,12 +32,24 @@
 			"storage_device" : [
 				{
 					"address" : "virtio:0",
+                    "labels": [
+                        {
+                            "key": "role",
+                            "value": "primary"
+                        }
+                    ],
 					"storage" : "012580a1-32a1-466e-a323-689ca16f2d43",
 					"storage_size" : 100,
 					"storage_title" : "Storage for server1.example.com",
 					"type" : "disk"
 				},
 				{
+                    "labels": [
+                        {
+                            "key": "role",
+                            "value": "secondary"
+                        }
+                    ],
 					"storage_size": 10,
 					"storage": "01d4fcd4-e446-433b-8a9c-551a1284952e",
 					"storage_title": "Operating system disk",

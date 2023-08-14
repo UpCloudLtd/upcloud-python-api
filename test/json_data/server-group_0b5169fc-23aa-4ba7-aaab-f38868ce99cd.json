@@ -1,0 +1,31 @@
+{
+    "server_group": {
+        "anti_affinity": "yes",
+        "anti_affinity_status": [
+            {
+                "uuid": "0016dadf-eba4-4331-bd34-a361841f7af1",
+                "status": "met"
+            },
+            {
+                "uuid": "00c77bbe-fc0e-436f-a753-37f5b5b76270",
+                "status": "met"
+            }
+        ],
+        "labels": {
+            "label": [
+                {
+                    "key": "foo",
+                    "value": "bar"
+                }
+            ]
+        },
+        "servers": {
+            "server": [
+                "0016dadf-eba4-4331-bd34-a361841f7af2",
+                "00c77bbe-fc0e-436f-a753-37f5b5b76271"
+            ]
+        },
+        "title": "test group",
+        "uuid": "0b5169fc-23aa-4ba7-aaab-f38868ce99cd"
+    }
+}

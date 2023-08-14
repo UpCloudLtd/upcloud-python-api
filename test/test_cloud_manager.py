@@ -34,3 +34,10 @@ class TestCloudManagerBasic:
 
         res = manager.get_timezones()
         assert json.loads(data) == res
+
+    @responses.activate
+    def test_get_plans(self, manager):
+        data = Mock.mock_get("plan")
+
+        res = manager.get_server_plans()
+        assert json.loads(data) == res

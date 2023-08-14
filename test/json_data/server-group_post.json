@@ -1,0 +1,15 @@
+{
+    "server_group": {
+        "anti_affinity": "yes",
+        "labels": {
+            "label": [
+                {
+                    "key": "foo",
+                    "value": "bar"
+                }
+            ]
+        },
+        "title": "foo",
+        "uuid": "0b5169fc-23aa-4ba7-aaab-f38868ce99cd"
+    }
+}

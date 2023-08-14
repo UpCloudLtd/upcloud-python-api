@@ -16,10 +16,19 @@
 				}
 			]
 		},
+        "labels": {
+            "label": [
+                {
+                    "key": "test",
+                    "value": "example"
+                }
+            ]
+        },
 		"license" : 0,
 		"memory_amount" : "1024",
 		"nic_model" : "virtio",
 		"state" : "started",
+		"simple_backup": "0430,monthlies",
 		"storage_devices" : {
 			"storage_device" : [
 				{

@@ -36,6 +36,7 @@ class TestCreateServer:
                 Storage(os='01000000-0000-4000-8000-000030200200', size=10),
                 Storage(size=100, title='storage disk 1'),
             ],
+            simple_backup='0430,monthlies',
         )
 
         assert server1.title == 'my.example.com'
@@ -43,6 +44,7 @@ class TestCreateServer:
         assert server1.memory_amount == 1024
         assert server1.hostname == server1.title
         assert server1.zone == 'us-chi1'
+        assert server1.simple_backup == '0430,monthlies'
 
     def test_server_prepare_post_body(self):
         server = Server(
@@ -188,6 +190,7 @@ class TestCreateServer:
             'memory_amount': 1024,
             'hostname': 'my.example.com',
             'zone': 'us-chi1',
+            'simple_backup': '0430,monthlies',
             'storage_devices': [
                 {'os': '01000000-0000-4000-8000-000030200200', 'size': 10},
                 {'size': 100, 'title': 'storage disk 1'},
@@ -209,6 +212,8 @@ class TestCreateServer:
         assert server1.video_model == 'cirrus'
         assert server1.vnc == 'off'
         assert server1.vnc_password == 'aabbccdd'
+
+        assert server1.simple_backup == '0430,monthlies'
 
     @responses.activate
     def test_create_server_from_template(self, manager):

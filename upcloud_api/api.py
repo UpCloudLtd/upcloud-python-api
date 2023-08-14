@@ -86,7 +86,13 @@ class API:
         """
         Middleware that raises an exception when HTTP statuscode is an error code.
         """
-        if res.status_code in [400, 401, 402, 403, 404, 405, 406, 409]:
+        if res.status_code >= 400:
+            if res_json.get('type'):
+                raise UpCloudAPIError(
+                    error_code=res_json.get('title'),
+                    error_message=f'Details: {json.dumps(res_json)}',
+                )
+
             err_dict = res_json.get('error', {})
             raise UpCloudAPIError(
                 error_code=err_dict.get('error_code'), error_message=err_dict.get('error_message')

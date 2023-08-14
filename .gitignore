@@ -1,6 +1,7 @@
 .gitignore
 __pycache__
 ENV/
+.env
 .DS_Store
 *.py[cod]
 build/

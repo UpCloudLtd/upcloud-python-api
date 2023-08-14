@@ -3,7 +3,9 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
+from upcloud_api.server_group import ServerGroup
 from upcloud_api.storage import Storage
+from upcloud_api.upcloud_resource import UpCloudResource
 from upcloud_api.utils import try_it_n_times
 
 if TYPE_CHECKING:
@@ -27,6 +29,47 @@ def login_user_block(username, ssh_keys, create_password=False):
     return block
 
 
+class ServerNetworkInterface(UpCloudResource):
+    """
+    Class representation of server network interface
+    """
+
+    ATTRIBUTES = {
+        'ip_addresses': [],
+        'type': 'public',
+        'network': None,
+        'source_ip_filtering': 'yes',
+    }
+
+    def __init__(self, raw_dict, **kwargs):
+        """
+        Initialize network interface and set sane defaults
+        """
+        super().__init__(**kwargs)
+        for k, v in raw_dict.items():
+            if k in ServerNetworkInterface.ATTRIBUTES:
+                setattr(self, k, v)
+
+        if not raw_dict.get('ip_addresses'):
+            self.ip_addresses = [{'family': 'IPv4'}]
+
+    def to_dict(self):
+        """
+        Returns a dict implementation of a network interface to support server creation.
+        """
+        body = {
+            'type': self.type,
+            'ip_addresses': {
+                'ip_address': self.ip_addresses,
+            },
+        }
+
+        if hasattr(self, 'network'):
+            body['network'] = self.network
+
+        return body
+
+
 # TODO: should this inherit from UpcloudResource too?
 class Server:
     """
@@ -47,31 +90,37 @@ class Server:
         'core_number',
         'firewall',
         'hostname',
+        'labels',
         'memory_amount',
         'nic_model',
+        'plan',
+        'simple_backup',
         'title',
         'timezone',
         'video_model',
         'vnc',
         'vnc_password',
-        'plan',
     ]
 
     optional_fields = [
-        'plan',
-        'core_number',
-        'memory_amount',
+        'avoid_host',
         'boot_order',
+        'core_number',
         'firewall',
+        'labels',
+        'login_user',
+        'memory_amount',
+        'networking',
         'nic_model',
+        'password_delivery',
+        'plan',
+        'server_group',
+        'simple_backup',
         'timezone',
+        'metadata',
+        'user_data',
         'video_model',
         'vnc_password',
-        'password_delivery',
-        'avoid_host',
-        'login_user',
-        'user_data',
-        'metadata',
     ]
 
     def __init__(self, server=None, **kwargs) -> None:
@@ -149,11 +198,11 @@ class Server:
         self.cloud_manager.modify_server(self.uuid, **kwargs)
         self._reset(kwargs)
 
-    def destroy(self):
+    def destroy(self, delete_storages=False):
         """
         Destroy the server.
         """
-        self.cloud_manager.delete_server(self.uuid)
+        self.cloud_manager.delete_server(self.uuid, delete_storages=delete_storages)
 
     def shutdown(self, hard: bool = False, timeout: int = 30) -> None:
         """
@@ -335,6 +384,18 @@ class Server:
             if hasattr(self, optional_field):
                 body['server'][optional_field] = getattr(self, optional_field)
 
+        if hasattr(self, 'labels'):
+            dict_labels = {'label': []}
+            for label in self.labels:
+                dict_labels['label'].append(label.to_dict())
+            body['server']['labels'] = dict_labels
+
+        if hasattr(self, 'metadata') and isinstance(self.metadata, bool):
+            body['server']['metadata'] = "yes" if self.metadata else "no"
+
+        if hasattr(self, 'server_group') and isinstance(self.server_group, ServerGroup):
+            body['server']['server_group'] = f"{self.server_group.uuid}"
+
         # set password_delivery default as 'none' to prevent API from sending
         # emails (with credentials) about each created server
         if not hasattr(self, 'password_delivery'):
@@ -345,6 +406,16 @@ class Server:
         # for each of them
 
         body['server']['storage_devices'] = {'storage_device': []}
+
+        if hasattr(self, 'networking') and isinstance(self.networking, list):
+            interfaces = []
+            for iface in self.networking:
+                if isinstance(iface, ServerNetworkInterface):
+                    interfaces.append(iface.to_dict())
+                else:
+                    interfaces.append(iface)
+
+            body['server']['networking'] = {'interfaces': {'interface': interfaces}}
 
         storage_title_id = 0  # running number for unique storage titles
         for storage in self.storage_devices:
@@ -402,6 +473,9 @@ class Server:
                 fields['ip_addresses'].append(
                     {'address': ip.address, 'access': ip.access, 'family': ip.family}
                 )
+            fields['networking'] = []
+            for iface in dict.get(dict.get(self.networking, 'interfaces'), 'interface'):
+                fields['networking'].append(ServerNetworkInterface(iface).to_dict())
 
             for storage in self.storage_devices:
                 fields['storage_devices'].append(
