@@ -492,8 +492,7 @@ class Server:
         del fields['cloud_manager']
         return fields
 
-    # TODO: strict is unused?
-    def get_ip(self, access='public', addr_family=None, strict=None):
+    def get_ip(self, access='public', addr_family=None):
         """
         Return the server's IP address.
 
@@ -505,27 +504,40 @@ class Server:
         if addr_family not in ['IPv4', 'IPv6', None]:
             raise Exception("`addr_family` must be 'IPv4', 'IPv6' or None")
 
-        if access not in ['private', 'public']:
-            raise Exception("`access` must be 'public' or 'private'")
+        if access not in ['private', 'public', 'utility']:
+            raise Exception("`access` must be 'public', 'utility' or 'private'")
 
-        if not hasattr(self, 'ip_addresses'):
-            self.populate()
+        if not hasattr(self, 'networking'):
+            raise Exception(
+                "`networking` attribute is missing, server details must be fetched first"
+            )
 
-        # server can have several public or private IPs
-        ip_addrs = [ip_addr for ip_addr in self.ip_addresses if ip_addr.access == access]
+        ip_addrs = []
+        for iface in self.networking['interfaces']['interface']:
+            iface_ip_addrs = iface['ip_addresses']['ip_address']
+            if len(iface_ip_addrs) == 0:
+                continue
 
-        # prefer addr_family (or IPv4 if none given)
-        preferred_family = addr_family if addr_family else 'IPv4'
-        for ip_addr in ip_addrs:
-            if ip_addr.family == preferred_family:
-                return ip_addr.address
+            for ip in iface_ip_addrs:
+                if iface['type'] == access and (not addr_family or ip['family'] == addr_family):
+                    ip_addrs.append(ip)
 
-        # any IP (of the right access) will do if available and addr_family is None
-        return ip_addrs[0].address if ip_addrs and not addr_family else None
+        # If IP address family has not been defined, we'll prefer v4 when it's available
+        if not addr_family:
+            for addr in ip_addrs:
+                if addr['family'] == 'IPv4':
+                    return addr['address']
+
+        # Any remaining IP should be good
+        return ip_addrs[0]['address'] if ip_addrs else None
 
     def get_public_ip(self, addr_family=None, *args, **kwargs):
         """Alias for get_ip('public')"""
         return self.get_ip('public', addr_family, *args, **kwargs)
+
+    def get_utility_ip(self, addr_family=None, *args, **kwargs):
+        """Alias for get_ip('utility')"""
+        return self.get_ip('utility', addr_family, *args, **kwargs)
 
     def get_private_ip(self, addr_family=None, *args, **kwargs):
         """Alias for get_ip('private')"""
