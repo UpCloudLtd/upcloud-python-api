@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Server object helper function `get_utility_ip` for fetching server utility IP
 
-# Changed
+# Fixed
 
 - Fixed server IP helper functions `get_public_ip` and `get_private_ip` to support private networking.
 
