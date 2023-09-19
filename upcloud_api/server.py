@@ -514,15 +514,21 @@ class Server:
 
         ip_addrs = []
         for iface in self.networking['interfaces']['interface']:
-            ip_addresses = iface['ip_addresses']['ip_address']
-            if len(ip_addresses) == 0:
+            iface_ip_addrs = iface['ip_addresses']['ip_address']
+            if len(iface_ip_addrs) == 0:
                 continue
 
-            for ip in ip_addresses:
+            for ip in iface_ip_addrs:
                 if iface['type'] == access and (not addr_family or ip['family'] == addr_family):
                     ip_addrs.append(ip)
 
-        # any IP (of the right access) will do if available and addr_family is None
+        # If IP address family has not been defined, we'll prefer v4 when it's available
+        if not addr_family:
+            for addr in ip_addrs:
+                if addr['family'] == 'IPv4':
+                    return addr['address']
+
+        # Any remaining IP should be good
         return ip_addrs[0]['address'] if ip_addrs else None
 
     def get_public_ip(self, addr_family=None, *args, **kwargs):
