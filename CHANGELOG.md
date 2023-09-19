@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Server deletion now support deleting attached storages in CloudManager.
-- Backup deletion policies can be given when deleting servers and storages.
-
 ----
+
+## [2.5.1] - 2023-09-19
+
+### Added
+
+- Server object helper function `get_utility_ip` for fetching server utility IP
+
+# Changed
+
+- Fixed server IP helper functions `get_public_ip` and `get_private_ip` to support private networking.
 
 ## [2.5.0] - 2023-07-31
 
@@ -26,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loadbalancer object support with labels included
 - Manager support for listing server plans
 - Manager support for load balancers with dictionary responses
+- Server deletion now supports deleting attached storages in CloudManager.
+- Backup deletion policies can be given when deleting servers and storages.
 
 ## [2.0.1] - 2023-03-22
 
