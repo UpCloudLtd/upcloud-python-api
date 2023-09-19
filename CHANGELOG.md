@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Server deletion now support deleting attached storages in CloudManager.
-- Backup deletion policies can be given when deleting servers and storages.
-
 ----
+
+## [2.5.1] - 2023-09-19
+
+### Added
+
+- Server object helper function `get_utility_ip` for fetching server utility IP
+
+# Fixed
+
+- Fixed server IP helper functions `get_public_ip` and `get_private_ip` to support private networking.
 
 ## [2.5.0] - 2023-07-31
 
@@ -26,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loadbalancer object support with labels included
 - Manager support for listing server plans
 - Manager support for load balancers with dictionary responses
+- Server deletion now supports deleting attached storages in CloudManager.
+- Backup deletion policies can be given when deleting servers and storages.
 
 ## [2.0.1] - 2023-03-22
 
@@ -282,7 +290,7 @@ Move to X.Y.Z versioning and bump version from 0.1(.0) to 0.1.1
 
 First release, available at https://pypi.python.org/pypi/upcloud-api-python
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v2.5.1...HEAD
 [0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1.1
 [0.2.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.2.0
@@ -305,3 +313,6 @@ First release, available at https://pypi.python.org/pypi/upcloud-api-python
 [1.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.0
 [1.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.1
 [2.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.0
+[2.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.1
+[2.5.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.0
+[2.5.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.1
