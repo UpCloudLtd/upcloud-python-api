@@ -14,7 +14,9 @@ click==8.1.6
     # via pip-tools
 coverage[toml]==7.2.7
     # via pytest-cov
-idna==3.4
+exceptiongroup==1.2.0
+    # via pytest
+idna==3.7
     # via requests
 iniconfig==2.0.0
     # via pytest
@@ -42,6 +44,13 @@ requests==2.31.0
     # via responses
 responses==0.23.2
     # via -r requirements-dev.in
+tomli==2.0.1
+    # via
+    #   build
+    #   coverage
+    #   pip-tools
+    #   pyproject-hooks
+    #   pytest
 types-pyyaml==6.0.12.11
     # via responses
 urllib3==2.0.7
