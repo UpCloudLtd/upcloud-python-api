@@ -31,9 +31,10 @@ class TestStorage:
     def test_storage_create(self, manager):
         Mock.mock_post("storage")
         storage = manager.create_storage(
-            zone="fi-hel1", size=666, tier="maxiops", title="My data collection"
+            zone="fi-hel1", encrypted=True, size=666, tier="maxiops", title="My data collection"
         )
         assert type(storage).__name__ == "Storage"
+        assert storage.encrypted
         assert storage.size == 666
         assert storage.tier == "maxiops"
         assert storage.title == "My data collection"
@@ -47,6 +48,7 @@ class TestStorage:
         Mock.mock_post("storage/01d4fcd4-e446-433b-8a9c-551a1284952e/clone")
         cloned_storage = storage.clone('cloned-storage-test', 'fi-hel1')
         assert type(cloned_storage).__name__ == "Storage"
+        assert not cloned_storage.encrypted
         assert cloned_storage.size == 666
         assert cloned_storage.tier == "maxiops"
         assert cloned_storage.title == "cloned-storage-test"

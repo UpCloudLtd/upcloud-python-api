@@ -5,6 +5,7 @@
 		"backups" : {
 			"backup" : []
 			},
+        "encrypted": "yes",
         "labels": [
             {
                 "key": "role",
