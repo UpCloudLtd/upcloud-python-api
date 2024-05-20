@@ -56,7 +56,7 @@ class Storage(UpCloudResource):
         elif 'storage_size' in kwargs:
             self.size = kwargs['storage_size']
 
-        if 'encrypted' in kwargs and kwargs['encrypted'] == 'yes':
+        if kwargs.get('encrypted') == 'yes':
             self.encrypted = True
         else:
             self.encrypted = False
