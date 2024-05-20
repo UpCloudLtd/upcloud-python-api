@@ -169,7 +169,7 @@ class Storage(UpCloudResource):
             body['labels'] = dict_labels
 
         if hasattr(self, 'encrypted') and isinstance(self.encrypted, bool):
-            body['server']['encrypted'] = "yes" if self.encrypted else "no"
+            body['encrypted'] = "yes" if self.encrypted else "no"
 
         return body
 
