@@ -38,7 +38,7 @@ pytest-cov==4.1.0
     # via -r requirements-dev.in
 pyyaml==6.0.1
     # via responses
-requests==2.31.0
+requests==2.32.0
     # via responses
 responses==0.23.2
     # via -r requirements-dev.in
