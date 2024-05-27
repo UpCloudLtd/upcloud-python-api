@@ -51,7 +51,8 @@ storage1 = manager.create_storage(
     zone='fi-hel1',
     size=10,
     tier="maxiops",
-    title="my storage disk"
+    title="my storage disk",
+    encrypted=False
 )
 
 storage2 = manager.create_storage(zone='de-fra1', size=100)
