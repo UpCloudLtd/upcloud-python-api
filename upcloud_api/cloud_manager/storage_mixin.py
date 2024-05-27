@@ -55,10 +55,7 @@ class StorageManager:
         if backup_rule is None:
             backup_rule = {}
 
-        if encrypted:
-            encrypted_str = 'yes'
-        else:
-            encrypted_str = 'no'
+        encrypted_str = 'yes' if encrypted else 'no'
 
         body = {
             'storage': {
