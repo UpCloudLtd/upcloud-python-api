@@ -2,7 +2,7 @@
 Python Interface to UpCloud's API.
 """
 
-__version__ = '2.5.1'
+__version__ = '2.6.0'
 __author__ = 'Developers from UpCloud & elsewhere'
 __author_email__ = 'hello@upcloud.com'
 __maintainer__ = 'UpCloud'
