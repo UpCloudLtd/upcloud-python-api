@@ -21,6 +21,7 @@ class Storage(UpCloudResource):
     ATTRIBUTES = {
         'access': None,
         'address': None,
+        'encrypted': None,
         'labels': None,
         'license': None,
         'state': None,
@@ -55,12 +56,26 @@ class Storage(UpCloudResource):
         elif 'storage_size' in kwargs:
             self.size = kwargs['storage_size']
 
+        if kwargs.get('encrypted') == 'yes':
+            self.encrypted = True
+        else:
+            self.encrypted = False
+
         # send the rest to super._reset
 
         filtered_kwargs = {
             key: val
             for key, val in kwargs.items()
-            if key not in ['uuid', 'storage', 'title', 'storage_title', 'size', 'storage_size']
+            if key
+            not in [
+                'uuid',
+                'storage',
+                'title',
+                'storage_title',
+                'size',
+                'storage_size',
+                'encrypted',
+            ]
         }
         super()._reset(**filtered_kwargs)
 
@@ -152,6 +167,9 @@ class Storage(UpCloudResource):
             for label in self.labels:
                 dict_labels.append(label.to_dict())
             body['labels'] = dict_labels
+
+        if hasattr(self, 'encrypted') and isinstance(self.encrypted, bool):
+            body['encrypted'] = "yes" if self.encrypted else "no"
 
         return body
 

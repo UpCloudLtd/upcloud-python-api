@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-----
+### Added
+
+- Added `encrypted` boolean flag to Storage for encryption at rest support
+
+### Changed
+
+- Python versions supported: 3.8, 3.9, 3.10, 3.11, 3.12, PyPy3. Dropped support for 3.7.
 
 ## [2.5.1] - 2023-09-19
 

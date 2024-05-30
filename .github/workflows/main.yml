@@ -8,29 +8,30 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
-          python-version: 3.11
-      - uses: pre-commit/action@v3.0.0
+          python-version: 3.12
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         tox_env:
-          - py37
           - py38
           - py39
           - py310
+          - py311
+          - py312
           - pypy3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Fedora Tox with ${{ matrix.tox_env }}
-        uses: fedora-python/tox-github-action@v37.0
+        uses: fedora-python/tox-github-action@6f0add50b32e4bedfd98976984ffa499af4c218b # v39.0
         with:
           tox_env: ${{ matrix.tox_env }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           cache: pip
           cache-dependency-path: |
@@ -40,9 +41,9 @@ jobs:
     name: Build deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: casperdcl/deploy-pypi@v2.3.2
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+      - uses: casperdcl/deploy-pypi@10cf4cd83fc885003a8d4f37f93a5a0f0fc2d2f4 # v2.4.1
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           build: true

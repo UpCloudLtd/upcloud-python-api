@@ -45,6 +45,7 @@ class StorageManager:
         size: int = 10,
         tier: str = 'maxiops',
         title: str = 'Storage disk',
+        encrypted: bool = False,
         *,
         backup_rule: Optional[dict] = None,
     ) -> Storage:
@@ -53,6 +54,9 @@ class StorageManager:
         """
         if backup_rule is None:
             backup_rule = {}
+
+        encrypted_str = 'yes' if encrypted else 'no'
+
         body = {
             'storage': {
                 'size': size,
@@ -60,6 +64,7 @@ class StorageManager:
                 'title': title,
                 'zone': zone,
                 'backup_rule': backup_rule,
+                'encrypted': encrypted_str,
             }
         }
         res = self.api.post_request('/storage', body)
