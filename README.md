@@ -22,7 +22,7 @@ Alternatively, if you want the newest (possibly not yet released) stuff, clone t
 python setup.py install
 ```
 
-### Supported Python versions in API v2.5.1
+### Supported Python versions in API v2.6.0
 
 - Python 3.8
 - Python 3.9
