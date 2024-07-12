@@ -2,6 +2,18 @@ from enum import Enum
 
 from upcloud_api.upcloud_resource import UpCloudResource
 
+STORAGE_OSES_WHICH_REQUIRE_METADATA = [
+    "01000000-0000-4000-8000-000020060100",  # Debian GNU/Linux 11 (Bullseye)
+    "01000000-0000-4000-8000-000020070100",  # Debian GNU/Linux 12 (Bookworm)
+    "01000000-0000-4000-8000-000030200200",  # Ubuntu Server 20.04 LTS (Focal Fossa)
+    "01000000-0000-4000-8000-000030220200",  # Ubuntu Server 22.04 LTS (Jammy Jellyfish)
+    "01000000-0000-4000-8000-000030240200",  # Ubuntu Server 24.04 LTS (Noble Numbat)
+    "01000000-0000-4000-8000-000140010100",  # AlmaLinux 8
+    "01000000-0000-4000-8000-000140020100",  # AlmaLinux 9
+    "01000000-0000-4000-8000-000150010100",  # Rocky Linux 8
+    "01000000-0000-4000-8000-000150020100",  # Rocky Linux 9
+]
+
 
 class BackupDeletionPolicy(Enum):
     """
