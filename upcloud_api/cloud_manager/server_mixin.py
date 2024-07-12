@@ -94,7 +94,7 @@ class ServerManager:
               zone = "uk-lon1",
               labels = [Label('role', 'example')],
               storage_devices = [
-                Storage(os = "01000000-0000-4000-8000-000030200200", size=10, tier=maxiops, title='Example OS disk'),
+                Storage(os = "01000000-0000-4000-8000-000030240200", size=10, tier=maxiops, title='Example OS disk'),
                 Storage(size=10, labels=[Label('usage', 'data_disk')]),
                 Storage()
               title = "My Example Server"
@@ -107,10 +107,11 @@ class ServerManager:
           (id is a running starting from 1)
         - tier defaults to maxiops
         - valid operating systems are for example:
-          * CentOS 8: 01000000-0000-4000-8000-000050010400
-          * Debian 10: 01000000-0000-4000-8000-000020050100
-          * Ubuntu 20.04: 01000000-0000-4000-8000-000030200200
-          * Windows 2019: 01000000-0000-4000-8000-000010070300
+          * Debian GNU/Linux 12 (Bookworm): 01000000-0000-4000-8000-000020070100
+          * Ubuntu Server 24.04 LTS (Noble Numbat): 01000000-0000-4000-8000-000030240200
+          * Rocky Linux 9: 01000000-0000-4000-8000-000150020100
+          * Windows Server 2022 Standard: 01000000-0000-4000-8000-000010080300
+          (for a more up-to-date listing, use UpCloud's CLI: `upctl storage list --public --template`.)
 
         """
         if isinstance(server, Server):

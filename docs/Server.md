@@ -47,7 +47,7 @@ server = Server(
 			hostname = "web1.example.com",
 			zone = 'uk-lon1',
 			storage_devices = [
-				Storage(os = "01000000-0000-4000-8000-000030200200", size=10),
+				Storage(os = "01000000-0000-4000-8000-000030240200", size=10),
 				Storage(size=10, tier="hdd")
 			])
 
