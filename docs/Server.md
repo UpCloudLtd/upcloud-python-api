@@ -57,7 +57,7 @@ manager.create_server( server )
 
 Currently available operating system templates can be retrieved with 'manager.get_templates()'. More information on this method can be found in storage_mixin documentation.
 
-Please refer to the [API documentation](https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf) for the allowed Server attributes.
+Please refer to the [API documentation](https://developers.upcloud.com/1.3/8-servers/#modify-server) for the allowed Server attributes.
 
 ## Update
 
@@ -82,7 +82,7 @@ Updateable attributes:
 	"nic_model", "title", "timezone", "video_model", "vnc", "vnc_password"
 ```
 
-Please refer to the [API documentation](https://www.upcloud.com/static/downloads/upcloud-apidoc-1.1.1.pdf) for the allowed values.
+Please refer to the [API documentation](https://developers.upcloud.com/1.3/8-servers/#modify-server) for the allowed values.
 
 ### Storages
 

@@ -111,6 +111,7 @@ class ServerManager:
           * Debian 10: 01000000-0000-4000-8000-000020050100
           * Ubuntu 20.04: 01000000-0000-4000-8000-000030200200
           * Windows 2019: 01000000-0000-4000-8000-000010070300
+
         """
         if isinstance(server, Server):
             body = server.prepare_post_body()

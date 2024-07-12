@@ -8,9 +8,6 @@ This documentation includes many code examples for administrating resources on t
 In some cases it can help to be familiar with [UpCloud's API v1.3 documentation](https://www.upcloud.com/api/).
 The code itself also has commentary & examples and is structured similarly to this documentation.
 
-If you haven't used UpCloud's API before, please see
-[Getting Started With UpCloud’s API](https://www.upcloud.com/support/getting-started-with-upclouds-api/).
-
 The documentation is divided into two parts. Usage describes the basic CRUD functionality for the object
 representations of different UpCloud resources (servers, storages, networks etc). The CloudManager describes
 the API for performing direct API calls.
