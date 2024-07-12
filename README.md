@@ -78,7 +78,6 @@ cluster = {
     ),
     'web2': Server(
         plan='2xCPU-4GB',
-        memory_amount=1024,
         hostname='web2.example.com',
         zone='uk-lon1',
         storage_devices=[

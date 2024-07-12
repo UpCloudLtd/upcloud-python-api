@@ -4,11 +4,11 @@
 
 Firewall is configured with FirewallRule objects that are specific to each server.
 Please note that a servers firewall rules are ignored if firewall is turned off
-(see [Server](/server) and [API documentation](https://www.upcloud.com/api/7-servers/#modify-server)).
+(see [Server](/server) and [API documentation](https://developers.upcloud.com/1.3/8-servers/#modify-server)).
 
 If a server is removed, its firewall and thus its firewall rules are removed too.
 
-Please refer to the [API documentation](https://www.upcloud.com/api/10-firewall/#create-firewall-rule)
+Please refer to the [API documentation](https://developers.upcloud.com/1.3/11-firewall/#create-firewall-rule)
 for more info on the attributes of FirewallRule.
 
 ## List / Get
