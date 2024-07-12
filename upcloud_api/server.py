@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
 from upcloud_api.server_group import ServerGroup
-from upcloud_api.storage import Storage
+from upcloud_api.storage import STORAGE_OSES_WHICH_REQUIRE_METADATA, Storage
 from upcloud_api.upcloud_resource import UpCloudResource
 from upcloud_api.utils import try_it_n_times
 
@@ -392,6 +392,16 @@ class Server:
 
         if hasattr(self, 'metadata') and isinstance(self.metadata, bool):
             body['server']['metadata'] = "yes" if self.metadata else "no"
+
+        # metadata service has to be "yes" for certain OSes
+        for storage in self.storage_devices:
+            if (
+                hasattr(storage, 'os')
+                and storage.os
+                and storage.os in STORAGE_OSES_WHICH_REQUIRE_METADATA
+            ):
+                body['server']['metadata'] = "yes"
+                break
 
         if hasattr(self, 'server_group') and isinstance(self.server_group, ServerGroup):
             body['server']['server_group'] = f"{self.server_group.uuid}"
