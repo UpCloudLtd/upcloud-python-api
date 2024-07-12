@@ -70,7 +70,7 @@ cluster = {
             # OS: template storage UUID, all available os templates can be retrieved by calling manager.get_templates()
             # Note: the storage os template uuid:s will change when OS is updated. So check that the UUID is correct
             # default tier: maxIOPS, the 100k IOPS storage backend
-            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             # secondary storage, hdd for reduced speed & cost
             Storage(size=100, tier='hdd')
         ],
@@ -81,7 +81,7 @@ cluster = {
         hostname='web2.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=100, tier='hdd'),
         ],
         login_user=login_user
@@ -93,7 +93,7 @@ cluster = {
         hostname='db.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030200200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=100),
         ],
         login_user=login_user
@@ -103,7 +103,7 @@ cluster = {
         hostname='balancer.example.com',
         zone='uk-lon1',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030200200', size=10)
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10)
         ],
         login_user=login_user
     )

@@ -18,7 +18,7 @@ Tiers:
 
 ### Templates
 
-Public templates such as the 01000000-0000-4000-8000-000030200200 can be cloned by anyone to get a pre-installed
+Public templates such as the 01000000-0000-4000-8000-000030240200 can be cloned by anyone to get a pre-installed
 server image that is immediately ready to go. A user can also create private templates for themselves out of
 any storage. Storages can be cloned from templates during server creation.
 
