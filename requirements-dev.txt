@@ -6,7 +6,7 @@
 #
 build==0.10.0
     # via pip-tools
-certifi==2023.7.22
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.2.0
     # via requests
@@ -53,7 +53,7 @@ tomli==2.0.1
     #   pytest
 types-pyyaml==6.0.12.11
     # via responses
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   requests
     #   responses
@@ -63,3 +63,5 @@ wheel==0.41.0
 # The following packages are considered to be unsafe in a requirements file:
 # pip
 # setuptools
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
