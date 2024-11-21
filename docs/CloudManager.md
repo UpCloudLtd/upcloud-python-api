@@ -47,7 +47,7 @@ manager.get_timezones()
 
 ```python
 
-manager.get_pricing()
+manager.get_prices()
 
 ```
 
