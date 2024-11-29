@@ -10,8 +10,21 @@ HELPERS_PATH = os.path.join(os.path.dirname(__file__), 'helpers')
 sys.path.append(HELPERS_PATH)
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "integration_tests: mark test to run only on if --integration-tests is passed"
+    )
+
+
 def pytest_addoption(parser):
-    parser.addoption('--integration-tests', action='store_true', help='run integration tests')
+    parser.addoption(
+        '--integration-tests', action='store_true', default=False, help='run integration tests'
+    )
+
+
+def pytest_runtest_setup(item):
+    if 'integration_tests' in item.keywords and not item.config.getoption("--integration-tests"):
+        pytest.skip("need --integration-tests option to run this test")
 
 
 @pytest.fixture(scope='module')

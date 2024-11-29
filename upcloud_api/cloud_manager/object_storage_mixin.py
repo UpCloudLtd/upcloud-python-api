@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import Optional
 
 from upcloud_api.api import API
 from upcloud_api.object_storage import ObjectStorage
@@ -99,12 +99,12 @@ class ObjectStorageManager:
         datetime_from: datetime.datetime,
         datetime_to: Optional[datetime.datetime] = None,
         interval: Optional[int] = None,
-        bucket: Optional[List[str]] = None,
-        filename: Optional[List[str]] = None,
-        method: Optional[List[str]] = None,
-        status: Optional[List[int]] = None,
-        group_by: Optional[List[str]] = None,
-        order_by: Optional[List[str]] = None,
+        bucket: Optional[list[str]] = None,
+        filename: Optional[list[str]] = None,
+        method: Optional[list[str]] = None,
+        status: Optional[list[int]] = None,
+        group_by: Optional[list[str]] = None,
+        order_by: Optional[list[str]] = None,
         limit: Optional[int] = None,
     ):
         """

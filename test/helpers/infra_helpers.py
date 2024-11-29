@@ -47,7 +47,7 @@ def server_test(manager, server):
     storage = manager.create_storage(size=10, tier='maxiops', zone='uk-lon1')
     server.add_storage(storage)
 
-    server.start()
+    server.ensure_started()
 
     # sync new info from API and assert the changes from above have happened
     server.populate()
