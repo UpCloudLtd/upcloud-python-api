@@ -24,11 +24,11 @@ python setup.py install
 
 ### Supported Python versions in API v2.6.0
 
-- Python 3.8
 - Python 3.9
 - Python 3.10
 - Python 3.11
 - Python 3.12
+- Python 3.13
 - PyPy3
 
 **Python 2 has been deprecated**
@@ -49,9 +49,9 @@ but are not able to get working, please [contact UpCloud support](https://upclou
 ```python
 
 import upcloud_api
-from upcloud_api import Server, Storage, login_user_block
+from upcloud_api import CloudManager, Server, Storage, login_user_block
 
-manager = upcloud_api.CloudManager('api_user', 'password')
+manager = CloudManager('api_user', 'password')
 manager.authenticate()
 
 
@@ -248,10 +248,10 @@ tox
 ```
 
 
-The project also supplies a small test suite to test against the live API at `test/live_test.py`.
-This suite is NOT run with `py.test` as it will permanently remove all resources related to an account.
+The project also supplies a small test suite to test against the live API in `test/test_integration`.
+This suite is NOT run with `py.test` dy default as it will permanently remove all resources related to an account.
 It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with
-PyPI releases. See source code on how to run the live test.
+PyPI releases. To run the integration tests, append `--integration-tests` flag to the `py.test` command.
 
 ## Bugs, Issues, Problems, Ideas
 

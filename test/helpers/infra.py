@@ -12,7 +12,7 @@ CLUSTER = {
         zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=10, tier='maxiops'),
         ],
     ),
@@ -23,7 +23,7 @@ CLUSTER = {
         zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030060200', size=10),
+            Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=10, tier='maxiops'),
         ],
         ip_addresses=[IPAddress(family='IPv6', access='public')],
@@ -35,22 +35,18 @@ CLUSTER = {
         zone='uk-lon1',
         password_delivery='none',
         storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000050010300', size=10),
-            Storage(size=10),
+            Storage(os='01000000-0000-4000-8000-000150020100', size=10),
+            Storage(size=10, tier='standard'),
         ],
-        login_user=login_user_block(
-            'testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True
-        ),
+        login_user=login_user_block('testuser', ['ssh-ed25519 AAAA'], False),
     ),
     'lb': Server(
         plan='1xCPU-1GB',
         hostname='balancer.example.com',
         zone='uk-lon1',
         password_delivery='none',
-        storage_devices=[Storage(os='Debian 10.0', size=30)],
-        login_user=login_user_block(
-            'testuser', ['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'], True
-        ),
+        storage_devices=[Storage(os='01000000-0000-4000-8000-000020070100', size=30)],
+        login_user=login_user_block('testuser', ['ssh-ed25519 AAAA'], False),
     ),
 }
 

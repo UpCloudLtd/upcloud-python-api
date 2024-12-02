@@ -10,12 +10,7 @@ from upcloud_api import CloudManager
 USERNAME = os.environ.get('UPCLOUD_API_USER')
 PASSWORD = os.environ.get('UPCLOUD_API_PASSWD')
 
-
-integration_test = pytest.mark.skipif(
-    True,  # TODO: not pytest.request.getoption('--integration-tests'),
-    reason='need --integration-tests option to run',
-)
-
+integration_test = pytest.mark.integration_tests
 
 # globals to store created resources so we can cleanup after tests
 CREATED_SERVERS = []
