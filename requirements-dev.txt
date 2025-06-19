@@ -54,7 +54,7 @@ tomli==2.2.1
     #   coverage
     #   pip-tools
     #   pytest
-urllib3==2.2.3
+urllib3==2.5.0
     # via
     #   requests
     #   responses
