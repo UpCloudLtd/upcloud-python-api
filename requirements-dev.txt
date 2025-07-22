@@ -54,6 +54,7 @@ urllib3==2.5.0
     #   responses
 wheel==0.45.1
     # via pip-tools
+zipp==3.19.1
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
