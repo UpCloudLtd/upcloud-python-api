@@ -8,7 +8,7 @@ __author_email__ = 'hello@upcloud.com'
 __maintainer__ = 'UpCloud'
 __maintainer_email__ = 'hello@upcloud.com'
 __license__ = 'MIT'
-__copyright__ = 'Copyright (c) 2015- UpCloud'
+__copyright__ = 'Copyright (c) 2015 UpCloud Oy'
 
 from upcloud_api.cloud_manager import CloudManager
 from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
