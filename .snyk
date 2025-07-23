@@ -1,0 +1,7 @@
+version: v1.25.0
+ignore:
+  SNYK-PYTHON-ZIPP-7430899:
+    - '*':
+        reason: Introduced by a transitive dependency that is not used in the project. (python 3.7 test in click 1.8.1)
+        expires: 2025-10-31
+patch: {}
