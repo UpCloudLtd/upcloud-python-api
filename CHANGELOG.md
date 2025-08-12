@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support authentication with API tokens
+- Added `Credentials` class for parsing credentials from environment similarly than in our Go based tooling.
+
 ## [2.7.0] - 2025-07-23
 
 ### Changed
