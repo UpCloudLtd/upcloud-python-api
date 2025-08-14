@@ -1,3 +1,4 @@
+keyring
 mock
 pip-tools
 pytest
