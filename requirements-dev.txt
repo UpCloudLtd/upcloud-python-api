@@ -18,8 +18,20 @@ idna==3.10
     # via requests
 iniconfig==2.1.0
     # via pytest
+jaraco-classes==3.4.0
+    # via keyring
+jaraco-context==6.0.1
+    # via keyring
+jaraco-functools==4.2.1
+    # via keyring
+keyring==25.6.0
+    # via -r requirements-dev.in
 mock==5.2.0
     # via -r requirements-dev.in
+more-itertools==10.7.0
+    # via
+    #   jaraco-classes
+    #   jaraco-functools
 packaging==25.0
     # via
     #   build

@@ -11,6 +11,7 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2015 UpCloud Oy'
 
 from upcloud_api.cloud_manager import CloudManager
+from upcloud_api.credentials import Credentials
 from upcloud_api.errors import UpCloudAPIError, UpCloudClientError
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.host import Host

@@ -44,6 +44,16 @@ python setup.py install
 More usage examples are available under [docs/]. If there's a specific thing you're interested in,
 but are not able to get working, please [contact UpCloud support](https://upcloud.com/contact/).
 
+### Load credentials from environment
+
+```python
+from upcloud_api import CloudManager, Credentials
+
+credentials = Credentials.parse()
+c = CloudManager(**credentials.dict)
+c.get_account()
+```
+
 ### Defining and creating servers
 
 ```python
