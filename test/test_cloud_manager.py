@@ -1,10 +1,18 @@
 import json
 
+import pytest
 import responses
 from conftest import Mock
 
+from upcloud_api import CloudManager
+from upcloud_api.errors import UpCloudClientError
+
 
 class TestCloudManagerBasic:
+    def test_no_credentials(self):
+        with pytest.raises(UpCloudClientError):
+            CloudManager()
+
     @responses.activate
     def test_get_account(self, manager):
         data = Mock.mock_get("account")
