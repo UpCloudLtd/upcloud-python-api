@@ -1,5 +1,3 @@
-import base64
-
 from upcloud_api.api import API
 from upcloud_api.cloud_manager.firewall_mixin import FirewallManager
 from upcloud_api.cloud_manager.host_mixin import HostManager
@@ -10,6 +8,8 @@ from upcloud_api.cloud_manager.object_storage_mixin import ObjectStorageManager
 from upcloud_api.cloud_manager.server_mixin import ServerManager
 from upcloud_api.cloud_manager.storage_mixin import StorageManager
 from upcloud_api.cloud_manager.tag_mixin import TagManager
+from upcloud_api.credentials import Credentials
+from upcloud_api.errors import UpCloudClientError
 
 
 class CloudManager(
@@ -31,21 +31,23 @@ class CloudManager(
 
     api: API
 
-    def __init__(self, username: str, password: str, timeout: int = 60) -> None:
+    def __init__(
+        self, username: str = None, password: str = None, timeout: int = 60, token: str = None
+    ) -> None:
         """
         Initiates CloudManager that handles all HTTP connections with UpCloud's API.
 
         Optionally determine a timeout for API connections (in seconds). A timeout with the value
         `None` means that there is no timeout.
         """
-        if not username or not password:
-            raise Exception('Invalid credentials, please provide a username and password')
-
-        credentials = f'{username}:{password}'.encode()
-        encoded_credentials = base64.b64encode(credentials).decode()
+        credentials = Credentials(username, password, token)
+        if not credentials.is_defined:
+            raise UpCloudClientError(
+                "Credentials are not defined. Please provide username and password or an API token."
+            )
 
         self.api = API(
-            token=f'Basic {encoded_credentials}',
+            token=credentials.authorization,
             timeout=timeout,
         )
 
