@@ -32,7 +32,6 @@ from upcloud_api import Server
 from upcloud_api import FirewallRule
 from upcloud_api import Network
 from upcloud_api import IPAddress
-from upcloud_api import ObjectStorage
 
 manager = upcloud_api.CloudManager("username", "password")
 ```
