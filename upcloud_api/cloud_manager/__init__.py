@@ -4,7 +4,6 @@ from upcloud_api.cloud_manager.host_mixin import HostManager
 from upcloud_api.cloud_manager.ip_address_mixin import IPManager
 from upcloud_api.cloud_manager.lb_mixin import LoadBalancerManager
 from upcloud_api.cloud_manager.network_mixin import NetworkManager
-from upcloud_api.cloud_manager.object_storage_mixin import ObjectStorageManager
 from upcloud_api.cloud_manager.server_mixin import ServerManager
 from upcloud_api.cloud_manager.storage_mixin import StorageManager
 from upcloud_api.cloud_manager.tag_mixin import TagManager
@@ -18,7 +17,6 @@ class CloudManager(
     IPManager,
     LoadBalancerManager,
     NetworkManager,
-    ObjectStorageManager,
     ServerManager,
     StorageManager,
     TagManager,
