@@ -28,7 +28,7 @@ jobs:
           - py311
           - py312
           - py313
-          - pypy3
+          - pypy311
     permissions:
       contents: read
     steps:
