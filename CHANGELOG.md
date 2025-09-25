@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Support for discontinued non-managed object storage product. Note: treated as non-breaking change as all users have been migrated to the new managed product
+
 ## [2.8.0] - 2025-08-18
 
 ### Added

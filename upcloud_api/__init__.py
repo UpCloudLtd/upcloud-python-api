@@ -28,7 +28,6 @@ from upcloud_api.load_balancer import (
     LoadBalancerNetwork,
 )
 from upcloud_api.network import Network
-from upcloud_api.object_storage import ObjectStorage
 from upcloud_api.router import Router
 from upcloud_api.server import Server, ServerNetworkInterface, login_user_block
 from upcloud_api.server_group import ServerGroup, ServerGroupAffinityPolicy
