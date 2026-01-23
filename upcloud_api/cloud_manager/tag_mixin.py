@@ -1,5 +1,3 @@
-from typing import Optional
-
 from upcloud_api.api import API
 from upcloud_api.tag import Tag
 
@@ -24,7 +22,7 @@ class TagManager:
         return Tag(cloud_manager=self, **res['tag'])
 
     def create_tag(
-        self, name: str, description: Optional[str] = None, servers: Optional[list] = None
+        self, name: str, description: str | None = None, servers: list | None = None
     ) -> Tag:
         """
         Create a new Tag. Only name is mandatory.
