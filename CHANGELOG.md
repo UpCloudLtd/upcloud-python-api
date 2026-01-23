@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Python versions supported: 3.10, 3.11, 3.12, 3.13, PyPy3. Dropped support for 3.9.
+
 ## [2.9.0] - 2025-09-25
 
 ### Removed
