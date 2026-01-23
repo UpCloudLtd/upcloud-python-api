@@ -73,7 +73,7 @@ responses==0.25.7
     # via -r requirements-dev.in
 secretstorage==3.5.0
     # via keyring
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   requests
     #   responses
