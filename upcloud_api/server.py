@@ -1,5 +1,5 @@
 from time import sleep
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from upcloud_api.firewall import FirewallRule
 from upcloud_api.ip_address import IPAddress
@@ -276,7 +276,7 @@ class Server:
 
     def add_storage(
         self,
-        storage: Optional[Storage] = None,  # TODO: this probably shouldn't be optional
+        storage: Storage | None = None,  # TODO: this probably shouldn't be optional
         type: str = 'disk',
         address=None,
     ) -> None:

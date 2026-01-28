@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import BinaryIO, Optional, Union
+from typing import BinaryIO
 
 from upcloud_api.api import API
 from upcloud_api.storage import BackupDeletionPolicy, Storage
@@ -47,7 +47,7 @@ class StorageManager:
         title: str = 'Storage disk',
         encrypted: bool = False,
         *,
-        backup_rule: Optional[dict] = None,
+        backup_rule: dict | None = None,
     ) -> Storage:
         """
         Create a Storage object. Returns an object based on the API's response.
@@ -70,7 +70,7 @@ class StorageManager:
         res = self.api.post_request('/storage', body)
         return Storage(cloud_manager=self, **res['storage'])
 
-    def _modify_storage(self, storage, size, title, backup_rule: Optional[dict] = None):
+    def _modify_storage(self, storage, size, title, backup_rule: dict | None = None):
         body = {'storage': {}}
         if size:
             body['storage']['size'] = size
@@ -81,7 +81,7 @@ class StorageManager:
         return self.api.put_request('/storage/' + str(storage), body)
 
     def modify_storage(
-        self, storage: str, size: int, title: str, backup_rule: Optional[dict] = None
+        self, storage: str, size: int, title: str, backup_rule: dict | None = None
     ) -> Storage:
         """
         Modify a Storage object. Returns an object based on the API's response.
@@ -95,9 +95,7 @@ class StorageManager:
         """
         return self.api.delete_request(f'/storage/{uuid}?backups={backups.value}')
 
-    def clone_storage(
-        self, storage: Union[Storage, str], title: str, zone: str, tier=None
-    ) -> Storage:
+    def clone_storage(self, storage: Storage | str, title: str, zone: str, tier=None) -> Storage:
         """
         Clones a Storage object. Returns an object based on the API's response.
         """
@@ -203,7 +201,7 @@ class StorageManager:
     def upload_file_for_storage_import(
         self,
         storage_import: StorageImport,
-        file: Union[str, PathLike, BinaryIO],
+        file: str | PathLike | BinaryIO,
         timeout: int = 30,
         content_type: str = 'application/octet-stream',
     ):
