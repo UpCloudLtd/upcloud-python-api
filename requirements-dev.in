@@ -4,4 +4,3 @@ pip-tools
 pytest
 pytest-cov
 responses
-zipp>=3.19.1  # pinned to avoid CVE-2024-5569 vulnerability
