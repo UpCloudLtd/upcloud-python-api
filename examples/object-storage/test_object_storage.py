@@ -17,16 +17,18 @@ import os
 import sys
 import time
 import traceback
-
-from upcloud_api.api.object_storage_2 import (
-    create_service,
-    delete_service,
-    list_services,
-)
-from upcloud_api.models import ServiceCreate
-from upcloud_api.models.property_configured_status import PropertyConfiguredStatus
+from uuid import UUID
 
 from upcloud_api import AuthenticatedClient
+from upcloud_api.api.object_storage_2 import (
+    create_object_storage,
+    delete_object_storage,
+    list_object_storages,
+)
+from upcloud_api.models import ObjectStorage2ServiceCreate
+from upcloud_api.models.object_storage_2_property_configured_status import (
+    ObjectStorage2PropertyConfiguredStatus,
+)
 
 
 def main():
@@ -46,10 +48,10 @@ def main():
         sys.exit(1)
 
     print("\n2. Listing existing Managed Object Storage services (BEFORE)...")
-    print("   Testing SDK function: list_services.sync_detailed()")
+    print("   Testing SDK function: list_object_storages.sync_detailed()")
     try:
         print("\n   Attempting SDK call...")
-        response = list_services.sync_detailed(client=client)
+        response = list_object_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_before = response.parsed or []
@@ -73,13 +75,13 @@ def main():
 
     try:
         # Create service using SDK models
-        service_payload = ServiceCreate(
+        service_payload = ObjectStorage2ServiceCreate(
             name=test_service_name,
             region="europe-1",
-            configured_status=PropertyConfiguredStatus.STARTED,
+            configured_status=ObjectStorage2PropertyConfiguredStatus.STARTED,
         )
 
-        response = create_service.sync_detailed(client=client, body=service_payload)
+        response = create_object_storage.sync_detailed(client=client, body=service_payload)
 
         if response.status_code in (200, 201, 202) and response.parsed:
             print(f"     Service '{test_service_name}' created successfully")
@@ -99,7 +101,7 @@ def main():
 
     print("\n4. Listing Managed Object Storage services (AFTER)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_object_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_after = response.parsed or []
@@ -135,8 +137,8 @@ def main():
         if not created_service_uuid:
             print("     No service UUID found from create response; skipping delete")
         else:
-            response = delete_service.sync_detailed(
-                client=client, service_uuid=created_service_uuid
+            response = delete_object_storage.sync_detailed(
+                client=client, service_uuid=UUID(str(created_service_uuid))
             )
 
             if response.status_code in (200, 204):
