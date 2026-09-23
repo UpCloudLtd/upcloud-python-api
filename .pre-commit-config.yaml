@@ -6,7 +6,10 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.8
     hooks:
+      # mdtest concatenates Python snippets whose indentation must be preserved.
       - id: ruff-check
         args:
           - --fix
+        types: [python]
       - id: ruff-format
+        types: [python]

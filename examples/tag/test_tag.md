@@ -32,16 +32,17 @@ import os
 import sys
 import time
 
-from upcloud_api import AuthenticatedClient
 from upcloud_api.api.tag import (
     list_tags,
     create_tag,
     delete_tag,
 )
 from upcloud_api.models import Tag
-from upcloud_api.models.tag_tag import TagTag
 from upcloud_api.models.tag_servers import TagServers
+from upcloud_api.models.tag_tag import TagTag
 from upcloud_api.types import UNSET
+
+from upcloud_api import AuthenticatedClient
 
 ```
 
