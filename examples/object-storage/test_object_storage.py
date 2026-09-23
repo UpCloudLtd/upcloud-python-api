@@ -18,7 +18,6 @@ import sys
 import time
 import traceback
 
-from upcloud_api import AuthenticatedClient
 from upcloud_api.api.object_storage_2 import (
     create_service,
     delete_service,
@@ -26,6 +25,8 @@ from upcloud_api.api.object_storage_2 import (
 )
 from upcloud_api.models import ServiceCreate
 from upcloud_api.models.property_configured_status import PropertyConfiguredStatus
+
+from upcloud_api import AuthenticatedClient
 
 
 def main():

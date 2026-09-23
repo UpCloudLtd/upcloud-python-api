@@ -34,7 +34,6 @@ Tests:
 import sys
 import os
 import time
-from upcloud_api import AuthenticatedClient
 from upcloud_api.api.object_storage_2 import (
     list_services,
     create_service,
@@ -42,6 +41,8 @@ from upcloud_api.api.object_storage_2 import (
 )
 from upcloud_api.models import ServiceCreate
 from upcloud_api.models.property_configured_status import PropertyConfiguredStatus
+
+from upcloud_api import AuthenticatedClient
 
 ```
 

@@ -33,7 +33,6 @@ import sys
 import time
 from uuid import UUID
 
-from upcloud_api import AuthenticatedClient
 from upcloud_api.api.file_storage import (
     list_services,
     create_service,
@@ -41,6 +40,8 @@ from upcloud_api.api.file_storage import (
 )
 from upcloud_api.models import FileStorageServiceCreate
 from upcloud_api.models.file_storage_configured_status import FileStorageConfiguredStatus
+
+from upcloud_api import AuthenticatedClient
 
 ```
 
