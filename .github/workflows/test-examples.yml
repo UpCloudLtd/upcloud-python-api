@@ -36,3 +36,8 @@ jobs:
         env:
           UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
         run: mdtest examples/tag/test_tag.md
+
+      - name: Test Kubernetes API
+        env:
+          UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
+        run: mdtest examples/kubernetes/test_kubernetes.md
