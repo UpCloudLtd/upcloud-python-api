@@ -10,48 +10,46 @@ fi
 # Strip leading "v" for Python packaging versions
 PY_VERSION="${VERSION#v}"
 
-SDK_DIR="sdk"
 ARTIFACT_DIR="generator/release-artifacts"
+BUILD_DIR="$ARTIFACT_DIR/dist"
 
-if [ ! -d "$SDK_DIR" ]; then
-  echo "ERROR: $SDK_DIR/ not found. Did you merge a regen PR?"
+if [ ! -d "upcloud_api" ]; then
+  echo "ERROR: upcloud_api/ not found. Did you merge a regen PR?"
   exit 1
 fi
 
-if [ ! -f "$SDK_DIR/pyproject.toml" ]; then
-  echo "ERROR: $SDK_DIR/pyproject.toml not found. SDK not packaged?"
+if [ ! -f "pyproject.toml" ]; then
+  echo "ERROR: pyproject.toml not found. SDK not packaged?"
   exit 1
 fi
 
 echo "== Prepare Release: Python SDK (${VERSION}) =="
 
+rm -rf "$ARTIFACT_DIR"
+mkdir -p "$BUILD_DIR"
+
 # Set the package version before building; the spec version stays unchanged.
-uv run --locked python generator/scripts/set_version.py \
-  "$SDK_DIR/pyproject.toml" \
-  "$PY_VERSION"
+uv run --locked python generator/scripts/set_version.py pyproject.toml "$PY_VERSION"
 
 echo "== Building sdist + wheel =="
-uv build --out-dir "$SDK_DIR/dist" "$SDK_DIR"
+uv build --out-dir "$BUILD_DIR"
 
 echo "== Validating distributions (twine check) =="
-uvx --from twine twine check "$SDK_DIR/dist"/*
+uvx --from twine twine check "$BUILD_DIR"/*
 
-echo "== Creating release artifacts directory =="
-rm -rf "$ARTIFACT_DIR"
-mkdir -p "$ARTIFACT_DIR"
-
-# 1) Template-parity tarball of the generated SDK folder
+# 1) Source tarball of the SDK project
 TARBALL="python-sdk.tar.gz"
-tar -czf "$ARTIFACT_DIR/$TARBALL" "$SDK_DIR"
+tar --exclude='__pycache__' --exclude='*.pyc' -czf "$ARTIFACT_DIR/$TARBALL" \
+  pyproject.toml README.md LICENSE.txt upcloud_api
 
 # 2) Copy wheel + sdist into release artifacts
-cp -v "$SDK_DIR/dist"/* "$ARTIFACT_DIR/"
+cp -v "$BUILD_DIR"/* "$ARTIFACT_DIR/"
 
 # 3) Traceability file (helps with debugging later)
 cat > "$ARTIFACT_DIR/build-info.txt" <<EOF
 tag=${VERSION}
 python_version=${PY_VERSION}
-sdk_dir=${SDK_DIR}
+sdk_dir=.
 built_at_utc=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 
