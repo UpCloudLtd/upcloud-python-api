@@ -34,9 +34,9 @@ import time
 from uuid import UUID
 
 from upcloud_api.api.file_storage import (
-    list_services,
-    create_service,
-    delete_service,
+    list_file_storages,
+    create_file_storage,
+    delete_file_storage,
 )
 from upcloud_api.models import FileStorageServiceCreate
 from upcloud_api.models.file_storage_configured_status import FileStorageConfiguredStatus
@@ -78,7 +78,7 @@ Before creating a new service, we list all existing File Storage services. This 
 
     print("\n2. Listing existing File Storage services (BEFORE)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_file_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_before = response.parsed or []
@@ -115,7 +115,7 @@ Now we create a new File Storage service using the `FileStorageServiceCreate` mo
             size_gib=size_gib,
         )
 
-        response = create_service.sync_detailed(
+        response = create_file_storage.sync_detailed(
             client=client,
             body=service_payload,
         )
@@ -144,7 +144,7 @@ After creating the service, we list all services again to verify the new service
 
     print("\n4. Listing File Storage services (AFTER)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_file_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_after = response.parsed or []
@@ -184,7 +184,7 @@ Finally, we clean up by deleting the test service we created. We wait a few seco
         if not created_service_uuid:
             print("     No service UUID found from create response; skipping delete")
         else:
-            response = delete_service.sync_detailed(
+            response = delete_file_storage.sync_detailed(
                 client=client,
                 service_uuid=UUID(str(created_service_uuid)),
             )
@@ -230,7 +230,7 @@ The script uses strict mode (`set -euo pipefail`) to exit on any error, undefine
 set -euo pipefail
 
 # Test File Storage API
-# Tests: list_services, create_service, list_services again, delete_service
+# Tests: list_file_storages, create_file_storage, list_file_storages again, delete_file_storage
 ```
 
 ### Configuration Variables
