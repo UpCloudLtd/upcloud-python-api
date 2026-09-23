@@ -1,6 +1,41 @@
+[project]
+name = "upcloud-api"
+version = "2.9.0"
+description = "UpCloud API Client"
+readme = "README.md"
+requires-python = ">=3.10,<4"
+license = "MIT"
+license-files = ["LICENSE.txt"]
+dependencies = ["requests"]
+
+[[project.maintainers]]
+name = "UpCloud"
+email = "hello@upcloud.com"
+
+[project.optional-dependencies]
+keyring = ["keyring>=23.0"]
+
+[project.urls]
+Homepage = "https://github.com/UpCloudLtd/upcloud-python-api"
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "upcloud_api"
+module-root = ""
+source-include = [
+    "docs/**",
+    "mkdocs.yml",
+    "test/conftest.py",
+    "test/json_data/**",
+    "test/test_*.py",
+]
+
 [tool.black]
 line-length = 99
-target-version = ['py310']
+target-version = ["py310"]
 skip-string-normalization = true
 
 [tool.ruff]
@@ -28,7 +63,6 @@ ignore = [
 ]
 line-length = 99
 select = [
-    # NB: `hacking` rules aren't supported by ruff
     "B",
     "D",
     "E",
