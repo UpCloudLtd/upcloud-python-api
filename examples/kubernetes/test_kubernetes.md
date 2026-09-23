@@ -70,6 +70,7 @@ The `main()` function starts by reading configuration from environment variables
 ```py filename=test_kubernetes_test.py
 
 def main():
+    """Run the Kubernetes API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
     zone = os.environ.get("UKS_ZONE", "fi-hel1")
     network_cidr = os.environ.get("UKS_NETWORK_CIDR", "10.0.0.0/24")

@@ -52,6 +52,7 @@ The `main()` function starts by reading the authentication token from environmen
 ```py filename=test_tag_test.py
 
 def main():
+    """Run the Tag API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
 
     if not token:

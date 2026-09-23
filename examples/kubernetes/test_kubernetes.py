@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Test script for Kubernetes API.
+"""
+Test script for Kubernetes API.
 
 Tests:
 - Authenticate client
@@ -39,6 +40,7 @@ from upcloud_api.types import UNSET
 
 
 def main():
+    """Run the Kubernetes API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
     zone = os.environ.get("UKS_ZONE", "fi-hel1")
     network_cidr = os.environ.get("UKS_NETWORK_CIDR", "10.0.0.0/24")
@@ -51,7 +53,9 @@ def main():
         print("ERROR: UPCLOUD_TOKEN environment variable is required")
         sys.exit(1)
 
-    ssh_keys = [key.strip() for key in ssh_keys_raw.split(",") if key.strip()] if ssh_keys_raw else None
+    ssh_keys = (
+        [key.strip() for key in ssh_keys_raw.split(",") if key.strip()] if ssh_keys_raw else None
+    )
 
     print("1. Authenticating client...")
     try:
@@ -88,7 +92,9 @@ def main():
 
         if response.status_code == 201 and response.parsed is not None:
             created_network_uuid = response.parsed.network.uuid
-            print(f"     Network '{test_network_name}' created successfully ({created_network_uuid})")
+            print(
+                f"     Network '{test_network_name}' created successfully ({created_network_uuid})"
+            )
         else:
             print(f"     Failed with status: {response.status_code}")
             print(f"     Parsed: {response.parsed}")
@@ -210,7 +216,9 @@ def main():
                 print("     Cluster not found for deletion (may have been auto-deleted)")
             else:
                 print(f"     Failed to delete (status: {response.status_code})")
-                print(f"     Note: Manual cleanup may be required for cluster '{test_cluster_name}'")
+                print(
+                    f"     Note: Manual cleanup may be required for cluster '{test_cluster_name}'"
+                )
     except Exception as e:
         print(f"     Error during cleanup: {e}")
         traceback.print_exc()
@@ -235,7 +243,9 @@ def main():
                 print("     Network not found for deletion (may have been auto-deleted)")
             else:
                 print(f"     Failed to delete (status: {response.status_code})")
-                print(f"     Note: Manual cleanup may be required for network '{test_network_name}'")
+                print(
+                    f"     Note: Manual cleanup may be required for network '{test_network_name}'"
+                )
     except Exception as e:
         print(f"     Error during cleanup: {e}")
         traceback.print_exc()
