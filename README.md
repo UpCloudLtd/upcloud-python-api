@@ -11,7 +11,7 @@ Please test thoroughly before production use. A separate UpCloud account for dev
 
 ## Installation
 
-Stable 2.x remains the default on PyPI:
+Stable 2.x remains the default on PyPI. Once a v3 alpha is published, select it explicitly:
 
 ```bash
 pip install upcloud-api               # latest 2.x (currently 2.9.x)
@@ -26,11 +26,11 @@ The distribution name is `upcloud-api`. The import package is `upcloud_api`.
 
 ### Supported Python versions
 
-- Python 3.10
 - Python 3.11
 - Python 3.12
 - Python 3.13
 - Python 3.14
+- PyPy 3.11
 
 ## Usage
 
@@ -61,6 +61,37 @@ generator/scripts/generate.sh
 ```
 
 `generate.sh` patches the spec, then recreates `sdk/`. Do not hand-edit `sdk/upcloud_api/` except via generator templates or `generator/scripts/patch_openapi.py`.
+
+## Development
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then set up
+the locked environment (Python 3.14 by default):
+
+```bash
+uv sync --locked
+uv run --locked pre-commit run --all-files
+uv build sdk
+```
+
+The root is a non-publishable development workspace; `sdk/` is the distributable
+`upcloud-api` package. To run a live example against the **local** SDK, set
+`UPCLOUD_TOKEN` for a separate development account and run, for example:
+
+```bash
+bash examples/tag/test_tag.sh
+```
+
+The literate examples also run via mdtest in CI. For a local mdtest run, pass the
+absolute SDK path because mdtest executes shell snippets in a temporary directory:
+
+```bash
+UPCLOUD_SDK_PATH="$(pwd)/sdk" mdtest examples/tag/test_tag.md
+```
+
+After regenerating the SDK from a new spec, run `uv lock` to update the workspace
+lockfile. The generated `sdk/pyproject.toml` version follows the spec version;
+the v3 release workflows set the package version from the release tag or manual
+TestPyPI input before building.
 
 ## Changelog
 
