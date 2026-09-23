@@ -49,7 +49,7 @@ client = AuthenticatedClient(
 #     servers = list_servers.sync(client=client)
 ```
 
-This is not a drop-in replacement for `CloudManager`. See generated helpers under `sdk/README.md` and examples under `examples/`.
+This is not a drop-in replacement for `CloudManager`. See generated helpers under `upcloud_api/` and examples under `examples/`.
 
 ## Regenerating the client
 
@@ -60,7 +60,8 @@ cp /path/to/upcloud-public-openapi.json generator/openapi/spec.json
 generator/scripts/generate.sh
 ```
 
-`generate.sh` patches the spec, then recreates `sdk/`. Do not hand-edit `sdk/upcloud_api/` except via generator templates or `generator/scripts/patch_openapi.py`.
+`generate.sh` patches the spec, then recreates only `upcloud_api/`. Do not hand-edit
+`upcloud_api/` except via generator templates or `generator/scripts/patch_openapi.py`.
 
 ## Development
 
@@ -70,11 +71,11 @@ the locked environment (Python 3.14 by default):
 ```bash
 uv sync --locked
 uv run --locked pre-commit run --all-files
-uv build sdk
+uv build
 ```
 
-The root is a non-publishable development workspace; `sdk/` is the distributable
-`upcloud-api` package. To run a live example against the **local** SDK, set
+The root is the distributable `upcloud-api` package. To run a live example
+against the **local** SDK, set
 `UPCLOUD_TOKEN` for a separate development account and run, for example:
 
 ```bash
@@ -85,13 +86,14 @@ The literate examples also run via mdtest in CI. For a local mdtest run, pass th
 absolute SDK path because mdtest executes shell snippets in a temporary directory:
 
 ```bash
-UPCLOUD_SDK_PATH="$(pwd)/sdk" mdtest examples/tag/test_tag.md
+UPCLOUD_SDK_PATH="$(pwd)" mdtest examples/tag/test_tag.md
 ```
 
-After regenerating the SDK from a new spec, run `uv lock` to update the workspace
-lockfile. The generated `sdk/pyproject.toml` version follows the spec version;
-the v3 release workflows set the package version from the release tag or manual
-TestPyPI input before building.
+After regenerating the SDK from a new spec, run `uv lock` to update the lockfile.
+`SPEC_VERSION` follows the OpenAPI spec, while the package version in the root
+`pyproject.toml` defaults to `3.0.0.dev0`. The v3 release workflows set the
+package version from the release tag or manual TestPyPI input before building.
+The root `pyproject.toml`, README, and license are not overwritten by regeneration.
 
 ## Changelog
 
