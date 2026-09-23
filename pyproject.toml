@@ -18,6 +18,17 @@ keyring = ["keyring>=23.0"]
 [project.urls]
 Homepage = "https://github.com/UpCloudLtd/upcloud-python-api"
 
+[dependency-groups]
+dev = [
+    "keyring",
+    "mock",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "responses",
+    "ruff",
+]
+
 [build-system]
 requires = ["uv_build>=0.12.9,<0.13.0"]
 build-backend = "uv_build"

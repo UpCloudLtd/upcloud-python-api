@@ -1,6 +1,0 @@
-keyring
-mock
-pip-tools
-pytest
-pytest-cov
-responses
