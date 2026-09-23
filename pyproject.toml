@@ -3,7 +3,7 @@ name = "upcloud-api"
 version = "2.9.0"
 description = "UpCloud API Client"
 readme = "README.md"
-requires-python = ">=3.10,<4"
+requires-python = ">=3.11,<4"
 license = "MIT"
 license-files = ["LICENSE.txt"]
 dependencies = ["requests"]
@@ -56,7 +56,7 @@ addopts = [
 testpaths = ["test"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 exclude = [
     ".git",
     "ENV",
