@@ -33,6 +33,9 @@ dev = [
 requires = ["uv_build>=0.12.9,<0.13.0"]
 build-backend = "uv_build"
 
+[tool.uv]
+required-version = ">=0.12.9,<0.13.0"
+
 [tool.uv.build-backend]
 module-name = "upcloud_api"
 module-root = ""
