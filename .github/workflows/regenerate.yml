@@ -1,0 +1,108 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+name: Regenerate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Spec version (e.g. 1.2.3)
+        required: true
+        type: string
+      asset_url:
+        description: GitHub API URL for the spec tarball release asset
+        required: true
+        type: string
+      spec_file:
+        description: Spec filename inside the released spec tarball
+        required: true
+        type: string
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      SPEC_VERSION: ${{ github.event.inputs.version }}
+      ASSET_URL: ${{ github.event.inputs.asset_url }}
+      SPEC_FILE: ${{ github.event.inputs.spec_file || 'upcloud-public-openapi.json' }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: v3-dev
+          fetch-depth: 1
+
+      - name: Download OpenAPI Spec
+        env:
+          SPECS_ACCESS_PAT: ${{ secrets.SPECS_ACCESS_PAT }}
+        run: |
+          set -euxo pipefail
+
+          if [ -z "$SPEC_VERSION" ]; then
+            echo "ERROR: Missing workflow_dispatch input: version"
+            exit 1
+          fi
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "ERROR: Missing asset_url"
+            exit 1
+          fi
+
+          if [ -z "$SPEC_FILE" ]; then
+            echo "ERROR: Missing spec_file"
+            exit 1
+          fi
+
+          : "${SPECS_ACCESS_PAT:?ERROR: SPECS_ACCESS_PAT secret is not set}"
+
+          echo "Spec version: $SPEC_VERSION"
+          echo "Spec file: $SPEC_FILE"
+          echo "Downloading from ASSET_URL='$ASSET_URL'"
+
+          mkdir -p generator/openapi
+
+          curl --fail -L \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-delay 2 \
+            -H "Authorization: Bearer $SPECS_ACCESS_PAT" \
+            -H "Accept: application/octet-stream" \
+            "$ASSET_URL" \
+            -o spec.tar.gz
+
+          echo "Extracting spec"
+          rm -rf /tmp/spec-extract
+          mkdir -p /tmp/spec-extract generator/openapi
+
+          if ! tar -tzf spec.tar.gz | grep -Fx "$SPEC_FILE" >/dev/null; then
+            echo "ERROR: $SPEC_FILE not found in downloaded tarball"
+            tar -tzf spec.tar.gz
+            exit 1
+          fi
+
+          tar -xzf spec.tar.gz -C /tmp/spec-extract "$SPEC_FILE"
+          mv "/tmp/spec-extract/$SPEC_FILE" generator/openapi/spec.json
+
+          if [ ! -f generator/openapi/spec.json ]; then
+            echo "ERROR: spec.json not found after extraction"
+            find generator/openapi -maxdepth 2 -type f
+            exit 1
+          fi
+
+      - name: Run generator
+        run: |
+          chmod +x generator/scripts/generate.sh
+          generator/scripts/generate.sh
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: regenerate SDK from spec ${{ env.SPEC_VERSION }}"
+          branch: "regen/${{ env.SPEC_VERSION }}"
+          title: "Regenerate SDK (${{ env.SPEC_VERSION }})"
+          base: v3-dev
+          body: >
+            Automated regeneration for spec version
+            `${{ env.SPEC_VERSION }}`.
