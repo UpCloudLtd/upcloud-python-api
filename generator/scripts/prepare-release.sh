@@ -25,29 +25,16 @@ fi
 
 echo "== Prepare Release: Python SDK (${VERSION}) =="
 
-# Build in an isolated venv to avoid relying on runner Python packages
-BUILD_VENV=".venv-release-build"
-rm -rf "$BUILD_VENV"
-python3 -m venv "$BUILD_VENV"
-# shellcheck disable=SC1090
-source "$BUILD_VENV/bin/activate"
-
-python -m pip install --upgrade pip setuptools wheel build twine tomlkit poetry-core
-
-# Set poetry version in pyproject.toml
-python generator/scripts/set_version.py \
+# Set the package version before building; the spec version stays unchanged.
+uv run --locked python generator/scripts/set_version.py \
   "$SDK_DIR/pyproject.toml" \
   "$PY_VERSION"
 
 echo "== Building sdist + wheel =="
-rm -rf "$SDK_DIR/dist"
-mkdir -p "$SDK_DIR/dist"
-python -m build --outdir "$SDK_DIR/dist" "$SDK_DIR"
+uv build --out-dir "$SDK_DIR/dist" "$SDK_DIR"
 
 echo "== Validating distributions (twine check) =="
-python -m twine check "$SDK_DIR/dist"/*
-
-deactivate
+uvx --from twine twine check "$SDK_DIR/dist"/*
 
 echo "== Creating release artifacts directory =="
 rm -rf "$ARTIFACT_DIR"

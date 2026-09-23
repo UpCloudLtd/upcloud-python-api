@@ -22,24 +22,10 @@ if [ ! -f "$SDK_DIR/pyproject.toml" ]; then
   exit 1
 fi
 
-rm -rf docs-src
 mkdir -p "$OUT_DIR"
 
-VENV=".venv-docs"
-rm -rf "$VENV"
-python3 -m venv "$VENV"
-# shellcheck disable=SC1090
-source "$VENV/bin/activate"
-
-pip install --quiet --upgrade pip
-pip install --quiet pydoc-markdown
-
 echo "== Install SDK and generate docs =="
-pip install --quiet "./$SDK_DIR"
-
-pydoc-markdown "$CONFIG"
-
-deactivate
+uvx --with "./$SDK_DIR" pydoc-markdown "$CONFIG"
 
 if [ ! -f "$OUT_FILE" ]; then
   echo "ERROR: Expected output not found: $OUT_FILE"
