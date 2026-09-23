@@ -20,7 +20,7 @@ pip install "upcloud-api==3.0.0a1"    # this generated v3 alpha
 
 Do **not** rely on a blanket `pip install --pre`. That would also pull pre-releases of other dependencies.
 
-**Ansible / version specifiers:** `upcloud-api>=2.9,<3` stays on 2.x: under PEP 440, `<3` excludes `3.0.0a1` even with `--pre`. To opt into the v3 alpha, pin `upcloud-api==3.0.0a1`.
+`upcloud-api>=2.9,<3` stays on 2.x: under PEP 440, `<3` excludes `3.0.0a1` even with `--pre`. To opt into the v3 alpha, pin `upcloud-api==3.0.0a1`.
 
 The distribution name is `upcloud-api`. The import package is `upcloud_api`.
 
