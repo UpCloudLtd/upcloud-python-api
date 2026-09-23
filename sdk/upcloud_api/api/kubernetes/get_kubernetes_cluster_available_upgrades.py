@@ -1,0 +1,173 @@
+from http import HTTPStatus
+from typing import Any
+from urllib.parse import quote
+from uuid import UUID
+
+import httpx
+
+from ...client import AuthenticatedClient, Client
+from ...models.kubernetes_cluster_available_upgrades import KubernetesClusterAvailableUpgrades
+from ...models.kubernetes_error import KubernetesError
+from ...types import Response
+
+
+def _get_kwargs(
+    uuid: UUID,
+) -> dict[str, Any]:
+
+    _kwargs: dict[str, Any] = {
+        "method": "get",
+        "url": "/1.3/kubernetes/{uuid}/available-upgrades".format(
+            uuid=quote(str(uuid), safe=""),
+        ),
+    }
+
+    return _kwargs
+
+
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> KubernetesClusterAvailableUpgrades | KubernetesError:
+    if response.status_code == 200:
+        response_200 = KubernetesClusterAvailableUpgrades.from_dict(response.json())
+
+        return response_200
+
+    if response.status_code == 401:
+        response_401 = KubernetesError.from_dict(response.json())
+
+        return response_401
+
+    if response.status_code == 404:
+        response_404 = KubernetesError.from_dict(response.json())
+
+        return response_404
+
+    response_default = KubernetesError.from_dict(response.json())
+
+    return response_default
+
+
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[KubernetesClusterAvailableUpgrades | KubernetesError]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
+
+def sync_detailed(
+    uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> Response[KubernetesClusterAvailableUpgrades | KubernetesError]:
+    """Get available upgrades
+
+     Returns a list of available versions that can be used to upgrade the cluster.
+
+    Args:
+        uuid (UUID): UUID
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[KubernetesClusterAvailableUpgrades | KubernetesError]
+    """
+
+    kwargs = _get_kwargs(
+        uuid=uuid,
+    )
+
+    response = client.get_httpx_client().request(
+        **kwargs,
+    )
+
+    return _build_response(client=client, response=response)
+
+
+def sync(
+    uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> KubernetesClusterAvailableUpgrades | KubernetesError | None:
+    """Get available upgrades
+
+     Returns a list of available versions that can be used to upgrade the cluster.
+
+    Args:
+        uuid (UUID): UUID
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        KubernetesClusterAvailableUpgrades | KubernetesError
+    """
+
+    return sync_detailed(
+        uuid=uuid,
+        client=client,
+    ).parsed
+
+
+async def asyncio_detailed(
+    uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> Response[KubernetesClusterAvailableUpgrades | KubernetesError]:
+    """Get available upgrades
+
+     Returns a list of available versions that can be used to upgrade the cluster.
+
+    Args:
+        uuid (UUID): UUID
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[KubernetesClusterAvailableUpgrades | KubernetesError]
+    """
+
+    kwargs = _get_kwargs(
+        uuid=uuid,
+    )
+
+    response = await client.get_async_httpx_client().request(**kwargs)
+
+    return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> KubernetesClusterAvailableUpgrades | KubernetesError | None:
+    """Get available upgrades
+
+     Returns a list of available versions that can be used to upgrade the cluster.
+
+    Args:
+        uuid (UUID): UUID
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        KubernetesClusterAvailableUpgrades | KubernetesError
+    """
+
+    return (
+        await asyncio_detailed(
+            uuid=uuid,
+            client=client,
+        )
+    ).parsed
