@@ -235,11 +235,11 @@ set -euo pipefail
 
 ### Configuration Variables
 
-mdtest runs the shell script in a temporary directory. Point it at the checked-out SDK with `UPCLOUD_SDK_PATH`.
+mdtest runs the shell script in a temporary directory. Point it at the repository root with `UPCLOUD_SDK_PATH`.
 
 ```sh filename=test.sh
 
-SDK_DIR="${UPCLOUD_SDK_PATH:?Set UPCLOUD_SDK_PATH to the local sdk directory}"
+SDK_DIR="${UPCLOUD_SDK_PATH:?Set UPCLOUD_SDK_PATH to the repository root}"
 ```
 
 ### Test Header Output

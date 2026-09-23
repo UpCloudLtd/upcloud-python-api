@@ -4,8 +4,9 @@ on:
   pull_request:
     paths:
       - ".github/workflows/test-examples.yml"
-      - "sdk/**/*.py"
-      - "sdk/pyproject.toml"
+      - "upcloud_api/**/*.py"
+      - "pyproject.toml"
+      - "uv.lock"
       - "examples/**/*.md"
   workflow_dispatch:
 
@@ -13,7 +14,7 @@ jobs:
   test-examples:
     runs-on: ubuntu-latest
     env:
-      UPCLOUD_SDK_PATH: ${{ github.workspace }}/sdk
+      UPCLOUD_SDK_PATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout
