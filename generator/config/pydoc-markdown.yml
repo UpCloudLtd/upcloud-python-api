@@ -1,0 +1,22 @@
+loaders:
+  - type: python
+    modules:
+      - upcloud_api
+      - upcloud_api.client
+      - upcloud_api.errors
+      - upcloud_api.types
+    packages:
+      - upcloud_api.api
+      - upcloud_api.models
+
+processors:
+  - type: filter
+    documented_only: true
+    skip_empty_modules: true
+  - type: smart
+  - type: crossref
+
+renderer:
+  type: markdown
+  render_toc: false
+  filename: docs-src/reference.md
