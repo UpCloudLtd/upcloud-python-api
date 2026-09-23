@@ -16,7 +16,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          python-version: 3.13
+          python-version: 3.14
       - run: uv sync --locked
       - run: uv run --locked pre-commit run --all-files
   test:
@@ -24,10 +24,10 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
           - "pypy3.11"
     permissions:
       contents: read
