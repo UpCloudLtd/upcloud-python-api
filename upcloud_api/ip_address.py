@@ -18,6 +18,7 @@ class IPAddress(UpCloudResource):
 
     Note that all of the fields are not always available depending on the API call,
     consult the official API docs for details.
+
     """
 
     ATTRIBUTES = {

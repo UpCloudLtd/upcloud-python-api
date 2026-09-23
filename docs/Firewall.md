@@ -27,15 +27,15 @@ server = manager.get_servers()[0]
 
 rule = server.add_firewall_rule(
     FirewallRule(
-        position = "1",
-        direction = "in",
-        family = "IPv4",
-        protocol = "tcp",
-        source_address_start = "192.168.1.1",
-        source_address_end = "192.168.1.255",
-        destination_port_start = "22",
-        destination_port_end = "22",
-        action = "accept"
+        position="1",
+        direction="in",
+        family="IPv4",
+        protocol="tcp",
+        source_address_start="192.168.1.1",
+        source_address_end="192.168.1.255",
+        destination_port_start="22",
+        destination_port_end="22",
+        action="accept",
     )
 )
 ```
@@ -52,27 +52,27 @@ server = manager.get_servers()[0]
 rules = server.configure_firewall(
     [
         FirewallRule(
-            position = "1",
-            direction = "in",
-            family = "IPv4",
-            protocol = "tcp",
-            source_address_start = "192.168.1.1",
-            source_address_end = "192.168.1.255",
-            destination_port_start = "22",
-            destination_port_end = "22",
-            action = "accept"
+            position="1",
+            direction="in",
+            family="IPv4",
+            protocol="tcp",
+            source_address_start="192.168.1.1",
+            source_address_end="192.168.1.255",
+            destination_port_start="22",
+            destination_port_end="22",
+            action="accept",
         ),
         FirewallRule(
-            position = "2",
-            direction = "in",
-            family = "IPv4",
-            protocol = "tcp",
-            source_address_start = "192.168.1.1",
-            source_address_end = "192.168.1.255",
-            destination_port_start = "21",
-            destination_port_end = "21",
-            action = "accept"
-        )
+            position="2",
+            direction="in",
+            family="IPv4",
+            protocol="tcp",
+            source_address_start="192.168.1.1",
+            source_address_end="192.168.1.255",
+            destination_port_start="21",
+            destination_port_end="21",
+            action="accept",
+        ),
     ]
 )
 ```

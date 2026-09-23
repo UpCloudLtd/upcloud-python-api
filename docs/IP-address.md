@@ -20,10 +20,8 @@ The only updateable attribute is the `ptr_record`.
 CloudManager returns IPAddress objects.
 
 ```python
-
 manager.get_ips()
 manager.get_ip("185.20.31.125")
-
 ```
 
 ## Create
@@ -31,7 +29,6 @@ manager.get_ip("185.20.31.125")
 A new IPAddress must be attached to a server and has a random address.
 
 ```python
-
 # params: server uuid or a Server object and family, for which default is IPv4
 manager.attach_ip(server_uuid)
 manager.attach_ip(server_uuid, "IPv4")
@@ -43,10 +40,9 @@ manager.attach_ip(Server, "IPv6")
 
 # or use Server instance
 server = manager.get_server(uuid)
-server.add_ip() # default is IPv4
+server.add_ip()  # default is IPv4
 server.add_ip("IPv4")
 server.add_ip("IPv6")
-
 ```
 
 ## Update
@@ -54,18 +50,14 @@ server.add_ip("IPv6")
 At the moment only the ptr_record (reverse DNS) of an IP address can be changed.
 
 ```python
-
 ip = manager.get_ip("185.20.31.125")
 ip.ptr_record = "the.new.ptr.record"
 ip.save()
-
 ```
 
 ## Destroy
 
 ```python
-
 ip = manager.get_ip("185.20.31.125")
 ip.destroy()
-
 ```

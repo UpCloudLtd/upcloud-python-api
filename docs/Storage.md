@@ -27,10 +27,8 @@ any storage. Storages can be cloned from templates during server creation.
 CloudManager returns Storage instances.
 
 ```python
-
 manager.get_storages()
 manager.get_storage(storage.uuid)
-
 ```
 
 `get_storages()` accepts one of the following parameters to filter the query:
@@ -46,17 +44,11 @@ Storage can be created with the CloudManager's `create_storage()` function.
 
 
 ```python
-
 storage1 = manager.create_storage(
-    zone='fi-hel1',
-    size=10,
-    tier="maxiops",
-    title="my storage disk",
-    encrypted=False
+    zone='fi-hel1', size=10, tier="maxiops", title="my storage disk", encrypted=False
 )
 
 storage2 = manager.create_storage(zone='de-fra1', size=100)
-
 ```
 
 
@@ -66,10 +58,8 @@ Only the size and title of a storage can be updated. Please note that size can n
 OS level actions are required to account for the increased size.
 
 ```python
-
 storage = manager.get_storage(uuid)
 storage.update(size=100, title="new title")
-
 ```
 
 ## Delete
@@ -77,9 +67,7 @@ storage.update(size=100, title="new title")
 Warning: data loss is permanent.
 
 ```python
-
 storage.destroy()
-
 ```
 
 ## Delete with backups
@@ -92,11 +80,9 @@ Following example deletes the storage, but keeps the latest existing backup. If 
 nothing is left behind.
 
 ```python
-
 from upcloud_api.storage import BackupDeletionPolicy
 
 manager.delete_storage(uuid, backups=BackupDeletionPolicy.KEEP_LATEST)
-
 ```
 
 ## Import
@@ -117,7 +103,6 @@ Storages can be uploaded by providing a URL. Note that the upload is not
 done by the time `create_storage_import` returns, and you need to poll its
 status with `get_storage_import_details`.
 ```python
-
 new_storage = manager.create_storage(size=20, zone='nl-ams1')
 storage_import = manager.create_storage_import(
     storage=new_storage.uuid,
@@ -126,13 +111,11 @@ storage_import = manager.create_storage_import(
 )
 
 import_details = manager.get_storage_import_details(new_storage.uuid)
-
 ```
 
 Other way is to upload a storage directly. After finishing, you should confirm
 that the storage has been processed with `get_storage_import_details`.
 ```python
-
 new_storage = manager.create_storage(size=20, zone='de-fra1', title='New imported storage')
 storage_import = manager.create_storage_import(storage=new_storage.uuid, source='direct_upload')
 
@@ -142,14 +125,11 @@ manager.upload_file_for_storage_import(
 )
 
 import_details = manager.get_storage_import_details(new_storage.uuid)
-
 ```
 
 Ongoing imports can also be cancelled:
 ```python
-
 manager.cancel_storage_import(new_storage.uuid)
-
 ```
 
 ## Clone
@@ -159,9 +139,7 @@ Returns an object based on the API's response.
 Method requires title and zone to be passed while tier is optional.
 
 ```python
-
 storage_clone = storage.clone(title='title of storage clone', zone='fi-hel1', tier=None)
-
 ```
 
 
@@ -172,9 +150,7 @@ Needs to be called from the cloned storage (object returned by clone operation)
 and not the storage that is being cloned.
 
 ```python
-
 storage_clone.cancel_cloning()
-
 ```
 
 
@@ -184,9 +160,7 @@ Creates a point-in-time backup of a storage resource using StorageManager.
 Method requires title to be passed.
 
 ```python
-
 storage_backup = storage.create_backup('Backup title')
-
 ```
 
 
@@ -196,9 +170,7 @@ Restores the origin storage with data from the specified backup storage using St
 Must be called from a storage object created by create_backup and not the original one.
 
 ```python
-
 storage_backup.restore_backup()
-
 ```
 
 
@@ -208,7 +180,5 @@ Creates an exact copy of an existing storage resource which can be used as a tem
 for creating new servers using StorageManager. Method requires title to be passed.
 
 ```python
-
 storage.templatize('Template title')
-
 ```

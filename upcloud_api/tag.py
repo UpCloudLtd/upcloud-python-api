@@ -12,6 +12,7 @@ class Tag(UpCloudResource):
     description -- optional description
     servers -- list of Server objects (with only uuid populated)
                can be instantiated with UUID strings or Server objects
+
     """
 
     ATTRIBUTES = {'name': None, 'description': None, 'servers': []}
