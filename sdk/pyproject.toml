@@ -1,22 +1,22 @@
-[tool.poetry]
+[project]
 name = "upcloud-api"
 version = "0.0.103"
 description = "A client library for accessing UpCloud API"
 authors = []
+requires-python = ">=3.11"
 readme = "README.md"
-packages = [
-    { include = "upcloud_api" },
+dependencies = [
+    "httpx>=0.23.1,<0.29.0",
+    "attrs>=22.2.0",
 ]
-include = ["upcloud_api/py.typed"]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-httpx = ">=0.23.1,<0.29.0"
-attrs = ">=22.2.0"
+[tool.uv.build-backend]
+module-name = "upcloud_api"
+module-root = ""
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 120
