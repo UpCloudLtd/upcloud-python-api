@@ -5,7 +5,7 @@ set -euo pipefail
 # Tests: list_services, create_service, list_services again
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SDK_DIR="${UPCLOUD_SDK_PATH:-$(cd "$SCRIPT_DIR/../.." && pwd)/sdk}"
+SDK_DIR="${UPCLOUD_SDK_PATH:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 echo "======================================"
 echo "Testing Object Storage 2.0 API"
