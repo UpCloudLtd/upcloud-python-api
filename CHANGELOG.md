@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking (v3 alpha):** replace the handwritten `CloudManager` client with an OpenAPI-generated client (`from upcloud_api import AuthenticatedClient`). Install with `pip install "upcloud-api==3.0.0a1"`. Default `pip install upcloud-api` remains 2.x.
+- Rebased on the uv-based v2 developer tooling; use a root uv workspace and `uv_build` for the generated SDK, and run examples against the local SDK.
 
 ## [2.9.0] - 2025-09-25
 
