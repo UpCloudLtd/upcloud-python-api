@@ -34,13 +34,14 @@ Tests:
 import sys
 import os
 import time
+from uuid import UUID
 from upcloud_api.api.object_storage_2 import (
-    list_services,
-    create_service,
-    delete_service,
+    list_object_storages,
+    create_object_storage,
+    delete_object_storage,
 )
-from upcloud_api.models import ServiceCreate
-from upcloud_api.models.property_configured_status import PropertyConfiguredStatus
+from upcloud_api.models import ObjectStorage2ServiceCreate
+from upcloud_api.models.object_storage_2_property_configured_status import ObjectStorage2PropertyConfiguredStatus
 
 from upcloud_api import AuthenticatedClient
 
@@ -77,7 +78,7 @@ Before creating a new service, we list all existing Managed Object Storage servi
     
     print("\n2. Listing existing Managed Object Storage services (BEFORE)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_object_storages.sync_detailed(client=client)
         
         if response.status_code == 200 and response.parsed is not None:
             services_before = response.parsed or []
@@ -97,7 +98,7 @@ Before creating a new service, we list all existing Managed Object Storage servi
 
 ### Step 3: Create a New Managed Object Storage Service
 
-Now we create a new Managed Object Storage service using the `ServiceCreate` model. We generate a unique name using a timestamp to avoid conflicts.
+Now we create a new Managed Object Storage service using the `ObjectStorage2ServiceCreate` model. We generate a unique name using a timestamp to avoid conflicts.
 
 ```py filename=test_object_storage_test.py
     
@@ -107,13 +108,13 @@ Now we create a new Managed Object Storage service using the `ServiceCreate` mod
     
     try:
         # Create service using SDK models
-        service_payload = ServiceCreate(
+        service_payload = ObjectStorage2ServiceCreate(
             name=test_service_name,
             region="europe-1",
-            configured_status=PropertyConfiguredStatus.STARTED
+            configured_status=ObjectStorage2PropertyConfiguredStatus.STARTED
         )
         
-        response = create_service.sync_detailed(
+        response = create_object_storage.sync_detailed(
             client=client,
             body=service_payload
         )
@@ -142,7 +143,7 @@ After creating the service, we list all services again to verify the new service
     
     print("\n4. Listing Managed Object Storage services (AFTER)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_object_storages.sync_detailed(client=client)
         
         if response.status_code == 200 and response.parsed is not None:
             services_after = response.parsed or []
@@ -182,9 +183,9 @@ Finally, we clean up by deleting the test service we created. We wait a few seco
         if not created_service_uuid:
             print("     No service UUID found from create response; skipping delete")
         else:
-            response = delete_service.sync_detailed(
+            response = delete_object_storage.sync_detailed(
                 client=client,
-                service_uuid=created_service_uuid
+                service_uuid=UUID(str(created_service_uuid))
             )
         
             if response.status_code in (200, 204):
@@ -228,7 +229,7 @@ The script uses strict mode (`set -euo pipefail`) to exit on any error, undefine
 set -euo pipefail
 
 # Test Object Storage 2.0 API
-# Tests: list_services, create_service, list_services again, delete_service
+# Tests: list_object_storages, create_object_storage, list_object_storages again, delete_object_storage
 ```
 
 ### Configuration Variables
