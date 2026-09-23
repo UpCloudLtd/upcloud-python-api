@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Test script for Tag API.
+"""
+Test script for Tag API.
 
 Tests:
 - Authenticate client
@@ -16,17 +17,18 @@ import traceback
 
 from upcloud_api import AuthenticatedClient
 from upcloud_api.api.tag import (
-    list_tags,
     create_tag,
     delete_tag,
+    list_tags,
 )
 from upcloud_api.models import Tag
-from upcloud_api.models.tag_tag import TagTag
 from upcloud_api.models.tag_servers import TagServers
+from upcloud_api.models.tag_tag import TagTag
 from upcloud_api.types import UNSET
 
 
 def main():
+    """Run the Tag API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
 
     if not token:

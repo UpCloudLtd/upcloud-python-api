@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Test script for File Storage API.
+"""
+Test script for File Storage API.
 
 Tests:
 - Authenticate client
@@ -17,15 +18,16 @@ from uuid import UUID
 
 from upcloud_api import AuthenticatedClient
 from upcloud_api.api.file_storage import (
-    list_services,
     create_service,
     delete_service,
+    list_services,
 )
 from upcloud_api.models import FileStorageServiceCreate
 from upcloud_api.models.file_storage_configured_status import FileStorageConfiguredStatus
 
 
 def main():
+    """Run the File Storage API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
     zone = os.environ.get("FILE_STORAGE_ZONE", "fi-hel2")
     size_gib = int(os.environ.get("FILE_STORAGE_SIZE_GIB", "250"))
@@ -150,7 +152,9 @@ def main():
                 print("     Service not found for deletion (may have been auto-deleted)")
             else:
                 print(f"     Failed to delete (status: {response.status_code})")
-                print(f"     Note: Manual cleanup may be required for service '{test_service_name}'")
+                print(
+                    f"     Note: Manual cleanup may be required for service '{test_service_name}'"
+                )
     except Exception as e:
         print(f"     Error during cleanup: {e}")
         traceback.print_exc()

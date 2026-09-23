@@ -51,6 +51,7 @@ The `main()` function starts by reading configuration from environment variables
 ```py filename=test_file_storage_test.py
 
 def main():
+    """Run the File Storage API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
     zone = os.environ.get("FILE_STORAGE_ZONE", "fi-hel2")
     size_gib = int(os.environ.get("FILE_STORAGE_SIZE_GIB", "250"))
