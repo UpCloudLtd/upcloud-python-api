@@ -259,6 +259,14 @@ Build the wheel and source distribution:
 uv build
 ```
 
+For a release, set the new version in both places:
+
+- `pyproject.toml`: the `version = "2.9.0"` field under `[project]`.
+- `upcloud_api/__init__.py`: the `__version__ = '2.9.0'` assignment.
+
+Use the same new version in both files, then run `uv lock` to update `uv.lock`.
+Do not edit the lockfile by hand.
+
 ## Bugs, Issues, Problems, Ideas
 
 Please report issues and features requests through

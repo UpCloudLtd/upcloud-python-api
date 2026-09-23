@@ -2,9 +2,7 @@
 Python Interface to UpCloud's API.
 """
 
-from importlib.metadata import version
-
-__version__ = version("upcloud-api")
+__version__ = '2.9.0'
 __author__ = 'Developers from UpCloud & elsewhere'
 __author_email__ = 'hello@upcloud.com'
 __maintainer__ = 'UpCloud'
