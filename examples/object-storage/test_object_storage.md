@@ -52,6 +52,7 @@ The `main()` function starts by reading the authentication token from environmen
 ```py filename=test_object_storage_test.py
 
 def main():
+    """Run the Object Storage API test."""
     token = os.environ.get("UPCLOUD_TOKEN")
     
     if not token:
