@@ -13,26 +13,14 @@ def main():
     with open(path, "r", encoding="utf-8") as f:
         doc = parse(f.read())
 
-    changed = False
-
-    # Poetry-style version
-    if "tool" in doc and "poetry" in doc["tool"] and "version" in doc["tool"]["poetry"]:
-        doc["tool"]["poetry"]["version"] = version
-        changed = True
-
-    # PEP 621 fallback
-    if "project" in doc and "version" in doc["project"]:
-        doc["project"]["version"] = version
-        changed = True
-
-    if not changed:
+    if "project" not in doc or "version" not in doc["project"]:
         print(
-            "ERROR: Could not find a version field in pyproject.toml "
-            "([tool.poetry].version or [project].version)",
+            "ERROR: Could not find [project].version in pyproject.toml",
             file=sys.stderr,
         )
         sys.exit(1)
 
+    doc["project"]["version"] = version
     with open(path, "w", encoding="utf-8") as f:
         f.write(dumps(doc))
 
