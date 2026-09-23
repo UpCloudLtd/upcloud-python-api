@@ -11,8 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Python versions supported: 3.10, 3.11, 3.12, 3.13, PyPy3. Dropped support for 3.9.
-- Migrated packaging, dependency management, tests, formatting, and builds to uv.
+- **Breaking (v3 alpha):** replace the handwritten `CloudManager` client with an OpenAPI-generated client (`from upcloud_api import AuthenticatedClient`). Install with `pip install "upcloud-api==3.0.0a1"`. Default `pip install upcloud-api` remains 2.x.
 
 ## [2.9.0] - 2025-09-25
 
