@@ -16,15 +16,14 @@ import time
 import traceback
 from uuid import UUID
 
+from upcloud_api import AuthenticatedClient
 from upcloud_api.api.file_storage import (
-    create_service,
-    delete_service,
-    list_services,
+    create_file_storage,
+    delete_file_storage,
+    list_file_storages,
 )
 from upcloud_api.models import FileStorageServiceCreate
 from upcloud_api.models.file_storage_configured_status import FileStorageConfiguredStatus
-
-from upcloud_api import AuthenticatedClient
 
 
 def main():
@@ -46,9 +45,9 @@ def main():
         sys.exit(1)
 
     print("\n2. Listing existing File Storage services (BEFORE)...")
-    print("   Testing SDK function: list_services.sync_detailed()")
+    print("   Testing SDK function: list_file_storages.sync_detailed()")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_file_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_before = response.parsed or []
@@ -79,7 +78,7 @@ def main():
             size_gib=size_gib,
         )
 
-        response = create_service.sync_detailed(
+        response = create_file_storage.sync_detailed(
             client=client,
             body=service_payload,
         )
@@ -108,7 +107,7 @@ def main():
 
     print("\n4. Listing File Storage services (AFTER)...")
     try:
-        response = list_services.sync_detailed(client=client)
+        response = list_file_storages.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             services_after = response.parsed or []
@@ -142,7 +141,7 @@ def main():
         if not created_service_uuid:
             print("     No service UUID found from create response; skipping delete")
         else:
-            response = delete_service.sync_detailed(
+            response = delete_file_storage.sync_detailed(
                 client=client,
                 service_uuid=UUID(str(created_service_uuid)),
             )
