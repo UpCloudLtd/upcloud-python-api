@@ -17,10 +17,10 @@ testing / developing the client is recommended.
 pip install upcloud-api
 ```
 
-Alternatively, if you want the newest (possibly not yet released) stuff, clone the project and run:
+Alternatively, install the newest, possibly unreleased, revision directly from GitHub:
 
-``` bash
-python setup.py install
+```bash
+pip install "upcloud-api @ git+https://github.com/UpCloudLtd/upcloud-python-api.git"
 ```
 
 ### Supported Python versions
@@ -215,40 +215,49 @@ ip_addrs = manager.get_ips()
 ip_addr = manager.get_ip(address)  # e.g server1.ip_addresses[0].address
 ```
 
-## Testing
+## Development
 
-Set up environment and install dependencies:
-
-``` bash
-# run at project root, python3 and virtualenv must be installed
-virtualenv venv
-source venv/bin/activate
-```
-
-Install the package in editable mode.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then create
+the locked development environment:
 
 ```bash
-# run at project root
-pip install -e .
+uv sync --locked
 ```
 
-Tests are located under `test/`. Run with:
+Run the unit tests:
 
 ```bash
-py.test test/
+uv run pytest
 ```
 
-To test against all supported python versions, run:
+CI runs the suite with CPython 3.10 through 3.13 and PyPy 3.11. To reproduce
+the full interpreter matrix locally:
 
 ```bash
-tox
+for python in 3.10 3.11 3.12 3.13 pypy3.11; do
+    uv run --locked --python "$python" pytest
+done
 ```
 
+The integration tests under `test/test_integration` can permanently remove all
+resources associated with an account. Run them only with a throwaway
+development account:
 
-The project also supplies a small test suite to test against the live API in `test/test_integration`.
-This suite is NOT run with `py.test` dy default as it will permanently remove all resources related to an account.
-It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with
-PyPI releases. To run the integration tests, append `--integration-tests` flag to the `py.test` command.
+```bash
+uv run pytest --integration-tests -x
+```
+
+Run all lint and formatting hooks:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+Build the wheel and source distribution:
+
+```bash
+uv build
+```
 
 ## Bugs, Issues, Problems, Ideas
 
