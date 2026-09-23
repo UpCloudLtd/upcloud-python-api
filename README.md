@@ -20,7 +20,7 @@ pip install "upcloud-api==3.0.0a1"    # this generated v3 alpha
 
 Do **not** rely on a blanket `pip install --pre`. That would also pull pre-releases of other dependencies.
 
-**Ansible / version specifiers:** `upcloud-api>=2.9,<3` still matches `3.0.0a1` because `3.0.0a1 < 3.0.0`. Without `--pre`, pip stays on 2.x. To stay on 2.x even with `--pre`, pin `upcloud-api~=2.9.0` or `upcloud-api>=2.9.0,<3.0.0.dev0`. To opt into v3 alpha, pin `upcloud-api==3.0.0a1`.
+**Ansible / version specifiers:** `upcloud-api>=2.9,<3` stays on 2.x: under PEP 440, `<3` excludes `3.0.0a1` even with `--pre`. To opt into the v3 alpha, pin `upcloud-api==3.0.0a1`.
 
 The distribution name is `upcloud-api`. The import package is `upcloud_api`.
 
@@ -91,8 +91,9 @@ UPCLOUD_SDK_PATH="$(pwd)" mdtest examples/tag/test_tag.md
 
 After regenerating the SDK from a new spec, run `uv lock` to update the lockfile.
 `SPEC_VERSION` follows the OpenAPI spec, while the package version in the root
-`pyproject.toml` defaults to `3.0.0.dev0`. The v3 release workflows set the
-package version from the release tag or manual TestPyPI input before building.
+`pyproject.toml` defaults to `3.0.0.dev0` for development builds. The v3 release
+workflows replace it with the release tag or manual TestPyPI input (for example,
+`3.0.0a1`) before building.
 The root `pyproject.toml`, README, and license are not overwritten by regeneration.
 
 ## Changelog
