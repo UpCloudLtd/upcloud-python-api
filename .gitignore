@@ -8,7 +8,6 @@ build/
 dist/
 *.egg-info
 *.sublime-workspace
-.tox
 .cache
 .vscode/
 .idea/
@@ -16,10 +15,6 @@ dist/
 # coverage
 .coverage
 htmlcov
-
-# local
-.test-snippets
-sandbox
 
 ### Vim ###
 # swap
