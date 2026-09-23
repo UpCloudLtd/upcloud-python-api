@@ -8,7 +8,6 @@ build/
 dist/
 *.egg-info
 *.sublime-workspace
-docs/html/
 .tox
 .cache
 .vscode/
