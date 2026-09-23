@@ -1,59 +1,5 @@
-[project]
-name = "upcloud-api"
-version = "2.9.0"
-description = "UpCloud API Client"
-readme = "README.md"
-requires-python = ">=3.11,<4"
-license = "MIT"
-license-files = ["LICENSE.txt"]
-dependencies = ["requests"]
-
-[[project.maintainers]]
-name = "UpCloud"
-email = "hello@upcloud.com"
-
-[project.optional-dependencies]
-keyring = ["keyring>=23.0"]
-
-[project.urls]
-Homepage = "https://github.com/UpCloudLtd/upcloud-python-api"
-
-[dependency-groups]
-dev = [
-    "keyring",
-    "mock",
-    "pre-commit",
-    "pytest",
-    "pytest-cov",
-    "responses",
-    "ruff",
-]
-
-[build-system]
-requires = ["uv_build>=0.12.9,<0.13.0"]
-build-backend = "uv_build"
-
 [tool.uv]
 required-version = ">=0.12.9,<0.13.0"
-
-[tool.uv.build-backend]
-module-name = "upcloud_api"
-module-root = ""
-source-include = [
-    "docs/**",
-    "mkdocs.yml",
-    "test/conftest.py",
-    "test/json_data/**",
-    "test/test_*.py",
-]
-
-[tool.pytest.ini_options]
-addopts = [
-    "--cov=test",
-    "--cov=upcloud_api",
-    "--cov-report=term-missing",
-]
-testpaths = ["test"]
 
 [tool.ruff]
 target-version = "py311"
@@ -62,6 +8,8 @@ exclude = [
     "ENV",
     "__pycache__",
     "build",
+    "sdk",
+    "generator",
 ]
 line-length = 99
 
