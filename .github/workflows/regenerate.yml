@@ -34,11 +34,16 @@ jobs:
           ref: v3-dev
           fetch-depth: 1
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: 3.14
+
       - name: Download OpenAPI Spec
         env:
           SPECS_ACCESS_PAT: ${{ secrets.SPECS_ACCESS_PAT }}
         run: |
-          set -euxo pipefail
+          set -euo pipefail
 
           if [ -z "$SPEC_VERSION" ]; then
             echo "ERROR: Missing workflow_dispatch input: version"
@@ -95,6 +100,9 @@ jobs:
         run: |
           chmod +x generator/scripts/generate.sh
           generator/scripts/generate.sh
+
+      - name: Update workspace lockfile
+        run: uv lock
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v7

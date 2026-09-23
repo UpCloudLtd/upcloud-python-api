@@ -13,35 +13,49 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: 3.14
+      - run: uv sync --locked
+      - run: uv run --locked pre-commit run --all-files
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+          - "pypy3.11"
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+      - name: Setup uv with Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          python-version: 3.14
-      - name: Install generated client and smoke-import
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ./sdk
-          python -c "from upcloud_api import AuthenticatedClient, Client; print(AuthenticatedClient, Client)"
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --locked
+      - name: Smoke-import generated SDK
+        run: uv run --locked python -c "from upcloud_api import AuthenticatedClient, Client, SPEC_VERSION; print(AuthenticatedClient, Client, SPEC_VERSION)"
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-      - run: python -m pip install --upgrade build poetry-core tomlkit
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: 3.14
       - name: Set package version from tag
         if: ${{ startsWith(github.ref, 'refs/tags/v3.') }}
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          python generator/scripts/set_version.py sdk/pyproject.toml "${TAG#v}"
-      - run: python -m build --outdir dist sdk
+          uv run --locked python generator/scripts/set_version.py sdk/pyproject.toml "${TAG#v}"
+      - run: uv build sdk --out-dir dist
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
           name: dist
