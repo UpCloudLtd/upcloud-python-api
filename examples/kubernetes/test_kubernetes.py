@@ -18,6 +18,7 @@ import time
 import traceback
 from uuid import UUID
 
+from upcloud_api import AuthenticatedClient
 from upcloud_api.api.kubernetes import (
     create_kubernetes_cluster,
     delete_kubernetes_cluster,
@@ -36,8 +37,6 @@ from upcloud_api.models import (
 )
 from upcloud_api.models.kubernetes_node_group import KubernetesNodeGroup
 from upcloud_api.types import UNSET
-
-from upcloud_api import AuthenticatedClient
 
 
 def main():

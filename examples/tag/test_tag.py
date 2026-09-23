@@ -15,6 +15,7 @@ import sys
 import time
 import traceback
 
+from upcloud_api import AuthenticatedClient
 from upcloud_api.api.tag import (
     create_tag,
     delete_tag,
@@ -24,8 +25,6 @@ from upcloud_api.models import Tag
 from upcloud_api.models.tag_servers import TagServers
 from upcloud_api.models.tag_tag import TagTag
 from upcloud_api.types import UNSET
-
-from upcloud_api import AuthenticatedClient
 
 
 def main():
