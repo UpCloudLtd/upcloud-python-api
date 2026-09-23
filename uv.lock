@@ -1,12 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.11, <4"
-
-[manifest]
-members = [
-    "upcloud-api",
-    "upcloud-python-api-dev",
-]
+requires-python = ">=3.11"
 
 [[package]]
 name = "anyio"
@@ -267,25 +261,11 @@ wheels = [
 
 [[package]]
 name = "upcloud-api"
-version = "0.0.103"
-source = { editable = "sdk" }
+version = "3.0.0.dev0"
+source = { editable = "." }
 dependencies = [
     { name = "attrs" },
     { name = "httpx" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "attrs", specifier = ">=22.2.0" },
-    { name = "httpx", specifier = ">=0.23.1,<0.29.0" },
-]
-
-[[package]]
-name = "upcloud-python-api-dev"
-version = "0.0.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "upcloud-api" },
 ]
 
 [package.dev-dependencies]
@@ -296,7 +276,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "upcloud-api", editable = "sdk" }]
+requires-dist = [
+    { name = "attrs", specifier = ">=22.2.0" },
+    { name = "httpx", specifier = ">=0.23.1,<0.29.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [

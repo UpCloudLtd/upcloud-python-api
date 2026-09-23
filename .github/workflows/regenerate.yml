@@ -101,7 +101,7 @@ jobs:
           chmod +x generator/scripts/generate.sh
           generator/scripts/generate.sh
 
-      - name: Update workspace lockfile
+      - name: Update lockfile
         run: uv lock
 
       - name: Create PR

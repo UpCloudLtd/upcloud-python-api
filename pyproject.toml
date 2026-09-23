@@ -1,8 +1,20 @@
 [project]
-name = "upcloud-python-api-dev"
-version = "0.0.0"
-requires-python = ">=3.11,<4"
-dependencies = ["upcloud-api"]
+name = "upcloud-api"
+version = "3.0.0.dev0"
+description = "A client library for accessing UpCloud API"
+authors = []
+maintainers = [{ name = "UpCloud", email = "hello@upcloud.com" }]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.txt"]
+dependencies = [
+    "httpx>=0.23.1,<0.29.0",
+    "attrs>=22.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/UpCloudLtd/upcloud-python-api"
 
 [dependency-groups]
 dev = [
@@ -13,13 +25,14 @@ dev = [
 
 [tool.uv]
 required-version = ">=0.12.9,<0.13.0"
-package = false
 
-[tool.uv.workspace]
-members = ["sdk"]
+[tool.uv.build-backend]
+module-name = "upcloud_api"
+module-root = ""
 
-[tool.uv.sources]
-upcloud-api = { workspace = true }
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
 
 [tool.ruff]
 target-version = "py311"
@@ -28,7 +41,7 @@ exclude = [
     "ENV",
     "__pycache__",
     "build",
-    "sdk",
+    "upcloud_api",
     "generator",
 ]
 line-length = 99

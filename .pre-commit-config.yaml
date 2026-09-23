@@ -1,7 +1,7 @@
 minimum_pre_commit_version: 4.0.0
 ci:
   autofix_prs: false
-exclude: ^(sdk/|generator/)
+exclude: ^(upcloud_api/|generator/)
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.8

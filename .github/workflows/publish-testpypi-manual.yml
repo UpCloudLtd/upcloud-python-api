@@ -23,8 +23,8 @@ jobs:
       - name: Set package version
         env:
           VERSION: ${{ inputs.version }}
-        run: uv run --locked python generator/scripts/set_version.py sdk/pyproject.toml "$VERSION"
-      - run: uv build sdk --out-dir dist
+        run: uv run --locked python generator/scripts/set_version.py pyproject.toml "$VERSION"
+      - run: uv build --out-dir dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
