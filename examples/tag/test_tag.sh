@@ -1,26 +1,17 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SDK_DIR="${UPCLOUD_SDK_PATH:-$(cd "$SCRIPT_DIR/../.." && pwd)/sdk}"
 
 echo "======================================"
 echo "Testing Tag API"
 echo "======================================"
 
-# Create temporary virtualenv
-VENV_DIR=$(mktemp -d)
-trap "rm -rf $VENV_DIR" EXIT
+if [[ -z "${UPCLOUD_TOKEN:-}" ]]; then
+    echo "ERROR: UPCLOUD_TOKEN environment variable is required"
+    exit 1
+fi
 
-echo "== Create clean virtualenv =="
-python3 -m venv "$VENV_DIR"
-source "$VENV_DIR/bin/activate"
-
-echo "== Install upcloud-api + test deps from TestPyPI =="
-pip install --quiet --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ upcloud-api
-
-echo ""
-echo "== Test Tag API =="
-python3 test_tag.py
-
-echo ""
-echo "== Cleanup =="
-deactivate
-echo "✓ Done"
+echo "== Test Tag API with local SDK =="
+uv run --no-project --with "$SDK_DIR" python "$SCRIPT_DIR/test_tag.py"

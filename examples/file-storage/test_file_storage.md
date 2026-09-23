@@ -234,14 +234,11 @@ set -euo pipefail
 
 ### Configuration Variables
 
-We define the package name (as published on TestPyPI), the virtual environment directory, and the Python binary to use.
+mdtest runs the shell script in a temporary directory. Point it at the checked-out SDK with `UPCLOUD_SDK_PATH`.
 
 ```sh filename=test.sh
 
-# TestPyPI project name is "upcloud-api" (installs the "upcloud_api" module)
-PKG_NAME="upcloud-api"
-VENV_DIR=".venv-test-file-storage"
-PYTHON_BIN="${PYTHON_BIN:-python3}"
+SDK_DIR="${UPCLOUD_SDK_PATH:?Set UPCLOUD_SDK_PATH to the local sdk directory}"
 ```
 
 ### Test Header Output
@@ -268,58 +265,15 @@ if [[ -z "${UPCLOUD_TOKEN:-}" ]]; then
 fi
 ```
 
-### Create Virtual Environment
-
-We create a fresh virtual environment to ensure a clean test environment without any cached packages.
-
-```sh filename=test.sh
-
-echo "== Create clean virtualenv =="
-rm -rf "${VENV_DIR}"
-"${PYTHON_BIN}" -m venv "${VENV_DIR}"
-# shellcheck disable=SC1091
-source "${VENV_DIR}/bin/activate"
-
-python -m pip install --upgrade pip > /dev/null
-```
-
-### Install SDK from TestPyPI
-
-We install the `upcloud-api` package from TestPyPI, along with the `httpx` dependency from the main PyPI repository.
-
-```sh filename=test.sh
-
-echo "== Install ${PKG_NAME} + test deps from TestPyPI =="
-pip install \
-    --no-cache-dir \
-    --index-url https://test.pypi.org/simple/ \
-    --extra-index-url https://pypi.org/simple \
-    "${PKG_NAME}" \
-    httpx > /dev/null
-```
-
 ### Run the Python Test
 
-Now we execute the Python test script we created earlier.
+Run the test against the checked-out SDK in a uv-managed, isolated environment.
 
 ```sh filename=test.sh
 
 echo ""
-echo "== Test File Storage API =="
-python test_file_storage_test.py
-```
-
-### Cleanup
-
-After the test completes, we deactivate and remove the virtual environment.
-
-```sh filename=test.sh
-
-echo ""
-echo "== Cleanup =="
-deactivate
-rm -rf "${VENV_DIR}"
-echo "✓ Done"
+echo "== Test File Storage API with local SDK =="
+uv run --no-project --with "$SDK_DIR" python test_file_storage_test.py
 ```
 
 ## Execute the Test
