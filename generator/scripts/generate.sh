@@ -7,7 +7,6 @@ SPEC_PATH="generator/openapi/spec.json"
 PATCHED_SPEC_PATH="generator/openapi/spec.patched.json"
 OUT_DIR="sdk"
 TMP_DIR=".tmp-openapi-python-client"
-VENV=".venv"
 
 if [ ! -f "$SPEC_PATH" ]; then
   echo "ERROR: Missing spec file at $SPEC_PATH"
@@ -19,20 +18,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-# Create venv if missing
-if [ ! -d "$VENV" ]; then
-  python3 -m venv "$VENV"
-fi
-
-# Activate venv
-source "$VENV/bin/activate"
-
-# Upgrade tooling
-python -m pip install --upgrade pip setuptools wheel
-
-# Install generator
 OPENAPI_PYTHON_CLIENT_VERSION="0.29.1"
-python -m pip install "openapi-python-client==${OPENAPI_PYTHON_CLIENT_VERSION}"
 
 echo "Cleaning temp/output dirs..."
 rm -rf "$TMP_DIR" "$OUT_DIR"
@@ -46,12 +32,12 @@ echo "Patching OpenAPI spec: removing known-broken operations..."
 python3 generator/scripts/patch_openapi.py "$SPEC_PATH" "$PATCHED_SPEC_PATH"
 
 echo "Generating SDK..."
-openapi-python-client generate \
+uvx --from "openapi-python-client==${OPENAPI_PYTHON_CLIENT_VERSION}" openapi-python-client generate \
   --path "$PATCHED_SPEC_PATH" \
   --config generator/config/openapi-python-client.yml \
   --custom-template-path generator/templates \
   --output-path "$TMP_DIR" \
-  --meta poetry \
+  --meta uv \
   --overwrite
 
 echo "Syncing generated output into $OUT_DIR/ ..."
