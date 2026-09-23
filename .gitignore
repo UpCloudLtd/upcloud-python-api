@@ -37,3 +37,9 @@ tags
 # virtual environments
 venv
 .venv
+.venv-*/
+
+# SDK generation
+.tmp-openapi-python-client/
+docs-src/
+generator/release-artifacts/
