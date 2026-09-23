@@ -1,5 +1,25 @@
+[project]
+name = "upcloud-python-api-dev"
+version = "0.0.0"
+requires-python = ">=3.11,<4"
+dependencies = ["upcloud-api"]
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff",
+    "tomlkit",
+]
+
 [tool.uv]
 required-version = ">=0.12.9,<0.13.0"
+package = false
+
+[tool.uv.workspace]
+members = ["sdk"]
+
+[tool.uv.sources]
+upcloud-api = { workspace = true }
 
 [tool.ruff]
 target-version = "py311"
