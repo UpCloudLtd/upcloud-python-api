@@ -3,19 +3,15 @@
 This example demonstrates how to use the UpCloud Python SDK to interact with the Kubernetes (UKS) API. We'll create a test script that:
 
 - Authenticates a client using a bearer token
+- Creates a private network for the cluster to use
 - Lists existing Kubernetes clusters
-- Creates a new Kubernetes cluster with a node group
+- Creates a new Kubernetes cluster with a node group, attached to the new network
 - Verifies the cluster was created
-- Cleans up by deleting the test cluster
+- Cleans up by deleting the test cluster and the test network
 
 ## Prerequisites
 
-> **Note:** This test currently requires an existing UpCloud network. You must provide
-> the network UUID via the `UKS_NETWORK` environment variable.
->
-> In a future version, once the Python SDK supports network creation, this example
-> will be updated to create its own network programmatically, eliminating the need
-> for the `UKS_NETWORK` environment variable.
+This test creates and destroys its own private network, so only `UPCLOUD_TOKEN` is required.
 
 ## The Python Test Script
 
@@ -23,7 +19,7 @@ Let's build the test script step by step.
 
 ### Imports and Module Docstring
 
-First, we define the script's purpose and import the necessary modules. We need the UpCloud SDK client, the Kubernetes API functions, and the models for creating clusters.
+First, we define the script's purpose and import the necessary modules. We need the UpCloud SDK client, the Kubernetes and Network API functions, and the models for creating networks and clusters.
 
 ```py filename=test_kubernetes_test.py
 #!/usr/bin/env python3
@@ -31,24 +27,37 @@ First, we define the script's purpose and import the necessary modules. We need 
 
 Tests:
 - Authenticate client
+- Create a network for the cluster
 - List existing clusters
 - Create a new cluster
 - List clusters again to verify creation
 - Delete the test cluster
+- Delete the test network
 """
 
 import os
 import sys
 import time
+import traceback
 from uuid import UUID
 
 from upcloud_api import AuthenticatedClient
 from upcloud_api.api.kubernetes import (
-    get_clusters,
-    post_cluster,
-    delete_cluster,
+    create_kubernetes_cluster,
+    delete_kubernetes_cluster,
+    list_kubernetes_clusters,
 )
-from upcloud_api.models import KubernetesCluster
+from upcloud_api.api.network import create_network, delete_network
+from upcloud_api.models import (
+    CreateNetworkRequest,
+    CreateNetworkRequestNetwork,
+    CreateNetworkRequestNetworkIpNetworks,
+    CreateNetworkRequestNetworkIpNetworksIpNetworkItem,
+    KubernetesCluster,
+    NetworkBooleanYesno,
+    NetworkIpFamily,
+    NetworkType,
+)
 from upcloud_api.models.kubernetes_node_group import KubernetesNodeGroup
 from upcloud_api.types import UNSET
 
@@ -56,13 +65,12 @@ from upcloud_api.types import UNSET
 
 ### Main Function Setup
 
-The `main()` function starts by reading configuration from environment variables. The `UPCLOUD_TOKEN` and `UKS_NETWORK` are required, while other parameters have sensible defaults.
+The `main()` function starts by reading configuration from environment variables. Only `UPCLOUD_TOKEN` is required, while other parameters have sensible defaults.
 
 ```py filename=test_kubernetes_test.py
 
 def main():
     token = os.environ.get("UPCLOUD_TOKEN")
-    network = os.environ.get("UKS_NETWORK")  # Network UUID
     zone = os.environ.get("UKS_ZONE", "fi-hel1")
     network_cidr = os.environ.get("UKS_NETWORK_CIDR", "10.0.0.0/24")
     version = os.environ.get("UKS_VERSION", "1.34")
@@ -72,17 +80,6 @@ def main():
 
     if not token:
         print("ERROR: UPCLOUD_TOKEN environment variable is required")
-        sys.exit(1)
-
-    missing = [
-        name
-        for name, value in (
-            ("UKS_NETWORK", network),
-        )
-        if not value
-    ]
-    if missing:
-        print("ERROR: Missing required environment variables: " + ", ".join(missing))
         sys.exit(1)
 
     ssh_keys = [key.strip() for key in ssh_keys_raw.split(",") if key.strip()] if ssh_keys_raw else None
@@ -96,15 +93,60 @@ def main():
         sys.exit(1)
 ```
 
-### Step 2: List Existing Clusters (Before)
+### Step 2: Create a Network for the Cluster
+
+A Kubernetes cluster needs a private network to attach its nodes to. We create one with a single IPv4 subnet and DHCP enabled, and keep its UUID for use in the cluster payload and for cleanup.
+
+```py filename=test_kubernetes_test.py
+
+    print("\n2. Creating a network for the cluster...")
+    print("   Testing SDK function: create_network.sync_detailed()")
+    test_network_name = f"test-k8s-net-{int(time.time())}"
+    created_network_uuid = None
+
+    try:
+        network_payload = CreateNetworkRequest(
+            network=CreateNetworkRequestNetwork(
+                type_=NetworkType.PRIVATE,
+                name=test_network_name,
+                zone=zone,
+                ip_networks=CreateNetworkRequestNetworkIpNetworks(
+                    ip_network=[
+                        CreateNetworkRequestNetworkIpNetworksIpNetworkItem(
+                            family=NetworkIpFamily.IPV4,
+                            address=network_cidr,
+                            dhcp=NetworkBooleanYesno.YES,
+                        )
+                    ]
+                ),
+            )
+        )
+
+        response = create_network.sync_detailed(client=client, body=network_payload)
+
+        if response.status_code == 201 and response.parsed is not None:
+            created_network_uuid = response.parsed.network.uuid
+            print(f"     Network '{test_network_name}' created successfully ({created_network_uuid})")
+        else:
+            print(f"     Failed with status: {response.status_code}")
+            print(f"     Parsed: {response.parsed}")
+            sys.exit(1)
+    except Exception as e:
+        print(f"     Error: {e}")
+        traceback.print_exc()
+        sys.exit(1)
+```
+
+### Step 3: List Existing Clusters (Before)
 
 Before creating a new cluster, we list all existing Kubernetes clusters. This establishes a baseline count that we'll use later to verify our new cluster was created.
 
 ```py filename=test_kubernetes_test.py
 
-    print("\n2. Listing existing Kubernetes clusters (BEFORE)...")
+    print("\n3. Listing existing Kubernetes clusters (BEFORE)...")
+    print("   Testing SDK function: list_kubernetes_clusters.sync_detailed()")
     try:
-        response = get_clusters.sync_detailed(client=client)
+        response = list_kubernetes_clusters.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             clusters_before = response.parsed or []
@@ -116,19 +158,22 @@ Before creating a new cluster, we list all existing Kubernetes clusters. This es
                 print(f"     - {cluster_name} (zone: {cluster_zone})")
         else:
             print(f"   Failed with status: {response.status_code}")
+            print(f"   Parsed: {response.parsed}")
             sys.exit(1)
     except Exception as e:
-        print(f"   Error: {e}")
+        print(f"\n   SDK ERROR: {type(e).__name__}: {e}")
+        traceback.print_exc()
         sys.exit(1)
 ```
 
-### Step 3: Create a New Kubernetes Cluster
+### Step 4: Create a New Kubernetes Cluster
 
-Now we create a new Kubernetes cluster using the `KubernetesCluster` and `KubernetesNodeGroup` models. We generate a unique name using a timestamp to avoid conflicts.
+Now we create a new Kubernetes cluster using the `KubernetesCluster` and `KubernetesNodeGroup` models, referencing the network we created in step 2. We generate a unique name using a timestamp to avoid conflicts.
 
 ```py filename=test_kubernetes_test.py
 
-    print("\n3. Creating a new Kubernetes cluster...")
+    print("\n4. Creating a new Kubernetes cluster...")
+    print("   Testing SDK function: create_kubernetes_cluster.sync_detailed()")
     test_cluster_name = f"test-k8s-{int(time.time())}"
     created_cluster_uuid = None
 
@@ -142,7 +187,7 @@ Now we create a new Kubernetes cluster using the `KubernetesCluster` and `Kubern
 
         cluster_payload = KubernetesCluster(
             name=test_cluster_name,
-            network=network,
+            network=str(created_network_uuid),
             zone=zone,
             version=version,
             labels=[],
@@ -150,7 +195,7 @@ Now we create a new Kubernetes cluster using the `KubernetesCluster` and `Kubern
             node_groups=[node_group],
         )
 
-        response = post_cluster.sync_detailed(
+        response = create_kubernetes_cluster.sync_detailed(
             client=client,
             body=cluster_payload,
         )
@@ -161,21 +206,23 @@ Now we create a new Kubernetes cluster using the `KubernetesCluster` and `Kubern
             print(f"     Cluster '{test_cluster_name}' created successfully")
         else:
             print(f"     Failed with status: {response.status_code}")
+            print(f"     Parsed: {response.parsed}")
             sys.exit(1)
     except Exception as e:
         print(f"     Error: {e}")
+        traceback.print_exc()
         sys.exit(1)
 ```
 
-### Step 4: List Clusters Again (After)
+### Step 5: List Clusters Again (After)
 
-After creating the cluster, we list all clusters again to verify the new cluster appears in the list. We compare the count with the baseline from step 2.
+After creating the cluster, we list all clusters again to verify the new cluster appears in the list. We compare the count with the baseline from step 3.
 
 ```py filename=test_kubernetes_test.py
 
-    print("\n4. Listing Kubernetes clusters (AFTER)...")
+    print("\n5. Listing Kubernetes clusters (AFTER)...")
     try:
-        response = get_clusters.sync_detailed(client=client)
+        response = list_kubernetes_clusters.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             clusters_after = response.parsed or []
@@ -195,19 +242,22 @@ After creating the cluster, we list all clusters again to verify the new cluster
                 )
         else:
             print(f"     Failed with status: {response.status_code}")
+            print(f"     Parsed: {response.parsed}")
             sys.exit(1)
     except Exception as e:
         print(f"     Error: {e}")
+        traceback.print_exc()
         sys.exit(1)
 ```
 
-### Step 5: Cleanup - Delete the Test Cluster
+### Step 6: Cleanup - Delete the Test Cluster
 
-Finally, we clean up by deleting the test cluster we created. We wait a few seconds for the cluster to start provisioning before attempting deletion.
+We clean up by deleting the test cluster we created. We wait a few seconds for the cluster to start provisioning before attempting deletion.
 
 ```py filename=test_kubernetes_test.py
 
-    print("\n5. Cleaning up - deleting test cluster...")
+    print("\n6. Cleaning up - deleting test cluster...")
+    print("   Testing SDK function: delete_kubernetes_cluster.sync_detailed()")
     try:
         print("   Waiting 10 seconds for cluster to start provisioning...")
         time.sleep(10)
@@ -215,7 +265,7 @@ Finally, we clean up by deleting the test cluster we created. We wait a few seco
         if not created_cluster_uuid:
             print("     No cluster UUID found from create response; skipping delete")
         else:
-            response = delete_cluster.sync_detailed(
+            response = delete_kubernetes_cluster.sync_detailed(
                 client=client,
                 uuid=UUID(str(created_cluster_uuid)),
             )
@@ -229,7 +279,41 @@ Finally, we clean up by deleting the test cluster we created. We wait a few seco
                 print(f"     Note: Manual cleanup may be required for cluster '{test_cluster_name}'")
     except Exception as e:
         print(f"     Error during cleanup: {e}")
+        traceback.print_exc()
         print(f"     Note: Manual cleanup may be required for cluster '{test_cluster_name}'")
+
+```
+
+### Step 7: Cleanup - Delete the Test Network
+
+Finally, we delete the network we created in step 2. The cluster's node group needs some time to detach from the network after the delete request above, so we wait before attempting the network deletion.
+
+```py filename=test_kubernetes_test.py
+
+    print("\n7. Cleaning up - deleting test network...")
+    print("   Testing SDK function: delete_network.sync_detailed()")
+    print("   Waiting 30 seconds for the cluster's node group to detach from the network...")
+    time.sleep(30)
+    try:
+        if not created_network_uuid:
+            print("     No network UUID found from create response; skipping delete")
+        else:
+            response = delete_network.sync_detailed(
+                client=client,
+                uuid=UUID(str(created_network_uuid)),
+            )
+
+            if response.status_code == 204:
+                print(f"     Network '{test_network_name}' deleted successfully")
+            elif response.status_code == 404:
+                print("     Network not found for deletion (may have been auto-deleted)")
+            else:
+                print(f"     Failed to delete (status: {response.status_code})")
+                print(f"     Note: Manual cleanup may be required for network '{test_network_name}'")
+    except Exception as e:
+        print(f"     Error during cleanup: {e}")
+        traceback.print_exc()
+        print(f"     Note: Manual cleanup may be required for network '{test_network_name}'")
         sys.exit(1)
 
     print("\n" + "=" * 50)
@@ -261,7 +345,8 @@ The script uses strict mode (`set -euo pipefail`) to exit on any error, undefine
 set -euo pipefail
 
 # Test Kubernetes API
-# Tests: list_clusters, create_cluster, list_clusters again, delete_cluster
+# Tests: create_network, list_clusters, create_cluster, list_clusters again,
+# delete_cluster, delete_network
 ```
 
 ### Configuration Variables
@@ -289,17 +374,13 @@ echo "======================================"
 
 ### Environment Variable Check
 
-The test requires the `UPCLOUD_TOKEN` and `UKS_NETWORK` environment variables to be set.
+The test only requires the `UPCLOUD_TOKEN` environment variable to be set; the network is created and destroyed by the test itself.
 
 ```sh filename=test.sh
 
 # Check for required environment variables
 if [[ -z "${UPCLOUD_TOKEN:-}" ]]; then
     echo "ERROR: UPCLOUD_TOKEN environment variable is required"
-    exit 1
-fi
-if [[ -z "${UKS_NETWORK:-}" ]]; then
-    echo "ERROR: UKS_NETWORK environment variable is required"
     exit 1
 fi
 ```

@@ -3,10 +3,12 @@
 
 Tests:
 - Authenticate client
+- Create a network for the cluster
 - List existing clusters
 - Create a new cluster
 - List clusters again to verify creation
 - Delete the test cluster
+- Delete the test network
 """
 
 import os
@@ -17,18 +19,27 @@ from uuid import UUID
 
 from upcloud_api import AuthenticatedClient
 from upcloud_api.api.kubernetes import (
-    get_clusters,
-    post_cluster,
-    delete_cluster,
+    create_kubernetes_cluster,
+    delete_kubernetes_cluster,
+    list_kubernetes_clusters,
 )
-from upcloud_api.models import KubernetesCluster
+from upcloud_api.api.network import create_network, delete_network
+from upcloud_api.models import (
+    CreateNetworkRequest,
+    CreateNetworkRequestNetwork,
+    CreateNetworkRequestNetworkIpNetworks,
+    CreateNetworkRequestNetworkIpNetworksIpNetworkItem,
+    KubernetesCluster,
+    NetworkBooleanYesno,
+    NetworkIpFamily,
+    NetworkType,
+)
 from upcloud_api.models.kubernetes_node_group import KubernetesNodeGroup
 from upcloud_api.types import UNSET
 
 
 def main():
     token = os.environ.get("UPCLOUD_TOKEN")
-    network = os.environ.get("UKS_NETWORK")  # Network UUID
     zone = os.environ.get("UKS_ZONE", "fi-hel1")
     network_cidr = os.environ.get("UKS_NETWORK_CIDR", "10.0.0.0/24")
     version = os.environ.get("UKS_VERSION", "1.34")
@@ -38,17 +49,6 @@ def main():
 
     if not token:
         print("ERROR: UPCLOUD_TOKEN environment variable is required")
-        sys.exit(1)
-
-    missing = [
-        name
-        for name, value in (
-            ("UKS_NETWORK", network),
-        )
-        if not value
-    ]
-    if missing:
-        print("ERROR: Missing required environment variables: " + ", ".join(missing))
         sys.exit(1)
 
     ssh_keys = [key.strip() for key in ssh_keys_raw.split(",") if key.strip()] if ssh_keys_raw else None
@@ -61,10 +61,47 @@ def main():
         print(f"   Error: {e}")
         sys.exit(1)
 
-    print("\n2. Listing existing Kubernetes clusters (BEFORE)...")
-    print("   Testing SDK function: get_clusters.sync_detailed()")
+    print("\n2. Creating a network for the cluster...")
+    print("   Testing SDK function: create_network.sync_detailed()")
+    test_network_name = f"test-k8s-net-{int(time.time())}"
+    created_network_uuid = None
+
     try:
-        response = get_clusters.sync_detailed(client=client)
+        network_payload = CreateNetworkRequest(
+            network=CreateNetworkRequestNetwork(
+                type_=NetworkType.PRIVATE,
+                name=test_network_name,
+                zone=zone,
+                ip_networks=CreateNetworkRequestNetworkIpNetworks(
+                    ip_network=[
+                        CreateNetworkRequestNetworkIpNetworksIpNetworkItem(
+                            family=NetworkIpFamily.IPV4,
+                            address=network_cidr,
+                            dhcp=NetworkBooleanYesno.YES,
+                        )
+                    ]
+                ),
+            )
+        )
+
+        response = create_network.sync_detailed(client=client, body=network_payload)
+
+        if response.status_code == 201 and response.parsed is not None:
+            created_network_uuid = response.parsed.network.uuid
+            print(f"     Network '{test_network_name}' created successfully ({created_network_uuid})")
+        else:
+            print(f"     Failed with status: {response.status_code}")
+            print(f"     Parsed: {response.parsed}")
+            sys.exit(1)
+    except Exception as e:
+        print(f"     Error: {e}")
+        traceback.print_exc()
+        sys.exit(1)
+
+    print("\n3. Listing existing Kubernetes clusters (BEFORE)...")
+    print("   Testing SDK function: list_kubernetes_clusters.sync_detailed()")
+    try:
+        response = list_kubernetes_clusters.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             clusters_before = response.parsed or []
@@ -83,7 +120,8 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    print("\n3. Creating a new Kubernetes cluster...")
+    print("\n4. Creating a new Kubernetes cluster...")
+    print("   Testing SDK function: create_kubernetes_cluster.sync_detailed()")
     test_cluster_name = f"test-k8s-{int(time.time())}"
     created_cluster_uuid = None
 
@@ -97,7 +135,7 @@ def main():
 
         cluster_payload = KubernetesCluster(
             name=test_cluster_name,
-            network=network,
+            network=str(created_network_uuid),
             zone=zone,
             version=version,
             labels=[],
@@ -105,7 +143,7 @@ def main():
             node_groups=[node_group],
         )
 
-        response = post_cluster.sync_detailed(
+        response = create_kubernetes_cluster.sync_detailed(
             client=client,
             body=cluster_payload,
         )
@@ -123,9 +161,9 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    print("\n4. Listing Kubernetes clusters (AFTER)...")
+    print("\n5. Listing Kubernetes clusters (AFTER)...")
     try:
-        response = get_clusters.sync_detailed(client=client)
+        response = list_kubernetes_clusters.sync_detailed(client=client)
 
         if response.status_code == 200 and response.parsed is not None:
             clusters_after = response.parsed or []
@@ -152,7 +190,8 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    print("\n5. Cleaning up - deleting test cluster...")
+    print("\n6. Cleaning up - deleting test cluster...")
+    print("   Testing SDK function: delete_kubernetes_cluster.sync_detailed()")
     try:
         print("   Waiting 10 seconds for cluster to start provisioning...")
         time.sleep(10)
@@ -160,7 +199,7 @@ def main():
         if not created_cluster_uuid:
             print("     No cluster UUID found from create response; skipping delete")
         else:
-            response = delete_cluster.sync_detailed(
+            response = delete_kubernetes_cluster.sync_detailed(
                 client=client,
                 uuid=UUID(str(created_cluster_uuid)),
             )
@@ -176,6 +215,31 @@ def main():
         print(f"     Error during cleanup: {e}")
         traceback.print_exc()
         print(f"     Note: Manual cleanup may be required for cluster '{test_cluster_name}'")
+
+    print("\n7. Cleaning up - deleting test network...")
+    print("   Testing SDK function: delete_network.sync_detailed()")
+    print("   Waiting 30 seconds for the cluster's node group to detach from the network...")
+    time.sleep(30)
+    try:
+        if not created_network_uuid:
+            print("     No network UUID found from create response; skipping delete")
+        else:
+            response = delete_network.sync_detailed(
+                client=client,
+                uuid=UUID(str(created_network_uuid)),
+            )
+
+            if response.status_code == 204:
+                print(f"     Network '{test_network_name}' deleted successfully")
+            elif response.status_code == 404:
+                print("     Network not found for deletion (may have been auto-deleted)")
+            else:
+                print(f"     Failed to delete (status: {response.status_code})")
+                print(f"     Note: Manual cleanup may be required for network '{test_network_name}'")
+    except Exception as e:
+        print(f"     Error during cleanup: {e}")
+        traceback.print_exc()
+        print(f"     Note: Manual cleanup may be required for network '{test_network_name}'")
         sys.exit(1)
 
     print("\n" + "=" * 50)
