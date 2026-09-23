@@ -1,0 +1,38 @@
+name: Test SDK Examples
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/test-examples.yml"
+      - "sdk/**/*.py"
+      - "sdk/pyproject.toml"
+      - "examples/**/*.md"
+  workflow_dispatch:
+
+jobs:
+  test-examples:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup mdtest
+        uses: UpCloudLtd/mdtest/.github/actions/setup-mdtest@main
+        with:
+          install-go: "true"
+
+      - name: Test File Storage API
+        env:
+          UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
+        run: mdtest examples/file-storage/test_file_storage.md
+
+      - name: Test Object Storage API
+        env:
+          UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
+        run: mdtest examples/object-storage/test_object_storage.md
+
+      - name: Test Tag API
+        env:
+          UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
+        run: mdtest examples/tag/test_tag.md
