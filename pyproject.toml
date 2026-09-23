@@ -44,6 +44,14 @@ source-include = [
     "test/test_*.py",
 ]
 
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=test",
+    "--cov=upcloud_api",
+    "--cov-report=term-missing",
+]
+testpaths = ["test"]
+
 [tool.black]
 line-length = 99
 target-version = ["py310"]
