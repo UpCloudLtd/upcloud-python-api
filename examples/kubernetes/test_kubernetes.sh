@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Test Kubernetes API
-# Tests: list_clusters, create_cluster, list_clusters again, delete_cluster
+# Tests: create_network, list_clusters, create_cluster, list_clusters again,
+# delete_cluster, delete_network
 
 # TestPyPI project name is "upcloud-api" (installs the "upcloud_api" module)
 PKG_NAME="upcloud-api"
@@ -17,10 +18,6 @@ echo "======================================"
 # Check for required environment variables
 if [[ -z "${UPCLOUD_TOKEN:-}" ]]; then
     echo "ERROR: UPCLOUD_TOKEN environment variable is required"
-    exit 1
-fi
-if [[ -z "${UKS_NETWORK:-}" ]]; then
-    echo "ERROR: UKS_NETWORK environment variable is required"
     exit 1
 fi
 
