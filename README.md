@@ -17,10 +17,10 @@ testing / developing the client is recommended.
 pip install upcloud-api
 ```
 
-Alternatively, if you want the newest (possibly not yet released) stuff, clone the project and run:
+Alternatively, install the newest, possibly unreleased, revision directly from GitHub:
 
-``` bash
-python setup.py install
+```bash
+pip install "upcloud-api @ git+https://github.com/UpCloudLtd/upcloud-python-api.git"
 ```
 
 ### Supported Python versions
@@ -57,7 +57,6 @@ c.get_account()
 ### Defining and creating servers
 
 ```python
-
 import upcloud_api
 from upcloud_api import CloudManager, Server, Storage, login_user_block
 
@@ -68,23 +67,23 @@ manager.authenticate()
 login_user = login_user_block(
     username='theuser',
     ssh_keys=['ssh-rsa AAAAB3NzaC1yc2EAA[...]ptshi44x user@some.host'],
-    create_password=False
+    create_password=False,
 )
 
 cluster = {
     'web1': Server(
         plan='2xCPU-4GB',
         hostname='web1.example.com',
-        zone='uk-lon1', # All available zones with ids can be retrieved by using manager.get_zones()
+        zone='uk-lon1',  # All available zones with ids can be retrieved by using manager.get_zones()
         storage_devices=[
             # OS: template storage UUID, all available os templates can be retrieved by calling manager.get_templates()
             # Note: the storage os template uuid:s will change when OS is updated. So check that the UUID is correct
             # default tier: maxIOPS, the 100k IOPS storage backend
             Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             # secondary storage, hdd for reduced speed & cost
-            Storage(size=100, tier='hdd')
+            Storage(size=100, tier='hdd'),
         ],
-        login_user=login_user  # user and ssh-keys
+        login_user=login_user,  # user and ssh-keys
     ),
     'web2': Server(
         plan='2xCPU-4GB',
@@ -94,34 +93,31 @@ cluster = {
             Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=100, tier='hdd'),
         ],
-        login_user=login_user
+        login_user=login_user,
     ),
     'db': Server(
         # use custom resources, instead of a plan
-        core_number=12, # CPU cores
-        memory_amount=49152, # RAM in MB
+        core_number=12,  # CPU cores
+        memory_amount=49152,  # RAM in MB
         hostname='db.example.com',
         zone='uk-lon1',
         storage_devices=[
             Storage(os='01000000-0000-4000-8000-000030240200', size=10),
             Storage(size=100),
         ],
-        login_user=login_user
+        login_user=login_user,
     ),
     'lb': Server(
         plan='2xCPU-4GB',
         hostname='balancer.example.com',
         zone='uk-lon1',
-        storage_devices=[
-            Storage(os='01000000-0000-4000-8000-000030240200', size=10)
-        ],
-        login_user=login_user
-    )
+        storage_devices=[Storage(os='01000000-0000-4000-8000-000030240200', size=10)],
+        login_user=login_user,
+    ),
 }
 
 for server in cluster:
-    manager.create_server(cluster[server]) # creates all server objects defined in cluster
-
+    manager.create_server(cluster[server])  # creates all server objects defined in cluster
 ```
 
 Servers can be defined as dicts without using Server or Storage classes.
@@ -132,14 +128,13 @@ This feature is mainly for easier usage of the module from Ansible, but may prov
 
 ```python
 for server in cluster:
-	server.shutdown()
-	# OR:
-	server.start()
-	# OR:
-	server.destroy()
-	for storage in server.storage_devices:
-	  storage.destroy()
-
+    server.shutdown()
+    # OR:
+    server.start()
+    # OR:
+    server.destroy()
+    for storage in server.storage_devices:
+        storage.destroy()
 ```
 
 As the success of server.start() or server.destroy() and storage.destroy()
@@ -162,24 +157,20 @@ Following example would delete all storages attached to a server, but would keep
 of each storage if backups exist.
 
 ```python
-
 from upcloud_api.storage import BackupDeletionPolicy
 
 manager.delete_server(uuid, delete_storages=True, backups=BackupDeletionPolicy.KEEP_LATEST)
-
 ```
 
 ### Upgrade a Server
 
 ```python
-
 server = cluster['web1']
 server.shutdown()
 server.core_number = 4
 server.memory_amount = 4096
 server.save()
 server.start()
-
 ```
 
 ### Clone a new server from existing storage
@@ -195,9 +186,9 @@ clone = Server(
     storage_devices=[
         Storage(
             uuid='012bea57-0f70-4154-84d0-b3d25f4a018b',
-            size=50  # size must be defined and it has to be at least same size than storage being cloned
+            size=50,  # size must be defined and it has to be at least same size than storage being cloned
         ),
-    ]
+    ],
 )
 
 manager.create_server(clone)
@@ -206,62 +197,75 @@ manager.create_server(clone)
 ### Easy access to servers and their information
 
 ```python
-
 # returns a public IPv4 (preferred) IPv6 (no public IPv4 was attached) address
 server.get_public_ip()
 
 # returns a JSON serializable dict with the server's information (storages and ip-addresses included)
 server.to_dict()
-
 ```
 
 ### Get resources
 
 ```python
-
-servers     = manager.get_servers()
-server1     = manager.get_server(uuid) # e.g servers[0].uuid
-storages    = manager.get_storages()
-storage1    = manager.get_storage(uuid) # e.g server1.storage_devices[0].uuid
-ip_addrs    = manager.get_ips()
-ip_addr     = manager.get_ip(address) # e.g server1.ip_addresses[0].address
-
+servers = manager.get_servers()
+server1 = manager.get_server(uuid)  # e.g servers[0].uuid
+storages = manager.get_storages()
+storage1 = manager.get_storage(uuid)  # e.g server1.storage_devices[0].uuid
+ip_addrs = manager.get_ips()
+ip_addr = manager.get_ip(address)  # e.g server1.ip_addresses[0].address
 ```
 
-## Testing
+## Development
 
-Set up environment and install dependencies:
-
-``` bash
-# run at project root, python3 and virtualenv must be installed
-virtualenv venv
-source venv/bin/activate
-```
-
-Install the package in editable mode.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then create
+the locked development environment:
 
 ```bash
-# run at project root
-pip install -e .
+uv sync --locked
 ```
 
-Tests are located under `test/`. Run with:
+Run the unit tests:
 
 ```bash
-py.test test/
+uv run pytest
 ```
 
-To test against all supported python versions, run:
+CI runs the suite with CPython 3.10 through 3.13 and PyPy 3.11. To reproduce
+the full interpreter matrix locally:
 
 ```bash
-tox
+for python in 3.10 3.11 3.12 3.13 pypy3.11; do
+    uv run --locked --python "$python" pytest
+done
 ```
 
+The integration tests under `test/test_integration` can permanently remove all
+resources associated with an account. Run them only with a throwaway
+development account:
 
-The project also supplies a small test suite to test against the live API in `test/test_integration`.
-This suite is NOT run with `py.test` dy default as it will permanently remove all resources related to an account.
-It should only be run with a throwaway dev-only account when preparing for a new release. It is not shipped with
-PyPI releases. To run the integration tests, append `--integration-tests` flag to the `py.test` command.
+```bash
+uv run pytest --integration-tests -x
+```
+
+Run all lint and formatting hooks:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+Build the wheel and source distribution:
+
+```bash
+uv build
+```
+
+For a release, set the new version in both places:
+
+- `pyproject.toml`: the `version = "2.9.0"` field under `[project]`.
+- `upcloud_api/__init__.py`: the `__version__ = '2.9.0'` assignment.
+
+Use the same new version in both files, then run `uv lock` to update `uv.lock`.
+Do not edit the lockfile by hand.
 
 ## Bugs, Issues, Problems, Ideas
 

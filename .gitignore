@@ -18,9 +18,6 @@ docs/html/
 .coverage
 htmlcov
 
-# pyenv
-.python-version
-
 # local
 .test-snippets
 sandbox

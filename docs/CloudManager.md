@@ -8,19 +8,15 @@ relayed to requests library, see [here](http://docs.python-requests.org/en/maste
 Default timeout is 10.
 
 ```python
-
 # create manager and form a token
 manager = CloudManager("api-username", "password")
-
 ```
 
 # Account / Authentication
 
 ```python
-
-manager.authenticate() # alias: get_account()
+manager.authenticate()  # alias: get_account()
 manager.get_account()
-
 ```
 
 # Zone
@@ -28,9 +24,7 @@ manager.get_account()
 Zones can be queried from the api.
 
 ```python
-
 manager.get_zones()
-
 ```
 
 # TimeZone
@@ -38,17 +32,13 @@ manager.get_zones()
 Timezone can be given as a parameter to a server during creation and update.
 
 ```python
-
 manager.get_timezones()
-
 ```
 
 # Pricing
 
 ```python
-
 manager.get_prices()
-
 ```
 
 # Server Sizes
@@ -56,7 +46,5 @@ manager.get_prices()
 List the possible server CPU-ram configurations.
 
 ```python
-
 manager.get_server_sizes()
-
 ```
