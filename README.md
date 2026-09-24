@@ -25,10 +25,10 @@ pip install "upcloud-api @ git+https://github.com/UpCloudLtd/upcloud-python-api.
 
 ### Supported Python versions
 
-- Python 3.10
 - Python 3.11
 - Python 3.12
 - Python 3.13
+- Python 3.14
 - PyPy3
 
 **Python 2 has been deprecated**
@@ -230,11 +230,11 @@ Run the unit tests:
 uv run pytest
 ```
 
-CI runs the suite with CPython 3.10 through 3.13 and PyPy 3.11. To reproduce
+CI runs the suite with CPython 3.11 through 3.14 and PyPy 3.11. To reproduce
 the full interpreter matrix locally:
 
 ```bash
-for python in 3.10 3.11 3.12 3.13 pypy3.11; do
+for python in 3.11 3.12 3.13 3.14 pypy3.11; do
     uv run --locked --python "$python" pytest
 done
 ```

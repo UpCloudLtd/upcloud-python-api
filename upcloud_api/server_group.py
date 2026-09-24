@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 
 from upcloud_api.upcloud_resource import UpCloudResource
 
 
-class ServerGroupAffinityPolicy(str, Enum):
+class ServerGroupAffinityPolicy(StrEnum):
     """
     Enum representation of affinity policy for a server group
     """
