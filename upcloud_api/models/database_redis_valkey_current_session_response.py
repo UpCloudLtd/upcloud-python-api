@@ -17,7 +17,7 @@ class DatabaseRedisValkeyCurrentSessionResponse:
 
     Attributes:
         active_channel_subscriptions (int | Unset): Number of active channel subscriptions. Example: 2.
-        active_database (int | Unset): Current database ID. Example: 0.
+        active_database (str | Unset): Current database ID. Example: 0.
         active_pattern_matching_channel_subscriptions (int | Unset): Number of pattern matching subscriptions. Example:
             1.
         application_name (str | Unset): Name of the application that is connected to this service. Example: my-app.
@@ -27,7 +27,7 @@ class DatabaseRedisValkeyCurrentSessionResponse:
         connection_idle (int | Unset): Idle time of the connection in nanoseconds. Example: 3000000000.
         flags (list[str] | Unset): List of flags describing the client connection. Example: ['N', 'U'].
         flags_raw (str | Unset): Client connection flags (raw string). Example: NU.
-        id (int | Unset): Process ID of this session. Example: 15.
+        id (str | Unset): Process ID of this session. Example: 15.
         multi_exec_commands (int | Unset): Number of commands in a MULTI/EXEC context. Example: -1.
         output_buffer (int | Unset): Output buffer length. Example: 0.
         output_buffer_memory (int | Unset): Output buffer memory usage. Example: 0.
@@ -38,7 +38,7 @@ class DatabaseRedisValkeyCurrentSessionResponse:
     """
 
     active_channel_subscriptions: int | Unset = UNSET
-    active_database: int | Unset = UNSET
+    active_database: str | Unset = UNSET
     active_pattern_matching_channel_subscriptions: int | Unset = UNSET
     application_name: str | Unset = UNSET
     client_addr: str | Unset = UNSET
@@ -46,7 +46,7 @@ class DatabaseRedisValkeyCurrentSessionResponse:
     connection_idle: int | Unset = UNSET
     flags: list[str] | Unset = UNSET
     flags_raw: str | Unset = UNSET
-    id: int | Unset = UNSET
+    id: str | Unset = UNSET
     multi_exec_commands: int | Unset = UNSET
     output_buffer: int | Unset = UNSET
     output_buffer_memory: int | Unset = UNSET

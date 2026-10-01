@@ -48,6 +48,10 @@ class DatabaseServicePropertiesValkey:
             default pub/sub channels' ACL for new users if ACL is not supplied. When this option is not defined,
             all_channels is assumed to keep backward compatibility. This option doesn't affect Valkey configuration acl-
             pubsub-default.
+        valkey_active_defrag_ignore_bytes (int | Unset): Minimum amount of fragmentation waste, in bytes, before active
+            defragmentation starts. Only takes effect when `valkey_activedefrag` is enabled.
+        valkey_active_defrag_threshold_lower (int | Unset): Minimum percentage of fragmentation before active
+            defragmentation starts. Only takes effect when `valkey_activedefrag` is enabled.
         valkey_active_expire_effort (int | Unset): Valkey reclaims expired keys both when accessed and in the
             background. The background process scans for expired keys to free memory. Increasing the active-expire-effort
             setting (default 1, max 10) uses more CPU to reclaim expired keys faster, reducing memory usage but potentially
@@ -63,10 +67,11 @@ class DatabaseServicePropertiesValkey:
         valkey_notify_keyspace_events (str | Unset):
         valkey_number_of_databases (int | Unset): Set number of Valkey databases. Changing this will cause a restart of
             the Valkey service.
-        valkey_persistence (DatabaseServicePropertiesValkeyValkeyPersistence | Unset): When persistence is 'rdb', Valkey
-            does RDB dumps each 10 minutes if any key is changed. Also RDB dumps are done according to backup schedule for
-            backup purposes. When persistence is 'off', no RDB dumps and backups are done, so data can be lost at any moment
-            if service is restarted for any reason, or if service is powered off. Also service can't be forked.
+        valkey_persistence (DatabaseServicePropertiesValkeyValkeyPersistence | Unset): Controls whether Valkey writes
+            RDB dumps to disk. With `rdb`, RDB dumps are written for backups on the backup schedule and, if
+            `frequent_snapshots` is enabled, every 10 minutes so the service can recover recent data after a restart. With
+            `off`, no RDB dumps are written at all: backups and forking are unavailable, `frequent_snapshots` and
+            `backup_hour`/`backup_minute` have no effect, and all data is lost if the service restarts or is powered off.
         valkey_pubsub_client_output_buffer_limit (int | Unset): Set output buffer limit for pub / sub clients in MB. The
             value is the hard limit, the soft limit is 1/4 of the hard limit. When setting the limit, be mindful of the
             available memory in the selected service plan.
@@ -85,6 +90,8 @@ class DatabaseServicePropertiesValkey:
     public_access_prometheus: bool | Unset = UNSET
     service_log: bool | None | Unset = UNSET
     valkey_acl_channels_default: DatabaseServicePropertiesValkeyValkeyAclChannelsDefault | Unset = UNSET
+    valkey_active_defrag_ignore_bytes: int | Unset = UNSET
+    valkey_active_defrag_threshold_lower: int | Unset = UNSET
     valkey_active_expire_effort: int | Unset = UNSET
     valkey_activedefrag: bool | Unset = UNSET
     valkey_io_threads: int | Unset = UNSET
@@ -146,6 +153,10 @@ class DatabaseServicePropertiesValkey:
         if not isinstance(self.valkey_acl_channels_default, Unset):
             valkey_acl_channels_default = self.valkey_acl_channels_default.value
 
+        valkey_active_defrag_ignore_bytes = self.valkey_active_defrag_ignore_bytes
+
+        valkey_active_defrag_threshold_lower = self.valkey_active_defrag_threshold_lower
+
         valkey_active_expire_effort = self.valkey_active_expire_effort
 
         valkey_activedefrag = self.valkey_activedefrag
@@ -201,6 +212,10 @@ class DatabaseServicePropertiesValkey:
             field_dict["service_log"] = service_log
         if valkey_acl_channels_default is not UNSET:
             field_dict["valkey_acl_channels_default"] = valkey_acl_channels_default
+        if valkey_active_defrag_ignore_bytes is not UNSET:
+            field_dict["valkey_active_defrag_ignore_bytes"] = valkey_active_defrag_ignore_bytes
+        if valkey_active_defrag_threshold_lower is not UNSET:
+            field_dict["valkey_active_defrag_threshold_lower"] = valkey_active_defrag_threshold_lower
         if valkey_active_expire_effort is not UNSET:
             field_dict["valkey_active_expire_effort"] = valkey_active_expire_effort
         if valkey_activedefrag is not UNSET:
@@ -300,6 +315,10 @@ class DatabaseServicePropertiesValkey:
                 _valkey_acl_channels_default
             )
 
+        valkey_active_defrag_ignore_bytes = d.pop("valkey_active_defrag_ignore_bytes", UNSET)
+
+        valkey_active_defrag_threshold_lower = d.pop("valkey_active_defrag_threshold_lower", UNSET)
+
         valkey_active_expire_effort = d.pop("valkey_active_expire_effort", UNSET)
 
         valkey_activedefrag = d.pop("valkey_activedefrag", UNSET)
@@ -352,6 +371,8 @@ class DatabaseServicePropertiesValkey:
             public_access_prometheus=public_access_prometheus,
             service_log=service_log,
             valkey_acl_channels_default=valkey_acl_channels_default,
+            valkey_active_defrag_ignore_bytes=valkey_active_defrag_ignore_bytes,
+            valkey_active_defrag_threshold_lower=valkey_active_defrag_threshold_lower,
             valkey_active_expire_effort=valkey_active_expire_effort,
             valkey_activedefrag=valkey_activedefrag,
             valkey_io_threads=valkey_io_threads,

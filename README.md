@@ -57,8 +57,15 @@ The client is produced by `openapi-python-client` from the public OpenAPI spec:
 
 ```bash
 cp /path/to/upcloud-public-openapi.json generator/openapi/spec.json
-generator/scripts/generate.sh
+mise trust .config/mise.toml
+mise install
+mise run generate
 ```
+
+The [mise](https://mise.jdx.dev/) configuration pins `uv` tooling, and its
+`generate` task invokes `generator/scripts/generate.sh`. With `uv` already
+installed, the script can also be run directly with
+`bash generator/scripts/generate.sh`.
 
 `generate.sh` patches the spec, then recreates only `upcloud_api/`. Do not hand-edit
 `upcloud_api/` except via generator templates or `generator/scripts/patch_openapi.py`.

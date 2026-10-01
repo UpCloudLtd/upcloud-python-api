@@ -21,6 +21,7 @@ from ..models.database_service_properties_pg_io_method import DatabaseServicePro
 from ..models.database_service_properties_pg_log_error_verbosity import DatabaseServicePropertiesPgLogErrorVerbosity
 from ..models.database_service_properties_pg_log_line_prefix import DatabaseServicePropertiesPgLogLinePrefix
 from ..models.database_service_properties_pg_password_encryption import DatabaseServicePropertiesPgPasswordEncryption
+from ..models.database_service_properties_pg_pg_stat_plans_track import DatabaseServicePropertiesPgPgStatPlansTrack
 from ..models.database_service_properties_pg_pg_stat_statements_track import (
     DatabaseServicePropertiesPgPgStatStatementsTrack,
 )
@@ -183,6 +184,12 @@ class DatabaseServicePropertiesPg:
             for PostgreSQL 13+.
         pg_stat_monitor_pgsm_max_buckets (int | Unset): Sets the maximum number of buckets. Changing this parameter
             causes a service restart. Only available for PostgreSQL 13+.
+        pg_stat_plans_enable (bool | Unset): Enable the pg_stat_plans extension. Changing this parameter causes a
+            service restart. Tracks execution plans for SQL queries
+        pg_stat_plans_track (DatabaseServicePropertiesPgPgStatPlansTrack | Unset): Controls which statements' plans are
+            tracked. Specify top to track top-level statements (those issued directly by clients), all to also track nested
+            statements (such as statements invoked within functions), or none to disable plan tracking. The default is
+            `top`.
         pg_stat_statements_track (DatabaseServicePropertiesPgPgStatStatementsTrack | Unset): Controls which statements
             are counted. Specify top to track top-level statements (those issued directly by clients), all to also track
             nested statements (such as statements invoked within functions), or none to disable statement statistics
@@ -292,6 +299,8 @@ class DatabaseServicePropertiesPg:
     pg_stat_monitor_enable: bool | Unset = UNSET
     pg_stat_monitor_pgsm_enable_query_plan: bool | Unset = UNSET
     pg_stat_monitor_pgsm_max_buckets: int | Unset = UNSET
+    pg_stat_plans_enable: bool | Unset = UNSET
+    pg_stat_plans_track: DatabaseServicePropertiesPgPgStatPlansTrack | Unset = UNSET
     pg_stat_statements_track: DatabaseServicePropertiesPgPgStatStatementsTrack | Unset = UNSET
     pgaudit: DatabaseServicePropertiesPgPgaudit | Unset = UNSET
     pgbouncer: DatabaseServicePropertiesPgPgbouncer | Unset = UNSET
@@ -487,6 +496,12 @@ class DatabaseServicePropertiesPg:
         pg_stat_monitor_pgsm_enable_query_plan = self.pg_stat_monitor_pgsm_enable_query_plan
 
         pg_stat_monitor_pgsm_max_buckets = self.pg_stat_monitor_pgsm_max_buckets
+
+        pg_stat_plans_enable = self.pg_stat_plans_enable
+
+        pg_stat_plans_track: str | Unset = UNSET
+        if not isinstance(self.pg_stat_plans_track, Unset):
+            pg_stat_plans_track = self.pg_stat_plans_track.value
 
         pg_stat_statements_track: str | Unset = UNSET
         if not isinstance(self.pg_stat_statements_track, Unset):
@@ -687,6 +702,10 @@ class DatabaseServicePropertiesPg:
             field_dict["pg_stat_monitor_pgsm_enable_query_plan"] = pg_stat_monitor_pgsm_enable_query_plan
         if pg_stat_monitor_pgsm_max_buckets is not UNSET:
             field_dict["pg_stat_monitor_pgsm_max_buckets"] = pg_stat_monitor_pgsm_max_buckets
+        if pg_stat_plans_enable is not UNSET:
+            field_dict["pg_stat_plans_enable"] = pg_stat_plans_enable
+        if pg_stat_plans_track is not UNSET:
+            field_dict["pg_stat_plans_track"] = pg_stat_plans_track
         if pg_stat_statements_track is not UNSET:
             field_dict["pg_stat_statements_track"] = pg_stat_statements_track
         if pgaudit is not UNSET:
@@ -993,6 +1012,15 @@ class DatabaseServicePropertiesPg:
 
         pg_stat_monitor_pgsm_max_buckets = d.pop("pg_stat_monitor_pgsm_max_buckets", UNSET)
 
+        pg_stat_plans_enable = d.pop("pg_stat_plans_enable", UNSET)
+
+        _pg_stat_plans_track = d.pop("pg_stat_plans_track", UNSET)
+        pg_stat_plans_track: DatabaseServicePropertiesPgPgStatPlansTrack | Unset
+        if isinstance(_pg_stat_plans_track, Unset):
+            pg_stat_plans_track = UNSET
+        else:
+            pg_stat_plans_track = DatabaseServicePropertiesPgPgStatPlansTrack(_pg_stat_plans_track)
+
         _pg_stat_statements_track = d.pop("pg_stat_statements_track", UNSET)
         pg_stat_statements_track: DatabaseServicePropertiesPgPgStatStatementsTrack | Unset
         if isinstance(_pg_stat_statements_track, Unset):
@@ -1170,6 +1198,8 @@ class DatabaseServicePropertiesPg:
             pg_stat_monitor_enable=pg_stat_monitor_enable,
             pg_stat_monitor_pgsm_enable_query_plan=pg_stat_monitor_pgsm_enable_query_plan,
             pg_stat_monitor_pgsm_max_buckets=pg_stat_monitor_pgsm_max_buckets,
+            pg_stat_plans_enable=pg_stat_plans_enable,
+            pg_stat_plans_track=pg_stat_plans_track,
             pg_stat_statements_track=pg_stat_statements_track,
             pgaudit=pgaudit,
             pgbouncer=pgbouncer,

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 from urllib.parse import quote
 from uuid import UUID
 
@@ -7,7 +7,6 @@ import httpx
 
 from ...client import AuthenticatedClient, Client
 from ...models.database_error_response import DatabaseErrorResponse
-from ...models.database_terminate_session_response import DatabaseTerminateSessionResponse
 from ...types import Response
 
 
@@ -27,12 +26,9 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> DatabaseErrorResponse | DatabaseTerminateSessionResponse:
+def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Any | DatabaseErrorResponse:
     if response.status_code == 204:
-        response_204 = DatabaseTerminateSessionResponse.from_dict(response.json())
-
+        response_204 = cast(Any, None)
         return response_204
 
     response_default = DatabaseErrorResponse.from_dict(response.json())
@@ -42,7 +38,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[DatabaseErrorResponse | DatabaseTerminateSessionResponse]:
+) -> Response[Any | DatabaseErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -56,7 +52,7 @@ def sync_detailed(
     pid: int,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[DatabaseErrorResponse | DatabaseTerminateSessionResponse]:
+) -> Response[Any | DatabaseErrorResponse]:
     """Terminate session
 
      Terminates a sessions or kills a running query for a Managed Database service by its {uuid}, session
@@ -71,7 +67,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DatabaseErrorResponse | DatabaseTerminateSessionResponse]
+        Response[Any | DatabaseErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -91,7 +87,7 @@ def sync(
     pid: int,
     *,
     client: AuthenticatedClient | Client,
-) -> DatabaseErrorResponse | DatabaseTerminateSessionResponse | None:
+) -> Any | DatabaseErrorResponse | None:
     """Terminate session
 
      Terminates a sessions or kills a running query for a Managed Database service by its {uuid}, session
@@ -106,7 +102,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DatabaseErrorResponse | DatabaseTerminateSessionResponse
+        Any | DatabaseErrorResponse
     """
 
     return sync_detailed(
@@ -121,7 +117,7 @@ async def asyncio_detailed(
     pid: int,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[DatabaseErrorResponse | DatabaseTerminateSessionResponse]:
+) -> Response[Any | DatabaseErrorResponse]:
     """Terminate session
 
      Terminates a sessions or kills a running query for a Managed Database service by its {uuid}, session
@@ -136,7 +132,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DatabaseErrorResponse | DatabaseTerminateSessionResponse]
+        Response[Any | DatabaseErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -154,7 +150,7 @@ async def asyncio(
     pid: int,
     *,
     client: AuthenticatedClient | Client,
-) -> DatabaseErrorResponse | DatabaseTerminateSessionResponse | None:
+) -> Any | DatabaseErrorResponse | None:
     """Terminate session
 
      Terminates a sessions or kills a running query for a Managed Database service by its {uuid}, session
@@ -169,7 +165,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DatabaseErrorResponse | DatabaseTerminateSessionResponse
+        Any | DatabaseErrorResponse
     """
 
     return (

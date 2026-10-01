@@ -89,9 +89,17 @@ def sync_detailed(
 
     Args:
         body (CreateServer | Unset): Cloud Server creation parameters Example: {'server':
-            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1',
-            'storage_devices': {'storage_device': [{'action': 'clone', 'storage': '01234567-89ab-
-            cdef-0123-456789abcdef', 'title': 'Operating System'}]}}}.
+            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1', 'plan':
+            '1xCPU-1GB', 'metadata': 'yes', 'networking': {'interfaces': {'interface':
+            [{'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'public'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'utility'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'network':
+            '03000000-0000-4000-8000-000000000000', 'type': 'private'}]}}, 'login_user': {'username':
+            'upclouduser', 'ssh_keys': {'ssh_key': ['ssh-ed25519
+            AAAAC3NzaC1lZDI1NTE5AAAAIO3t5AQcuv4+KxJ5rC75N8bW/e7eOq0k5Y2L7V1oH3Z5 user@example.com']}},
+            'storage_devices': {'storage_device': [{'action': 'clone', 'storage':
+            '01000000-0000-4000-8000-000020080100', 'size': 30, 'tier': 'maxiops', 'title': 'Debian
+            Trixie'}]}}}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -123,9 +131,17 @@ def sync(
 
     Args:
         body (CreateServer | Unset): Cloud Server creation parameters Example: {'server':
-            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1',
-            'storage_devices': {'storage_device': [{'action': 'clone', 'storage': '01234567-89ab-
-            cdef-0123-456789abcdef', 'title': 'Operating System'}]}}}.
+            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1', 'plan':
+            '1xCPU-1GB', 'metadata': 'yes', 'networking': {'interfaces': {'interface':
+            [{'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'public'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'utility'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'network':
+            '03000000-0000-4000-8000-000000000000', 'type': 'private'}]}}, 'login_user': {'username':
+            'upclouduser', 'ssh_keys': {'ssh_key': ['ssh-ed25519
+            AAAAC3NzaC1lZDI1NTE5AAAAIO3t5AQcuv4+KxJ5rC75N8bW/e7eOq0k5Y2L7V1oH3Z5 user@example.com']}},
+            'storage_devices': {'storage_device': [{'action': 'clone', 'storage':
+            '01000000-0000-4000-8000-000020080100', 'size': 30, 'tier': 'maxiops', 'title': 'Debian
+            Trixie'}]}}}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -152,9 +168,17 @@ async def asyncio_detailed(
 
     Args:
         body (CreateServer | Unset): Cloud Server creation parameters Example: {'server':
-            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1',
-            'storage_devices': {'storage_device': [{'action': 'clone', 'storage': '01234567-89ab-
-            cdef-0123-456789abcdef', 'title': 'Operating System'}]}}}.
+            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1', 'plan':
+            '1xCPU-1GB', 'metadata': 'yes', 'networking': {'interfaces': {'interface':
+            [{'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'public'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'utility'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'network':
+            '03000000-0000-4000-8000-000000000000', 'type': 'private'}]}}, 'login_user': {'username':
+            'upclouduser', 'ssh_keys': {'ssh_key': ['ssh-ed25519
+            AAAAC3NzaC1lZDI1NTE5AAAAIO3t5AQcuv4+KxJ5rC75N8bW/e7eOq0k5Y2L7V1oH3Z5 user@example.com']}},
+            'storage_devices': {'storage_device': [{'action': 'clone', 'storage':
+            '01000000-0000-4000-8000-000020080100', 'size': 30, 'tier': 'maxiops', 'title': 'Debian
+            Trixie'}]}}}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -184,9 +208,17 @@ async def asyncio(
 
     Args:
         body (CreateServer | Unset): Cloud Server creation parameters Example: {'server':
-            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1',
-            'storage_devices': {'storage_device': [{'action': 'clone', 'storage': '01234567-89ab-
-            cdef-0123-456789abcdef', 'title': 'Operating System'}]}}}.
+            {'hostname': 'my-server.example.com', 'title': 'My Server', 'zone': 'fi-hel1', 'plan':
+            '1xCPU-1GB', 'metadata': 'yes', 'networking': {'interfaces': {'interface':
+            [{'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'public'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'type': 'utility'},
+            {'ip_addresses': {'ip_address': [{'family': 'IPv4'}]}, 'network':
+            '03000000-0000-4000-8000-000000000000', 'type': 'private'}]}}, 'login_user': {'username':
+            'upclouduser', 'ssh_keys': {'ssh_key': ['ssh-ed25519
+            AAAAC3NzaC1lZDI1NTE5AAAAIO3t5AQcuv4+KxJ5rC75N8bW/e7eOq0k5Y2L7V1oH3Z5 user@example.com']}},
+            'storage_devices': {'storage_device': [{'action': 'clone', 'storage':
+            '01000000-0000-4000-8000-000020080100', 'size': 30, 'tier': 'maxiops', 'title': 'Debian
+            Trixie'}]}}}.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

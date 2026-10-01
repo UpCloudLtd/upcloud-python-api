@@ -150,12 +150,16 @@ class DatabaseServicePropertiesOpensearch:
         knn_memory_circuit_breaker_limit (int | Unset): Maximum amount of memory in percentage that can be used for the
             KNN index. Defaults to 50% of the JVM heap size. 0 is used to set it to null which can be used to invalidate
             caches.
+        ml_commons_connector_access_control_enabled (bool | Unset): When set to true, the setting allows admins to
+            control access and permissions to the connector API using backend_roles. Defaults to false.
         ml_commons_model_access_control_enabled (bool | Unset): Enable or disable model access control for ML Commons.
             When enabled, access to ML models is controlled by security permissions. Defaults to false.
         ml_commons_native_memory_threshold (int | Unset): Native memory threshold percentage for ML Commons. Controls
             the maximum percentage of native memory that can be used by ML Commons operations. Defaults to 90%.
         ml_commons_only_run_on_ml_node (bool | Unset): Enable or disable running ML Commons tasks only on ML nodes. When
             enabled, ML tasks will only execute on nodes designated as ML nodes. Defaults to true.
+        ml_commons_trusted_connector_endpoints_regex (list[str] | Unset): Adds the trusted endpoints to the cluster
+            settings. Supports Java regex expressions.
         node_search_cache_size (None | str | Unset): Defines a limit of how much total remote data can be referenced as
             a ratio of the size of the disk reserved for the file cache. This is designed to be a safeguard to prevent
             oversubscribing a cluster. Defaults to 5gb. Requires restarting all OpenSearch nodes.
@@ -259,9 +263,11 @@ class DatabaseServicePropertiesOpensearch:
     keep_index_refresh_interval: bool | Unset = UNSET
     knn_memory_circuit_breaker_enabled: bool | Unset = UNSET
     knn_memory_circuit_breaker_limit: int | Unset = UNSET
+    ml_commons_connector_access_control_enabled: bool | Unset = UNSET
     ml_commons_model_access_control_enabled: bool | Unset = UNSET
     ml_commons_native_memory_threshold: int | Unset = UNSET
     ml_commons_only_run_on_ml_node: bool | Unset = UNSET
+    ml_commons_trusted_connector_endpoints_regex: list[str] | Unset = UNSET
     node_search_cache_size: None | str | Unset = UNSET
     openid: DatabaseServicePropertiesOpensearchOpenid | Unset = UNSET
     opensearch_dashboards: DatabaseServicePropertiesOpensearchOpensearchDashboards | Unset = UNSET
@@ -438,11 +444,17 @@ class DatabaseServicePropertiesOpensearch:
 
         knn_memory_circuit_breaker_limit = self.knn_memory_circuit_breaker_limit
 
+        ml_commons_connector_access_control_enabled = self.ml_commons_connector_access_control_enabled
+
         ml_commons_model_access_control_enabled = self.ml_commons_model_access_control_enabled
 
         ml_commons_native_memory_threshold = self.ml_commons_native_memory_threshold
 
         ml_commons_only_run_on_ml_node = self.ml_commons_only_run_on_ml_node
+
+        ml_commons_trusted_connector_endpoints_regex: list[str] | Unset = UNSET
+        if not isinstance(self.ml_commons_trusted_connector_endpoints_regex, Unset):
+            ml_commons_trusted_connector_endpoints_regex = self.ml_commons_trusted_connector_endpoints_regex
 
         node_search_cache_size: None | str | Unset
         if isinstance(self.node_search_cache_size, Unset):
@@ -644,12 +656,16 @@ class DatabaseServicePropertiesOpensearch:
             field_dict["knn_memory_circuit_breaker_enabled"] = knn_memory_circuit_breaker_enabled
         if knn_memory_circuit_breaker_limit is not UNSET:
             field_dict["knn_memory_circuit_breaker_limit"] = knn_memory_circuit_breaker_limit
+        if ml_commons_connector_access_control_enabled is not UNSET:
+            field_dict["ml_commons_connector_access_control_enabled"] = ml_commons_connector_access_control_enabled
         if ml_commons_model_access_control_enabled is not UNSET:
             field_dict["ml_commons_model_access_control_enabled"] = ml_commons_model_access_control_enabled
         if ml_commons_native_memory_threshold is not UNSET:
             field_dict["ml_commons_native_memory_threshold"] = ml_commons_native_memory_threshold
         if ml_commons_only_run_on_ml_node is not UNSET:
             field_dict["ml_commons_only_run_on_ml_node"] = ml_commons_only_run_on_ml_node
+        if ml_commons_trusted_connector_endpoints_regex is not UNSET:
+            field_dict["ml_commons_trusted_connector_endpoints_regex"] = ml_commons_trusted_connector_endpoints_regex
         if node_search_cache_size is not UNSET:
             field_dict["node_search_cache_size"] = node_search_cache_size
         if openid is not UNSET:
@@ -972,11 +988,17 @@ class DatabaseServicePropertiesOpensearch:
 
         knn_memory_circuit_breaker_limit = d.pop("knn_memory_circuit_breaker_limit", UNSET)
 
+        ml_commons_connector_access_control_enabled = d.pop("ml_commons_connector_access_control_enabled", UNSET)
+
         ml_commons_model_access_control_enabled = d.pop("ml_commons_model_access_control_enabled", UNSET)
 
         ml_commons_native_memory_threshold = d.pop("ml_commons_native_memory_threshold", UNSET)
 
         ml_commons_only_run_on_ml_node = d.pop("ml_commons_only_run_on_ml_node", UNSET)
+
+        ml_commons_trusted_connector_endpoints_regex = cast(
+            list[str], d.pop("ml_commons_trusted_connector_endpoints_regex", UNSET)
+        )
 
         def _parse_node_search_cache_size(data: object) -> None | str | Unset:
             if data is None:
@@ -1184,9 +1206,11 @@ class DatabaseServicePropertiesOpensearch:
             keep_index_refresh_interval=keep_index_refresh_interval,
             knn_memory_circuit_breaker_enabled=knn_memory_circuit_breaker_enabled,
             knn_memory_circuit_breaker_limit=knn_memory_circuit_breaker_limit,
+            ml_commons_connector_access_control_enabled=ml_commons_connector_access_control_enabled,
             ml_commons_model_access_control_enabled=ml_commons_model_access_control_enabled,
             ml_commons_native_memory_threshold=ml_commons_native_memory_threshold,
             ml_commons_only_run_on_ml_node=ml_commons_only_run_on_ml_node,
+            ml_commons_trusted_connector_endpoints_regex=ml_commons_trusted_connector_endpoints_regex,
             node_search_cache_size=node_search_cache_size,
             openid=openid,
             opensearch_dashboards=opensearch_dashboards,

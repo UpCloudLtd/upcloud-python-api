@@ -29,8 +29,10 @@ class DatabaseServicePropertiesPgPgbouncer:
         ignore_startup_parameters (list[DatabaseServicePropertiesPgPgbouncerIgnoreStartupParametersItem] | Unset):
         max_prepared_statements (int | Unset):
         min_pool_size (int | Unset):
+        server_connect_timeout (float | Unset):
         server_idle_timeout (int | Unset):
         server_lifetime (int | Unset):
+        server_login_retry (float | Unset):
         server_reset_query_always (bool | Unset):
     """
 
@@ -41,8 +43,10 @@ class DatabaseServicePropertiesPgPgbouncer:
     ignore_startup_parameters: list[DatabaseServicePropertiesPgPgbouncerIgnoreStartupParametersItem] | Unset = UNSET
     max_prepared_statements: int | Unset = UNSET
     min_pool_size: int | Unset = UNSET
+    server_connect_timeout: float | Unset = UNSET
     server_idle_timeout: int | Unset = UNSET
     server_lifetime: int | Unset = UNSET
+    server_login_retry: float | Unset = UNSET
     server_reset_query_always: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -68,9 +72,13 @@ class DatabaseServicePropertiesPgPgbouncer:
 
         min_pool_size = self.min_pool_size
 
+        server_connect_timeout = self.server_connect_timeout
+
         server_idle_timeout = self.server_idle_timeout
 
         server_lifetime = self.server_lifetime
+
+        server_login_retry = self.server_login_retry
 
         server_reset_query_always = self.server_reset_query_always
 
@@ -91,10 +99,14 @@ class DatabaseServicePropertiesPgPgbouncer:
             field_dict["max_prepared_statements"] = max_prepared_statements
         if min_pool_size is not UNSET:
             field_dict["min_pool_size"] = min_pool_size
+        if server_connect_timeout is not UNSET:
+            field_dict["server_connect_timeout"] = server_connect_timeout
         if server_idle_timeout is not UNSET:
             field_dict["server_idle_timeout"] = server_idle_timeout
         if server_lifetime is not UNSET:
             field_dict["server_lifetime"] = server_lifetime
+        if server_login_retry is not UNSET:
+            field_dict["server_login_retry"] = server_login_retry
         if server_reset_query_always is not UNSET:
             field_dict["server_reset_query_always"] = server_reset_query_always
 
@@ -131,9 +143,13 @@ class DatabaseServicePropertiesPgPgbouncer:
 
         min_pool_size = d.pop("min_pool_size", UNSET)
 
+        server_connect_timeout = d.pop("server_connect_timeout", UNSET)
+
         server_idle_timeout = d.pop("server_idle_timeout", UNSET)
 
         server_lifetime = d.pop("server_lifetime", UNSET)
+
+        server_login_retry = d.pop("server_login_retry", UNSET)
 
         server_reset_query_always = d.pop("server_reset_query_always", UNSET)
 
@@ -145,8 +161,10 @@ class DatabaseServicePropertiesPgPgbouncer:
             ignore_startup_parameters=ignore_startup_parameters,
             max_prepared_statements=max_prepared_statements,
             min_pool_size=min_pool_size,
+            server_connect_timeout=server_connect_timeout,
             server_idle_timeout=server_idle_timeout,
             server_lifetime=server_lifetime,
+            server_login_retry=server_login_retry,
             server_reset_query_always=server_reset_query_always,
         )
 

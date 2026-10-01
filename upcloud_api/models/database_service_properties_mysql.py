@@ -88,7 +88,8 @@ class DatabaseServicePropertiesMysql:
         innodb_lock_wait_timeout (int | Unset): The length of time in seconds an InnoDB transaction waits for a row lock
             before giving up. Default is 120.
         innodb_log_buffer_size (int | Unset): The size in bytes of the buffer that InnoDB uses to write to the log files
-            on disk.
+            on disk. Requests above 15% of the RAM provided by your service plan are rejected, because a larger buffer
+            leaves less memory for the buffer pool and client connections.
         innodb_online_alter_log_max_size (int | Unset): The upper limit in bytes on the size of the temporary log files
             used during online DDL operations for InnoDB tables.
         innodb_optimize_fulltext_only (bool | Unset): When enabled, OPTIMIZE TABLE on InnoDB tables only updates the
@@ -120,13 +121,20 @@ class DatabaseServicePropertiesMysql:
             insensitive. This option can only be set when creating the service and cannot be changed later. See
             https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html for details.
         max_allowed_packet (int | Unset): Size of the largest message in bytes that can be received by the server.
-            Default is 67108864 (64M)
+            Default is 67108864 (64M). Statements and rows larger than this are rejected with a packet too large error.
+        max_connections (int | Unset): The maximum permitted number of simultaneous client connections. Lower this to
+            reserve memory for other work. The value cannot exceed the limit provided by your service plan. Upgrading the
+            plan does not raise a value you have set explicitly, so increase it yourself after an upgrade.
         max_execution_time (int | Unset): Execution timeout in milliseconds for read-only top-level SELECT statements. 0
             (the default) means no timeout.
         max_heap_table_size (int | Unset): Limits the size of internal in-memory tables. Also set tmp_table_size.
             Default is 16777216 (16M)
         max_seeks_for_key (int | Unset): Limit on the assumed maximum number of index seeks when looking up rows based
             on a key. Lowering this value causes the optimizer to prefer index lookups over table scans.
+        max_user_connections (int | Unset): The maximum number of simultaneous connections permitted to any single user
+            account. 0, the default, means no per-account limit. Any other value must be at least 10 below max_connections,
+            so that monitoring and your own admin sessions can still connect when an application saturates its own limit.
+            UpCloud's replication and management connections are unaffected however low you set this.
         migration (DatabaseServicePropertiesMysqlMigrationType0 | None | Unset):
         mysql_incremental_backup (DatabaseServicePropertiesMysqlMysqlIncrementalBackup | Unset):
         net_buffer_length (int | Unset): Start sizes of connection buffer and result buffer. Default is 16384 (16K).
@@ -159,7 +167,9 @@ class DatabaseServicePropertiesMysql:
             console.
         slow_query_log (bool | Unset): Slow query log enables capturing of slow queries. Setting slow_query_log to false
             also truncates the mysql.slow_log table.
-        sort_buffer_size (int | Unset): Sort buffer size in bytes for ORDER BY optimization. Default is 262144 (256K)
+        sort_buffer_size (int | Unset): Sort buffer size in bytes for ORDER BY optimization. Default is 262144 (256K).
+            Requests above 2% of the RAM provided by your service plan are rejected, because the buffer is allocated per
+            session and its cost multiplies with the connection count.
         sql_mode (str | Unset): Global SQL mode. Set to empty to use MySQL server defaults. When creating a new service
             and not setting this field UpCloud default SQL mode (strict, SQL standard compliant) will be assigned.
         sql_require_primary_key (bool | Unset): Require primary key to be defined for new tables or old tables modified
@@ -169,7 +179,8 @@ class DatabaseServicePropertiesMysql:
             Default is 16777216 (16M)
         version (DatabaseServicePropertiesMysqlVersion | Unset):
         wait_timeout (int | Unset): The number of seconds the server waits for activity on a noninteractive connection
-            before closing it.
+            before closing it. Requests to set this below 30 are rejected, because a shorter timeout closes your own idle
+            connections between statements.
         windowing_use_high_precision (bool | Unset): Whether window functions are computed to high precision. Disabling
             this trades exactness for speed in window function evaluation.
     """
@@ -216,9 +227,11 @@ class DatabaseServicePropertiesMysql:
     long_query_time: float | Unset = UNSET
     lower_case_table_names: DatabaseServicePropertiesMysqlLowerCaseTableNames | Unset = UNSET
     max_allowed_packet: int | Unset = UNSET
+    max_connections: int | Unset = UNSET
     max_execution_time: int | Unset = UNSET
     max_heap_table_size: int | Unset = UNSET
     max_seeks_for_key: int | Unset = UNSET
+    max_user_connections: int | Unset = UNSET
     migration: DatabaseServicePropertiesMysqlMigrationType0 | None | Unset = UNSET
     mysql_incremental_backup: DatabaseServicePropertiesMysqlMysqlIncrementalBackup | Unset = UNSET
     net_buffer_length: int | Unset = UNSET
@@ -354,11 +367,15 @@ class DatabaseServicePropertiesMysql:
 
         max_allowed_packet = self.max_allowed_packet
 
+        max_connections = self.max_connections
+
         max_execution_time = self.max_execution_time
 
         max_heap_table_size = self.max_heap_table_size
 
         max_seeks_for_key = self.max_seeks_for_key
+
+        max_user_connections = self.max_user_connections
 
         migration: dict[str, Any] | None | Unset
         if isinstance(self.migration, Unset):
@@ -507,12 +524,16 @@ class DatabaseServicePropertiesMysql:
             field_dict["lower_case_table_names"] = lower_case_table_names
         if max_allowed_packet is not UNSET:
             field_dict["max_allowed_packet"] = max_allowed_packet
+        if max_connections is not UNSET:
+            field_dict["max_connections"] = max_connections
         if max_execution_time is not UNSET:
             field_dict["max_execution_time"] = max_execution_time
         if max_heap_table_size is not UNSET:
             field_dict["max_heap_table_size"] = max_heap_table_size
         if max_seeks_for_key is not UNSET:
             field_dict["max_seeks_for_key"] = max_seeks_for_key
+        if max_user_connections is not UNSET:
+            field_dict["max_user_connections"] = max_user_connections
         if migration is not UNSET:
             field_dict["migration"] = migration
         if mysql_incremental_backup is not UNSET:
@@ -704,11 +725,15 @@ class DatabaseServicePropertiesMysql:
 
         max_allowed_packet = d.pop("max_allowed_packet", UNSET)
 
+        max_connections = d.pop("max_connections", UNSET)
+
         max_execution_time = d.pop("max_execution_time", UNSET)
 
         max_heap_table_size = d.pop("max_heap_table_size", UNSET)
 
         max_seeks_for_key = d.pop("max_seeks_for_key", UNSET)
+
+        max_user_connections = d.pop("max_user_connections", UNSET)
 
         def _parse_migration(data: object) -> DatabaseServicePropertiesMysqlMigrationType0 | None | Unset:
             if data is None:
@@ -838,9 +863,11 @@ class DatabaseServicePropertiesMysql:
             long_query_time=long_query_time,
             lower_case_table_names=lower_case_table_names,
             max_allowed_packet=max_allowed_packet,
+            max_connections=max_connections,
             max_execution_time=max_execution_time,
             max_heap_table_size=max_heap_table_size,
             max_seeks_for_key=max_seeks_for_key,
+            max_user_connections=max_user_connections,
             migration=migration,
             mysql_incremental_backup=mysql_incremental_backup,
             net_buffer_length=net_buffer_length,

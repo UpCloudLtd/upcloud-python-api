@@ -14,7 +14,7 @@
       "name": "MIT",
       "url": "https://spdx.org/licenses/MIT.html"
     },
-    "version": "0.0.103"
+    "version": "0.0.107"
   },
   "servers": [
     {
@@ -1177,6 +1177,9 @@
         "responses": {
           "201": {
             "$ref": "#/components/responses/addIPAddress201"
+          },
+          "409": {
+            "$ref": "#/components/responses/addIPAddress409"
           },
           "default": {
             "$ref": "#/components/responses/addIPAddressDefault"
@@ -4527,6 +4530,97 @@
           },
           "default": {
             "$ref": "#/components/responses/removeStorageFromFavoritesDefault"
+          }
+        },
+        "x-upcloud-visibility": "public"
+      }
+    },
+    "/1.3/storage/{uuid}/import": {
+      "get": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "Get storage import details",
+        "description": "Returns details of the latest import task for a storage resource, including its state, transferred byte counts, checksums, and any error information.",
+        "operationId": "getStorageImportDetails",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/getStorageImportDetailsUuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/getStorageImportDetails200"
+          },
+          "404": {
+            "$ref": "#/components/responses/getStorageImportDetails404"
+          },
+          "default": {
+            "$ref": "#/components/responses/getStorageImportDetailsDefault"
+          }
+        },
+        "x-upcloud-visibility": "public"
+      },
+      "post": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "Create storage import",
+        "description": "Creates an asynchronous task that imports a raw disk image into existing Block Storage from an HTTP URL or a temporary direct-upload URL. Attached Cloud Servers must be stopped.",
+        "operationId": "createStorageImport",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/createStorageImportUuid"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/createStorageImport"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/createStorageImport201"
+          },
+          "400": {
+            "$ref": "#/components/responses/createStorageImport400"
+          },
+          "409": {
+            "$ref": "#/components/responses/createStorageImport409"
+          },
+          "503": {
+            "$ref": "#/components/responses/createStorageImport503"
+          },
+          "default": {
+            "$ref": "#/components/responses/createStorageImportDefault"
+          }
+        },
+        "x-upcloud-visibility": "public"
+      }
+    },
+    "/1.3/storage/{uuid}/import/cancel": {
+      "post": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "Cancel storage import",
+        "description": "Requests cancellation of an ongoing storage import. The task enters the `cancelling` state while imported data is rolled back when necessary.",
+        "operationId": "cancelStorageImport",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cancelStorageImportUuid"
+          }
+        ],
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/cancelStorageImport202"
+          },
+          "404": {
+            "$ref": "#/components/responses/cancelStorageImport404"
+          },
+          "409": {
+            "$ref": "#/components/responses/cancelStorageImport409"
+          },
+          "default": {
+            "$ref": "#/components/responses/cancelStorageImportDefault"
           }
         },
         "x-upcloud-visibility": "public"
@@ -13300,7 +13394,24 @@
         "example": {
           "account": {
             "username": "apiuser01",
-            "credits": 25.5,
+            "credits": 125,
+            "credits_breakdown": {
+              "account_credits": {
+                "debt_credits": 0,
+                "max_debt": 0,
+                "paid_credits": 25
+              },
+              "account_free_credits": {
+                "breakdown": [
+                  {
+                    "free_credit_type": "other",
+                    "free_credits": 100,
+                    "free_credits_expire": "2027-08-11T11:00:41Z"
+                  }
+                ]
+              },
+              "total_credits": 125
+            },
             "resource_limits": {
               "managed_databases": 5,
               "network_peerings": 20,
@@ -13346,6 +13457,9 @@
           "credits": {
             "$ref": "#/components/schemas/accountCredits"
           },
+          "credits_breakdown": {
+            "$ref": "#/components/schemas/accountCreditsBreakdown"
+          },
           "trial_mode": {
             "$ref": "#/components/schemas/accountBoolean01"
           }
@@ -13358,7 +13472,24 @@
         "description": "Detailed account information and limits.",
         "example": {
           "username": "apiuser01",
-          "credits": 25.5,
+          "credits": 125,
+          "credits_breakdown": {
+            "account_credits": {
+              "debt_credits": 0,
+              "max_debt": 0,
+              "paid_credits": 25
+            },
+            "account_free_credits": {
+              "breakdown": [
+                {
+                  "free_credit_type": "other",
+                  "free_credits": 100,
+                  "free_credits_expire": "2027-08-11T11:00:41Z"
+                }
+              ]
+            },
+            "total_credits": 125
+          },
           "resource_limits": {
             "managed_databases": 5,
             "network_peerings": 20,
@@ -13815,6 +13946,82 @@
         "type": "number",
         "format": "double",
         "description": "Current account credit balance."
+      },
+      "accountCreditsBreakdown": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "account_credits": {
+            "type": "object",
+            "properties": {
+              "debt_credits": {
+                "type": "number",
+                "description": "Outstanding debt credits."
+              },
+              "max_debt": {
+                "type": "number",
+                "description": "Maximum allowed debt."
+              },
+              "paid_credits": {
+                "type": "number",
+                "description": "Paid credits on the account."
+              }
+            },
+            "required": [
+              "debt_credits",
+              "max_debt",
+              "paid_credits"
+            ],
+            "description": "Paid and debt credits on the account."
+          },
+          "account_free_credits": {
+            "type": "object",
+            "properties": {
+              "breakdown": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "free_credit_type": {
+                      "type": "string",
+                      "description": "Type identifier for the free credit grant."
+                    },
+                    "free_credits": {
+                      "type": "number",
+                      "format": "double",
+                      "description": "Amount of free credits."
+                    },
+                    "free_credits_expire": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Expiry date-time of the free credits in ISO 8601 format. Absent if the credits do not expire."
+                    }
+                  },
+                  "required": [
+                    "free_credit_type",
+                    "free_credits"
+                  ]
+                },
+                "description": "List of individual free credit grants."
+              }
+            },
+            "required": [
+              "breakdown"
+            ],
+            "description": "Free credits allocated to the account."
+          },
+          "total_credits": {
+            "type": "number",
+            "format": "double",
+            "description": "Total combined credit balance."
+          }
+        },
+        "required": [
+          "account_credits",
+          "account_free_credits",
+          "total_credits"
+        ],
+        "description": "Detailed breakdown of account credits."
       },
       "accountBoolean01": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -20430,12 +20637,61 @@
             "hostname": "my-server.example.com",
             "title": "My Server",
             "zone": "fi-hel1",
+            "plan": "1xCPU-1GB",
+            "metadata": "yes",
+            "networking": {
+              "interfaces": {
+                "interface": [
+                  {
+                    "ip_addresses": {
+                      "ip_address": [
+                        {
+                          "family": "IPv4"
+                        }
+                      ]
+                    },
+                    "type": "public"
+                  },
+                  {
+                    "ip_addresses": {
+                      "ip_address": [
+                        {
+                          "family": "IPv4"
+                        }
+                      ]
+                    },
+                    "type": "utility"
+                  },
+                  {
+                    "ip_addresses": {
+                      "ip_address": [
+                        {
+                          "family": "IPv4"
+                        }
+                      ]
+                    },
+                    "network": "03000000-0000-4000-8000-000000000000",
+                    "type": "private"
+                  }
+                ]
+              }
+            },
+            "login_user": {
+              "username": "upclouduser",
+              "ssh_keys": {
+                "ssh_key": [
+                  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO3t5AQcuv4+KxJ5rC75N8bW/e7eOq0k5Y2L7V1oH3Z5 user@example.com"
+                ]
+              }
+            },
             "storage_devices": {
               "storage_device": [
                 {
                   "action": "clone",
-                  "storage": "01234567-89ab-cdef-0123-456789abcdef",
-                  "title": "Operating System"
+                  "storage": "01000000-0000-4000-8000-000020080100",
+                  "size": 30,
+                  "tier": "maxiops",
+                  "title": "Debian Trixie"
                 }
               ]
             }
@@ -21797,6 +22053,7 @@
                     },
                     "index": {
                       "type": "integer",
+                      "maximum": 255,
                       "minimum": 1,
                       "description": "Index used to identify and order the network interface"
                     },
@@ -25142,6 +25399,67 @@
           }
         }
       },
+      "createStorageImportRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "storage_import": {
+            "type": "object",
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "source": {
+                      "const": "http_import"
+                    }
+                  },
+                  "required": [
+                    "source"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "source_location"
+                  ]
+                }
+              }
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "http_import",
+                  "direct_upload"
+                ],
+                "description": "Import mode. Use `http_import` to download an image or `direct_upload` to receive a temporary upload URL."
+              },
+              "source_location": {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^https?://",
+                "format": "uri",
+                "description": "Publicly reachable HTTP or HTTPS URL of the image. Required for `http_import`."
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "additionalProperties": false,
+            "description": "Storage import parameters."
+          }
+        },
+        "required": [
+          "storage_import"
+        ],
+        "additionalProperties": false,
+        "description": "Request schema for creating a storage import task.",
+        "example": {
+          "storage_import": {
+            "source": "http_import",
+            "source_location": "https://example.com/disk.raw"
+          }
+        }
+      },
       "createStorageTemplateRequest": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -25765,6 +26083,193 @@
             "uuid": "01d4fcd4-e446-433b-8a9c-551a1284952e",
             "zone": "fi-hel1"
           }
+        }
+      },
+      "storageImportResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "storage_import": {
+            "$ref": "#/components/schemas/storageImport"
+          }
+        },
+        "required": [
+          "storage_import"
+        ],
+        "additionalProperties": false,
+        "description": "Response containing a storage import task.",
+        "example": {
+          "storage_import": {
+            "client_content_length": 0,
+            "client_content_type": "",
+            "completed": "",
+            "created": "2020-06-26T08:51:07Z",
+            "direct_upload_url": "https://fi-hel1.img.upcloud.com/uploader/session/07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+            "error_code": "",
+            "error_message": "",
+            "md5sum": "",
+            "read_bytes": 0,
+            "sha256sum": "",
+            "source": "direct_upload",
+            "state": "prepared",
+            "uuid": "07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+            "written_bytes": 0
+          }
+        }
+      },
+      "storageImport": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "source": {
+                  "const": "http_import"
+                }
+              },
+              "required": [
+                "source"
+              ]
+            },
+            "else": {
+              "required": [
+                "direct_upload_url"
+              ]
+            },
+            "then": {
+              "required": [
+                "source_location"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "client_content_length": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Content length reported by the import client, in bytes."
+          },
+          "client_content_type": {
+            "type": "string",
+            "description": "Content type reported by the import client."
+          },
+          "completed": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ],
+            "description": "Completion time in RFC 3339 format, or an empty string while unfinished."
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time when the import task was created."
+          },
+          "direct_upload_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Temporary URL to which image data is uploaded in `direct_upload` mode."
+          },
+          "error_code": {
+            "type": "string",
+            "enum": [
+              "",
+              "CLIENT_FAILURE",
+              "IMPORT_FAILURE",
+              "INTERNAL_FAILURE"
+            ],
+            "description": "Failure category, empty unless the task failed."
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Failure details, empty unless the task failed."
+          },
+          "md5sum": {
+            "type": "string",
+            "description": "MD5 checksum of the imported data, available after completion."
+          },
+          "read_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of bytes read from the source."
+          },
+          "sha256sum": {
+            "type": "string",
+            "description": "SHA-256 checksum of the imported data, available after completion."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "http_import",
+              "direct_upload"
+            ],
+            "description": "Import mode."
+          },
+          "source_location": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTP or HTTPS source URL for an `http_import` task."
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "prepared",
+              "pending",
+              "importing",
+              "failed",
+              "cancelling",
+              "cancelled",
+              "completed"
+            ],
+            "description": "Current import task state."
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/storageUuid"
+          },
+          "written_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of bytes written to the storage resource."
+          }
+        },
+        "required": [
+          "client_content_length",
+          "client_content_type",
+          "completed",
+          "created",
+          "error_code",
+          "error_message",
+          "md5sum",
+          "read_bytes",
+          "sha256sum",
+          "source",
+          "state",
+          "uuid",
+          "written_bytes"
+        ],
+        "additionalProperties": false,
+        "description": "Details and progress of a storage import task.",
+        "example": {
+          "client_content_length": 0,
+          "client_content_type": "",
+          "completed": "",
+          "created": "2020-06-26T08:51:07Z",
+          "error_code": "",
+          "error_message": "",
+          "md5sum": "",
+          "read_bytes": 0,
+          "sha256sum": "",
+          "source": "http_import",
+          "source_location": "https://example.com/disk.raw",
+          "state": "pending",
+          "uuid": "07a6c9a3-300e-4d0e-b935-624f3dbdff3f",
+          "written_bytes": 0
         }
       },
       "resizeStorageResponse": {
@@ -32519,7 +33024,7 @@
             "type": "integer",
             "maximum": 4294967296,
             "minimum": 1048576,
-            "description": "The size in bytes of the buffer that InnoDB uses to write to the log files on disk."
+            "description": "The size in bytes of the buffer that InnoDB uses to write to the log files on disk. Requests above 15% of the RAM provided by your service plan are rejected, because a larger buffer leaves less memory for the buffer pool and client connections."
           },
           "innodb_online_alter_log_max_size": {
             "type": "integer",
@@ -32611,7 +33116,13 @@
             "type": "integer",
             "maximum": 1073741824,
             "minimum": 102400,
-            "description": "Size of the largest message in bytes that can be received by the server. Default is 67108864 (64M)"
+            "description": "Size of the largest message in bytes that can be received by the server. Default is 67108864 (64M). Statements and rows larger than this are rejected with a packet too large error."
+          },
+          "max_connections": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 30,
+            "description": "The maximum permitted number of simultaneous client connections. Lower this to reserve memory for other work. The value cannot exceed the limit provided by your service plan. Upgrading the plan does not raise a value you have set explicitly, so increase it yourself after an upgrade."
           },
           "max_execution_time": {
             "type": "integer",
@@ -32630,6 +33141,12 @@
             "maximum": 18446744073709552000,
             "minimum": 1,
             "description": "Limit on the assumed maximum number of index seeks when looking up rows based on a key. Lowering this value causes the optimizer to prefer index lookups over table scans."
+          },
+          "max_user_connections": {
+            "type": "integer",
+            "maximum": 99990,
+            "minimum": 0,
+            "description": "The maximum number of simultaneous connections permitted to any single user account. 0, the default, means no per-account limit. Any other value must be at least 10 below max_connections, so that monitoring and your own admin sessions can still connect when an application saturates its own limit. UpCloud's replication and management connections are unaffected however low you set this."
           },
           "migration": {
             "type": [
@@ -32805,7 +33322,7 @@
             "type": "integer",
             "maximum": 1073741824,
             "minimum": 32768,
-            "description": "Sort buffer size in bytes for ORDER BY optimization. Default is 262144 (256K)"
+            "description": "Sort buffer size in bytes for ORDER BY optimization. Default is 262144 (256K). Requests above 2% of the RAM provided by your service plan are rejected, because the buffer is allocated per session and its cost multiplies with the connection count."
           },
           "sql_mode": {
             "type": "string",
@@ -32824,12 +33341,8 @@
             "description": "Limits the size of internal in-memory tables. Also set max_heap_table_size. Default is 16777216 (16M)"
           },
           "version": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "enum": [
-              "8",
               "8.4"
             ]
           },
@@ -32837,7 +33350,7 @@
             "type": "integer",
             "maximum": 2147483,
             "minimum": 1,
-            "description": "The number of seconds the server waits for activity on a noninteractive connection before closing it."
+            "description": "The number of seconds the server waits for activity on a noninteractive connection before closing it. Requests to set this below 30 are rejected, because a shorter timeout closes your own idle connections between statements."
           },
           "windowing_use_high_precision": {
             "type": "boolean",
@@ -33302,6 +33815,19 @@
             "minimum": 1,
             "description": "Sets the maximum number of buckets. Changing this parameter causes a service restart. Only available for PostgreSQL 13+."
           },
+          "pg_stat_plans_enable": {
+            "type": "boolean",
+            "description": "Enable the pg_stat_plans extension. Changing this parameter causes a service restart. Tracks execution plans for SQL queries"
+          },
+          "pg_stat_plans_track": {
+            "type": "string",
+            "enum": [
+              "all",
+              "top",
+              "none"
+            ],
+            "description": "Controls which statements' plans are tracked. Specify top to track top-level statements (those issued directly by clients), all to also track nested statements (such as statements invoked within functions), or none to disable plan tracking. The default is `top`."
+          },
           "pg_stat_statements_track": {
             "type": "string",
             "enum": [
@@ -33468,6 +33994,12 @@
                 "maximum": 10000,
                 "minimum": 0
               },
+              "server_connect_timeout": {
+                "type": "number",
+                "title": "If connection and login don’t finish in this amount of time, the connection will be closed. [seconds]",
+                "maximum": 86400,
+                "minimum": 1
+              },
               "server_idle_timeout": {
                 "type": "integer",
                 "title": "If a server connection has been idle more than this many seconds it will be dropped. If 0 then timeout is disabled. [seconds]",
@@ -33479,6 +34011,12 @@
                 "title": "The pooler will close an unused server connection that has been connected longer than this. [seconds]",
                 "maximum": 86400,
                 "minimum": 60
+              },
+              "server_login_retry": {
+                "type": "number",
+                "title": "If login to the server failed, because of failure to connect or from authentication, the pooler waits this much before retrying to connect. During the waiting interval, new clients trying to connect to the failing server will get an error immediately without another connection attempt. [seconds]",
+                "maximum": 86400,
+                "minimum": 1
               },
               "server_reset_query_always": {
                 "type": "boolean",
@@ -34924,6 +35462,10 @@
             "minimum": 0,
             "description": "Maximum amount of memory in percentage that can be used for the KNN index. Defaults to 50% of the JVM heap size. 0 is used to set it to null which can be used to invalidate caches."
           },
+          "ml_commons_connector_access_control_enabled": {
+            "type": "boolean",
+            "description": "When set to true, the setting allows admins to control access and permissions to the connector API using backend_roles. Defaults to false."
+          },
           "ml_commons_model_access_control_enabled": {
             "type": "boolean",
             "description": "Enable or disable model access control for ML Commons. When enabled, access to ML models is controlled by security permissions. Defaults to false."
@@ -34937,6 +35479,16 @@
           "ml_commons_only_run_on_ml_node": {
             "type": "boolean",
             "description": "Enable or disable running ML Commons tasks only on ML nodes. When enabled, ML tasks will only execute on nodes designated as ML nodes. Defaults to true."
+          },
+          "ml_commons_trusted_connector_endpoints_regex": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "title": "An URL endpoint pattern.",
+              "maxLength": 261,
+              "example": "^https://api\\.example\\.com/.*$"
+            },
+            "description": "Adds the trusted endpoints to the cluster settings. Supports Java regex expressions."
           },
           "node_search_cache_size": {
             "type": [
@@ -35816,6 +36368,18 @@
             ],
             "description": "Determines default pub/sub channels' ACL for new users if ACL is not supplied. When this option is not defined, all_channels is assumed to keep backward compatibility. This option doesn't affect Valkey configuration acl-pubsub-default."
           },
+          "valkey_active_defrag_ignore_bytes": {
+            "type": "integer",
+            "maximum": 1073741824,
+            "minimum": 1048576,
+            "description": "Minimum amount of fragmentation waste, in bytes, before active defragmentation starts. Only takes effect when `valkey_activedefrag` is enabled."
+          },
+          "valkey_active_defrag_threshold_lower": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "description": "Minimum percentage of fragmentation before active defragmentation starts. Only takes effect when `valkey_activedefrag` is enabled."
+          },
           "valkey_active_expire_effort": {
             "type": "integer",
             "maximum": 10,
@@ -35875,7 +36439,7 @@
               "off",
               "rdb"
             ],
-            "description": "When persistence is 'rdb', Valkey does RDB dumps each 10 minutes if any key is changed. Also RDB dumps are done according to backup schedule for backup purposes. When persistence is 'off', no RDB dumps and backups are done, so data can be lost at any moment if service is restarted for any reason, or if service is powered off. Also service can't be forked."
+            "description": "Controls whether Valkey writes RDB dumps to disk. With `rdb`, RDB dumps are written for backups on the backup schedule and, if `frequent_snapshots` is enabled, every 10 minutes so the service can recover recent data after a restart. With `off`, no RDB dumps are written at all: backups and forking are unavailable, `frequent_snapshots` and `backup_hour`/`backup_minute` have no effect, and all data is lost if the service restarts or is powered off."
           },
           "valkey_pubsub_client_output_buffer_limit": {
             "type": "integer",
@@ -35898,7 +36462,6 @@
             ],
             "enum": [
               "8.1",
-              "9.0",
               "9.1"
             ]
           }
@@ -39571,8 +40134,7 @@
         "properties": {
           "deadline": {
             "type": "string",
-            "format": "date-time",
-            "description": "The deadline by which the update must be applied",
+            "description": "The deadline by which the update must be applied as an RFC 3339 timestamp. Empty when no deadline is set.",
             "example": "2022-01-21T12:21:00Z"
           },
           "description": {
@@ -39582,14 +40144,12 @@
           },
           "start_after": {
             "type": "string",
-            "format": "date-time",
-            "description": "The earliest time after which the update can start",
+            "description": "The earliest time after which the update can start as an RFC 3339 timestamp. Empty when no lower bound is set.",
             "example": "2022-01-21T12:21:00Z"
           },
           "start_at": {
             "type": "string",
-            "format": "date-time",
-            "description": "The exact scheduled start time for the update",
+            "description": "The exact scheduled start time for the update as an RFC 3339 timestamp. Empty when the update has not been scheduled.",
             "example": "2022-10-21T12:21:00Z"
           }
         },
@@ -39812,7 +40372,7 @@
           },
           "data_size": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "The size of the backup data in bytes."
           }
         },
@@ -42056,13 +42616,13 @@
         "properties": {
           "avg_timer_wait": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Average wait time for the query.",
             "example": 12345
           },
           "count_star": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of times the query was executed.",
             "example": 100
           },
@@ -42090,31 +42650,31 @@
           },
           "max_timer_wait": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Maximum wait time for the query.",
             "example": 54321
           },
           "min_timer_wait": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Minimum wait time for the query.",
             "example": 100
           },
           "quantile_95": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "95th percentile wait time.",
             "example": 20000
           },
           "quantile_99": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "99th percentile wait time.",
             "example": 30000
           },
           "quantile_999": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "99.9th percentile wait time.",
             "example": 40000
           },
@@ -42131,7 +42691,7 @@
           },
           "query_sample_timer_wait": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Wait time for the sample query.",
             "example": 15000
           },
@@ -42142,121 +42702,121 @@
           },
           "sum_created_tmp_disk_tables": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of temporary disk tables created.",
             "example": 2
           },
           "sum_created_tmp_tables": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of temporary tables created.",
             "example": 5
           },
           "sum_errors": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of errors encountered.",
             "example": 0
           },
           "sum_lock_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total lock time for the query.",
             "example": 1000
           },
           "sum_no_good_index_used": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of times no good index was used.",
             "example": 1
           },
           "sum_no_index_used": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of times no index was used.",
             "example": 3
           },
           "sum_rows_affected": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of rows affected.",
             "example": 10
           },
           "sum_rows_examined": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of rows examined.",
             "example": 1000
           },
           "sum_rows_sent": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of rows sent.",
             "example": 500
           },
           "sum_select_full_join": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of full joins performed.",
             "example": 0
           },
           "sum_select_full_range_join": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of full range joins performed.",
             "example": 0
           },
           "sum_select_range": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of range selects performed.",
             "example": 2
           },
           "sum_select_range_check": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of range checks performed.",
             "example": 0
           },
           "sum_select_scan": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of select scans performed.",
             "example": 4
           },
           "sum_sort_merge_passes": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of sort merge passes.",
             "example": 1
           },
           "sum_sort_range": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of sort range operations.",
             "example": 2
           },
           "sum_sort_rows": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of rows sorted.",
             "example": 100
           },
           "sum_sort_scan": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of sort scans performed.",
             "example": 3
           },
           "sum_timer_wait": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total wait time for the query.",
             "example": 20000
           },
           "sum_warnings": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of warnings generated.",
             "example": 0
           }
@@ -42296,19 +42856,19 @@
         "properties": {
           "blk_read_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Time spent reading data blocks, in milliseconds.",
             "example": 120
           },
           "blk_write_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Time spent writing data blocks, in milliseconds.",
             "example": 45
           },
           "calls": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of times the query was executed.",
             "example": 10
           },
@@ -42319,43 +42879,43 @@
           },
           "local_blks_dirtied": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of local blocks dirtied.",
             "example": 2
           },
           "local_blks_hit": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of local block cache hits.",
             "example": 100
           },
           "local_blks_read": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of local blocks read.",
             "example": 5
           },
           "local_blks_written": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of local blocks written.",
             "example": 3
           },
           "max_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Maximum execution time, in milliseconds.",
             "example": 300
           },
           "mean_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Mean execution time, in milliseconds.",
             "example": 150
           },
           "min_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Minimum execution time, in milliseconds.",
             "example": 100
           },
@@ -42366,55 +42926,55 @@
           },
           "rows": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total number of rows returned or affected.",
             "example": 20
           },
           "shared_blks_dirtied": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of shared blocks dirtied.",
             "example": 4
           },
           "shared_blks_hit": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of shared block cache hits.",
             "example": 200
           },
           "shared_blks_read": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of shared blocks read.",
             "example": 8
           },
           "shared_blks_written": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of shared blocks written.",
             "example": 6
           },
           "stddev_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Standard deviation of execution time, in milliseconds.",
             "example": 20
           },
           "temp_blks_read": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of temporary blocks read.",
             "example": 1
           },
           "temp_blks_written": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of temporary blocks written.",
             "example": 1
           },
           "total_time": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total execution time, in milliseconds.",
             "example": 1500
           },
@@ -42593,7 +43153,7 @@
           },
           "docs": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Number of documents in the index.",
             "example": 1
           },
@@ -42626,7 +43186,7 @@
           },
           "size": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Size of the index in bytes.",
             "example": 5313
           },
@@ -42831,13 +43391,13 @@
           },
           "backend_xid": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Top-level transaction identifier of this service, if any.",
             "example": 742
           },
           "backend_xmin": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "The current service's xmin horizon.",
             "example": 731
           },
@@ -42859,7 +43419,7 @@
           },
           "datid": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "OID of the database this service is connected to.",
             "example": 16384
           },
@@ -42907,7 +43467,7 @@
           },
           "usesysid": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "OID of the user logged into this service.",
             "example": 10
           },
@@ -42998,7 +43558,7 @@
         "examples": [
           {
             "active_channel_subscriptions": 2,
-            "active_database": 0,
+            "active_database": "0",
             "active_pattern_matching_channel_subscriptions": 1,
             "application_name": "my-app",
             "client_addr": "[fff0:fff0:fff0:fff0:0:fff0:fff0:fff0]:39956",
@@ -43009,7 +43569,7 @@
               "U"
             ],
             "flags_raw": "NU",
-            "id": 15,
+            "id": "15",
             "multi_exec_commands": -1,
             "output_buffer": 0,
             "output_buffer_memory": 0,
@@ -43027,10 +43587,9 @@
             "example": 2
           },
           "active_database": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "description": "Current database ID.",
-            "example": 0
+            "example": "0"
           },
           "active_pattern_matching_channel_subscriptions": {
             "type": "integer",
@@ -43050,13 +43609,13 @@
           },
           "connection_age": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Total duration of the connection in nanoseconds.",
             "example": 2079483000000000
           },
           "connection_idle": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Idle time of the connection in nanoseconds.",
             "example": 3000000000
           },
@@ -43077,10 +43636,9 @@
             "example": "NU"
           },
           "id": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "description": "Process ID of this session.",
-            "example": 15
+            "example": "15"
           },
           "multi_exec_commands": {
             "type": "integer",
@@ -43090,13 +43648,13 @@
           },
           "output_buffer": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Output buffer length.",
             "example": 0
           },
           "output_buffer_memory": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Output buffer memory usage.",
             "example": 0
           },
@@ -43113,37 +43671,19 @@
           },
           "query_buffer": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Query buffer length (0 means no query pending).",
             "example": 0
           },
           "query_buffer_free": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "description": "Free space of the query buffer (0 means the buffer is full).",
             "example": 0
           }
         },
         "title": "RedisValkeyCurrentSessionResponse",
         "description": "Schema for Redis Valkey current session response."
-      },
-      "databaseTerminateSessionResponse": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "examples": [
-          {
-            "success": true
-          }
-        ],
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Indicates whether the session termination was successful.",
-            "example": true
-          }
-        },
-        "title": "TerminateSessionResponse",
-        "description": "Schema for the response received after terminating a session"
       },
       "databaseServiceTaskResponse": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -56116,6 +56656,16 @@
           }
         }
       },
+      "addIPAddress409": {
+        "description": "The Cloud Server is not in a valid state, an IP address limit would be exceeded, the requested address, prefix, or VLAN is unavailable, or the maximum network interface index 255 of the Cloud Server is already occupied",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ipAddressError"
+            }
+          }
+        }
+      },
       "addIPAddressDefault": {
         "description": "General failure",
         "content": {
@@ -57638,7 +58188,7 @@
         }
       },
       "addServerInterface409": {
-        "description": "The Cloud Server is not stopped, the requested index is in use, or an interface, address, or device limit would be exceeded",
+        "description": "The Cloud Server is not stopped, the requested index is in use, the maximum interface index 255 is already occupied when no index is given, or an interface, address, or device limit would be exceeded",
         "content": {
           "application/json": {
             "schema": {
@@ -59858,6 +60408,126 @@
         "description": "Storage resource removed from favorites"
       },
       "removeStorageFromFavoritesDefault": {
+        "description": "General failure",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "getStorageImportDetails200": {
+        "description": "Storage import details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageImportResponse"
+            }
+          }
+        }
+      },
+      "getStorageImportDetails404": {
+        "description": "The storage resource has no import task",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "getStorageImportDetailsDefault": {
+        "description": "General failure",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "createStorageImport201": {
+        "description": "Storage import created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageImportResponse"
+            }
+          }
+        }
+      },
+      "createStorageImport400": {
+        "description": "Invalid import parameters or unsupported storage type",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "createStorageImport409": {
+        "description": "The storage or attached Cloud Server is in an incompatible state",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "createStorageImport503": {
+        "description": "Storage import is temporarily unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "createStorageImportDefault": {
+        "description": "General failure",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "cancelStorageImport202": {
+        "description": "Storage import cancellation requested",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageImportResponse"
+            }
+          }
+        }
+      },
+      "cancelStorageImport404": {
+        "description": "The storage resource has no import task",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "cancelStorageImport409": {
+        "description": "The storage import is not in progress",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/storageError"
+            }
+          }
+        }
+      },
+      "cancelStorageImportDefault": {
         "description": "General failure",
         "content": {
           "application/problem+json": {
@@ -63697,14 +64367,7 @@
         }
       },
       "terminateDatabaseSession204": {
-        "description": "OK",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/databaseTerminateSessionResponse"
-            }
-          }
-        }
+        "description": "No Content"
       },
       "terminateDatabaseSessionDefault": {
         "description": "Unexpected error",
@@ -68437,6 +69100,33 @@
         }
       },
       "removeStorageFromFavoritesUuid": {
+        "name": "uuid",
+        "in": "path",
+        "description": "Storage resource UUID",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/storageUuid"
+        }
+      },
+      "getStorageImportDetailsUuid": {
+        "name": "uuid",
+        "in": "path",
+        "description": "Storage resource UUID",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/storageUuid"
+        }
+      },
+      "createStorageImportUuid": {
+        "name": "uuid",
+        "in": "path",
+        "description": "Storage resource UUID",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/storageUuid"
+        }
+      },
+      "cancelStorageImportUuid": {
         "name": "uuid",
         "in": "path",
         "description": "Storage resource UUID",
@@ -74159,6 +74849,16 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/cloneStorageRequest"
+            }
+          }
+        }
+      },
+      "createStorageImport": {
+        "description": "Storage import parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/createStorageImportRequest"
             }
           }
         }

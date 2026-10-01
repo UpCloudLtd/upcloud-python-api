@@ -38,6 +38,11 @@ def _parse_response(
 
         return response_201
 
+    if response.status_code == 409:
+        response_409 = IpAddressError.from_dict(response.json())
+
+        return response_409
+
     response_default = IpAddressError.from_dict(response.json())
 
     return response_default

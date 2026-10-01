@@ -10,6 +10,7 @@ from ..models.account_boolean_01 import AccountBoolean01
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.account_credits_breakdown import AccountCreditsBreakdown
     from ..models.account_resource_limits import AccountResourceLimits
 
 
@@ -21,24 +22,29 @@ class AccountDetails:
     """Detailed account information and limits.
 
     Example:
-        {'username': 'apiuser01', 'credits': 25.5, 'resource_limits': {'managed_databases': 5, 'network_peerings': 20,
-            'file_storages': 10, 'managed_kubernetes': 5, 'tags': 200, 'cores': 64, 'cloud_server_dev_1xcpu_1gb_10gb_plans':
-            0, 'cloud_server_dev_1xcpu_1gb_plans': 0, 'storage_hdd': 10240, 'networks': 100, 'network_gateways_essentials':
-            20, 'network_gateways': 20, 'storage_ssd': 20480, 'load_balancers_essentials': 20, 'load_balancers': 20, 'gpus':
-            8, 'detached_interfaces': 100, 'detached_floating_ips': 50, 'managed_object_storages': 50, 'memory': 524288,
-            'ntp_excess_gib': 100, 'public_ipv4': 64, 'public_ipv6': 64, 'routers': 20, 'storage_maxiops': 10240,
-            'storage_standard': 20480, 'storage_total': 40960}}
+        {'username': 'apiuser01', 'credits': 125, 'credits_breakdown': {'account_credits': {'debt_credits': 0,
+            'max_debt': 0, 'paid_credits': 25}, 'account_free_credits': {'breakdown': [{'free_credit_type': 'other',
+            'free_credits': 100, 'free_credits_expire': '2027-08-11T11:00:41Z'}]}, 'total_credits': 125}, 'resource_limits':
+            {'managed_databases': 5, 'network_peerings': 20, 'file_storages': 10, 'managed_kubernetes': 5, 'tags': 200,
+            'cores': 64, 'cloud_server_dev_1xcpu_1gb_10gb_plans': 0, 'cloud_server_dev_1xcpu_1gb_plans': 0, 'storage_hdd':
+            10240, 'networks': 100, 'network_gateways_essentials': 20, 'network_gateways': 20, 'storage_ssd': 20480,
+            'load_balancers_essentials': 20, 'load_balancers': 20, 'gpus': 8, 'detached_interfaces': 100,
+            'detached_floating_ips': 50, 'managed_object_storages': 50, 'memory': 524288, 'ntp_excess_gib': 100,
+            'public_ipv4': 64, 'public_ipv6': 64, 'routers': 20, 'storage_maxiops': 10240, 'storage_standard': 20480,
+            'storage_total': 40960}}
 
     Attributes:
         resource_limits (AccountResourceLimits): Per-resource quota limits for an account.
         username (str): Username for an account.
         credits_ (float | Unset): Current account credit balance.
+        credits_breakdown (AccountCreditsBreakdown | Unset): Detailed breakdown of account credits.
         trial_mode (AccountBoolean01 | Unset): Schema for boolean-like values encoded as 0 or 1.
     """
 
     resource_limits: AccountResourceLimits
     username: str
     credits_: float | Unset = UNSET
+    credits_breakdown: AccountCreditsBreakdown | Unset = UNSET
     trial_mode: AccountBoolean01 | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -48,6 +54,10 @@ class AccountDetails:
         username = self.username
 
         credits_ = self.credits_
+
+        credits_breakdown: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.credits_breakdown, Unset):
+            credits_breakdown = self.credits_breakdown.to_dict()
 
         trial_mode: int | Unset = UNSET
         if not isinstance(self.trial_mode, Unset):
@@ -63,6 +73,8 @@ class AccountDetails:
         )
         if credits_ is not UNSET:
             field_dict["credits"] = credits_
+        if credits_breakdown is not UNSET:
+            field_dict["credits_breakdown"] = credits_breakdown
         if trial_mode is not UNSET:
             field_dict["trial_mode"] = trial_mode
 
@@ -70,6 +82,7 @@ class AccountDetails:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.account_credits_breakdown import AccountCreditsBreakdown  # noqa: PLC0415
         from ..models.account_resource_limits import AccountResourceLimits  # noqa: PLC0415
 
         d = dict(src_dict)
@@ -78,6 +91,13 @@ class AccountDetails:
         username = d.pop("username")
 
         credits_ = d.pop("credits", UNSET)
+
+        _credits_breakdown = d.pop("credits_breakdown", UNSET)
+        credits_breakdown: AccountCreditsBreakdown | Unset
+        if isinstance(_credits_breakdown, Unset):
+            credits_breakdown = UNSET
+        else:
+            credits_breakdown = AccountCreditsBreakdown.from_dict(_credits_breakdown)
 
         _trial_mode = d.pop("trial_mode", UNSET)
         trial_mode: AccountBoolean01 | Unset
@@ -90,6 +110,7 @@ class AccountDetails:
             resource_limits=resource_limits,
             username=username,
             credits_=credits_,
+            credits_breakdown=credits_breakdown,
             trial_mode=trial_mode,
         )
 
