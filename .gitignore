@@ -37,3 +37,4 @@ venv
 .tmp-openapi-python-client/
 docs-src/
 generator/release-artifacts/
+validation-artifacts/
