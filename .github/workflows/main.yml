@@ -38,8 +38,28 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --locked
-      - name: Smoke-import generated SDK
-        run: uv run --locked python -c "from upcloud_api import AuthenticatedClient, Client, SPEC_VERSION; print(AuthenticatedClient, Client, SPEC_VERSION)"
+      - name: Validate preprocessing and generated SDK contracts
+        run: uv run --locked bash generator/scripts/validate.sh quick
+  wiretap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: 3.14
+      - run: uv sync --locked
+      - name: Validate SDK calls against Wiretap
+        run: uv run --locked bash generator/scripts/validate.sh wiretap
+      - name: Upload contract diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wiretap-validation
+          path: validation-artifacts/
+          if-no-files-found: ignore
   build:
     runs-on: ubuntu-latest
     permissions:

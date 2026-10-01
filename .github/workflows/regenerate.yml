@@ -104,6 +104,17 @@ jobs:
       - name: Update lockfile
         run: uv lock
 
+      - name: Validate regenerated SDK before creating PR
+        run: uv run --locked bash generator/scripts/validate.sh all
+
+      - name: Upload contract diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: regenerated-sdk-validation
+          path: validation-artifacts/
+          if-no-files-found: ignore
+
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
         with:
