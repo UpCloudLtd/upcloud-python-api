@@ -3,11 +3,7 @@
 import importlib
 import json
 import os
-import shutil
-import socket
-import subprocess
 import tempfile
-import time
 import unittest
 from pathlib import Path
 
@@ -15,21 +11,17 @@ import httpx
 
 from upcloud_api import AuthenticatedClient
 
-from .wiretap_cases import ROOT, load_cases
-
-
-def available_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return sock.getsockname()[1]
+from .wiretap_cases import load_cases
 
 
 class WiretapTests(unittest.IsolatedAsyncioTestCase):
+    """Exercise the SDK; generator/scripts/wiretap.sh owns the server and the report check."""
+
     @classmethod
     def setUpClass(cls):
-        cls.engine = os.environ.get("CONTAINER_ENGINE", "docker")
-        if not shutil.which(cls.engine):
-            raise RuntimeError("Docker (or CONTAINER_ENGINE=podman) is required for Wiretap tests")
+        cls.base_url = os.environ.get("WIRETAP_URL")
+        if not cls.base_url:
+            raise RuntimeError("WIRETAP_URL is not set; run via `mise run test:wiretap`")
         cls.temporary = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.temporary.cleanup)
         cls.artifacts = Path(os.environ.get("VALIDATION_ARTIFACTS", cls.temporary.name)).resolve()
@@ -42,107 +34,7 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
             "passed": [],
             "failed": [],
         }
-        cls.report = cls.artifacts / "wiretap-violations.jsonl"
-        cls.report.unlink(missing_ok=True)
-        config = Path(cls.temporary.name) / "wiretap.json"
-        config.write_text(
-            json.dumps(
-                {
-                    "contract": "/spec.json",
-                    "mockMode": True,
-                    "hardValidation": True,
-                    "streamReport": True,
-                    "reportFile": "/reports/wiretap-violations.jsonl",
-                }
-            )
-        )
-        log = (cls.artifacts / "wiretap.log").open("w")
-        cls.addClassCleanup(log.close)
-        port = available_port()
-        cls.base_url = f"http://127.0.0.1:{port}"
-        cid = Path(cls.temporary.name) / "container-id"
-        cls.cid = cid
-        cls.server_stopped = False
-        cls.process = subprocess.Popen(
-            [
-                cls.engine,
-                "run",
-                "--rm",
-                "--cidfile",
-                str(cid),
-                "--publish",
-                f"127.0.0.1:{port}:9090",
-                "--volume",
-                f"{ROOT / 'generator/openapi/spec.patched.json'}:/spec.json:ro",
-                "--volume",
-                f"{config}:/wiretap.json:ro",
-                "--volume",
-                f"{cls.artifacts}:/reports",
-                "docker.io/pb33f/wiretap@sha256:e4d3d9c06bc5a246cc52d560bc378e5a1a2a73a566b009d909b865c6b06cc1f0",
-                "--config",
-                "/wiretap.json",
-                "--mock-mode",
-                "--hard-validation",
-                "--stream-report",
-                "--report-filename",
-                "/reports/wiretap-violations.jsonl",
-            ],
-            stdout=log,
-            stderr=subprocess.STDOUT,
-        )
-        cls.addClassCleanup(cls.stop_server)
-        deadline = time.monotonic() + 120
-        with httpx.Client(timeout=1, trust_env=False) as probe:
-            while time.monotonic() < deadline:
-                if cls.process.poll() is not None:
-                    raise RuntimeError(f"Wiretap exited; see {cls.artifacts / 'wiretap.log'}")
-                try:
-                    response = probe.get(
-                        cls.base_url + "/1.3/zone",
-                        headers={"Authorization": "Bearer sdk-validation"},
-                    )
-                    if response.status_code == 200:
-                        break
-                except httpx.TransportError:
-                    pass
-                time.sleep(0.1)
-            else:
-                raise RuntimeError(
-                    f"Wiretap did not become ready within 120 seconds; see {cls.artifacts / 'wiretap.log'}"
-                )
         cls.addClassCleanup(cls.write_inventory)
-
-    @classmethod
-    def stop_server(cls):
-        if cls.server_stopped:
-            return
-        try:
-            if cls.cid.exists():
-                stopped = subprocess.run(
-                    [cls.engine, "stop", "--time", "5", cls.cid.read_text().strip()],
-                    timeout=20,
-                    capture_output=True,
-                    text=True,
-                )
-                removed = any(
-                    message in stopped.stderr.lower()
-                    for message in (
-                        "no such container",
-                        "no such object",
-                        "no container with name or id",
-                    )
-                )
-                if stopped.returncode and not removed:
-                    raise RuntimeError(f"Cannot stop Wiretap container: {stopped.stderr}")
-        finally:
-            if cls.process.poll() is None:
-                cls.process.terminate()
-            try:
-                cls.process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                cls.process.kill()
-                cls.process.wait(timeout=5)
-        cls.server_stopped = True
 
     @classmethod
     def write_inventory(cls):
@@ -260,29 +152,3 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                     self.record_failure(case, "async", error, responses)
                     raise
                 self.inventory["passed"].append({"operation": case.operation_id, "mode": "async"})
-
-    def test_validation_rejects_invalid_request(self):
-        with httpx.Client(base_url=self.base_url, trust_env=False, timeout=10) as client:
-            response = client.get(
-                "/1.3/server/not-a-uuid", headers={"Authorization": "Bearer sdk-validation"}
-            )
-        self.assertEqual(response.status_code, 422)
-        self.assertIn("validation", response.text.lower())
-
-    def test_z_no_contract_violations(self):
-        self.stop_server()
-        self.assertTrue(self.report.is_file(), f"Wiretap did not create its report: {self.report}")
-        violations = [json.loads(line) for line in self.report.read_text().splitlines()]
-        canary = [
-            item
-            for item in violations
-            if item.get("requestPath") == "/1.3/server/not-a-uuid"
-            and item.get("validationType") == "parameter"
-        ]
-        self.assertTrue(canary, "Wiretap did not report the deliberately invalid request")
-        unexpected = [item for item in violations if item not in canary]
-        self.assertEqual(
-            len(unexpected),
-            0,
-            f"Wiretap reported {len(unexpected)} contract violations; see {self.report}",
-        )

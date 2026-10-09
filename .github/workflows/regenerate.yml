@@ -24,6 +24,7 @@ jobs:
       contents: write
       pull-requests: write
     env:
+      UV_PYTHON: "3.14"
       SPEC_VERSION: ${{ github.event.inputs.version }}
       ASSET_URL: ${{ github.event.inputs.asset_url }}
       SPEC_FILE: ${{ github.event.inputs.spec_file || 'upcloud-public-openapi.json' }}
@@ -34,78 +35,18 @@ jobs:
           ref: v3-dev
           fetch-depth: 1
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - name: Setup mise
+        uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          python-version: 3.14
+          version: 2026.8.6
 
       - name: Download OpenAPI Spec
         env:
           SPECS_ACCESS_PAT: ${{ secrets.SPECS_ACCESS_PAT }}
-        run: |
-          set -euo pipefail
+        run: mise run spec:download "$SPEC_VERSION" "$ASSET_URL" --spec-file "$SPEC_FILE"
 
-          if [ -z "$SPEC_VERSION" ]; then
-            echo "ERROR: Missing workflow_dispatch input: version"
-            exit 1
-          fi
-
-          if [ -z "$ASSET_URL" ]; then
-            echo "ERROR: Missing asset_url"
-            exit 1
-          fi
-
-          if [ -z "$SPEC_FILE" ]; then
-            echo "ERROR: Missing spec_file"
-            exit 1
-          fi
-
-          : "${SPECS_ACCESS_PAT:?ERROR: SPECS_ACCESS_PAT secret is not set}"
-
-          echo "Spec version: $SPEC_VERSION"
-          echo "Spec file: $SPEC_FILE"
-          echo "Downloading from ASSET_URL='$ASSET_URL'"
-
-          mkdir -p generator/openapi
-
-          curl --fail -L \
-            --retry 5 \
-            --retry-all-errors \
-            --retry-delay 2 \
-            -H "Authorization: Bearer $SPECS_ACCESS_PAT" \
-            -H "Accept: application/octet-stream" \
-            "$ASSET_URL" \
-            -o spec.tar.gz
-
-          echo "Extracting spec"
-          rm -rf /tmp/spec-extract
-          mkdir -p /tmp/spec-extract generator/openapi
-
-          if ! tar -tzf spec.tar.gz | grep -Fx "$SPEC_FILE" >/dev/null; then
-            echo "ERROR: $SPEC_FILE not found in downloaded tarball"
-            tar -tzf spec.tar.gz
-            exit 1
-          fi
-
-          tar -xzf spec.tar.gz -C /tmp/spec-extract "$SPEC_FILE"
-          mv "/tmp/spec-extract/$SPEC_FILE" generator/openapi/spec.json
-
-          if [ ! -f generator/openapi/spec.json ]; then
-            echo "ERROR: spec.json not found after extraction"
-            find generator/openapi -maxdepth 2 -type f
-            exit 1
-          fi
-
-      - name: Run generator
-        run: |
-          chmod +x generator/scripts/generate.sh
-          generator/scripts/generate.sh
-
-      - name: Update lockfile
-        run: uv lock
-
-      - name: Validate regenerated SDK before creating PR
-        run: uv run --locked bash generator/scripts/validate.sh all
+      - name: Generate, update lockfile, and validate before creating PR
+        run: mise run regenerate
 
       - name: Upload contract diagnostics
         if: always()

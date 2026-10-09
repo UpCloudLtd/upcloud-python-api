@@ -29,7 +29,7 @@ rm -rf "$ARTIFACT_DIR"
 mkdir -p "$BUILD_DIR"
 
 # Set the package version before building; the spec version stays unchanged.
-uv run --locked python generator/scripts/set_version.py pyproject.toml "$PY_VERSION"
+uv version --frozen "$PY_VERSION"
 
 echo "== Building sdist + wheel =="
 uv build --out-dir "$BUILD_DIR"

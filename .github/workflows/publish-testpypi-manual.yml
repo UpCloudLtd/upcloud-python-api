@@ -15,16 +15,19 @@ permissions:
 jobs:
   testpypi:
     runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.14"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - name: Setup mise
+        uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          python-version: 3.14
+          version: 2026.8.6
       - name: Set package version
         env:
           VERSION: ${{ inputs.version }}
-        run: uv run --locked python generator/scripts/set_version.py pyproject.toml "$VERSION"
-      - run: uv build --out-dir dist
+        run: mise run version:set "$VERSION"
+      - run: mise run build
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/

@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/test-examples.yml"
+      - ".config/mise.toml"
+      - "generator/scripts/run_examples.sh"
       - "upcloud_api/**/*.py"
       - "pyproject.toml"
       - "uv.lock"
@@ -14,14 +16,17 @@ jobs:
   test-examples:
     runs-on: ubuntu-latest
     env:
+      UV_PYTHON: "3.14"
       UPCLOUD_SDK_PATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - name: Setup mise
+        uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
+        with:
+          version: 2026.8.6
 
       - name: Setup mdtest
         uses: UpCloudLtd/mdtest/.github/actions/setup-mdtest@main
@@ -31,19 +36,19 @@ jobs:
       - name: Test File Storage API
         env:
           UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
-        run: mdtest examples/file-storage/test_file_storage.md
+        run: mise run examples:file-storage
 
       - name: Test Object Storage API
         env:
           UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
-        run: mdtest examples/object-storage/test_object_storage.md
+        run: mise run examples:object-storage
 
       - name: Test Tag API
         env:
           UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
-        run: mdtest examples/tag/test_tag.md
+        run: mise run examples:tag
 
       - name: Test Kubernetes API
         env:
           UPCLOUD_TOKEN: ${{ secrets.UPCLOUD_TOKEN }}
-        run: mdtest examples/kubernetes/test_kubernetes.md
+        run: mise run examples:kubernetes

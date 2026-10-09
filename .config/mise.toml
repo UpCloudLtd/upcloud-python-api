@@ -1,6 +1,92 @@
 [tools]
 uv = "0.12.9"
+jq = "1.8.1"
+"github:pb33f/wiretap" = "0.7.3"
+
+[tasks.setup]
+description = "Install locked development dependencies"
+run = "uv sync --locked"
+
+[tasks.lint]
+description = "Run all pre-commit checks"
+run = "uv run --locked pre-commit run --all-files"
+
+[tasks."test:preprocess"]
+description = "Run all generator tests (spec preprocessing, endpoint checker, helper scripts)"
+run = "uv run --locked bash generator/scripts/validate.sh preprocess"
+
+[tasks."test:unit"]
+description = "Run SDK smoke and validation harness unit tests"
+run = "uv run --locked bash generator/scripts/validate.sh unit"
+
+[tasks."check:endpoints"]
+description = "Check complete OpenAPI endpoint coverage"
+run = "uv run --locked bash generator/scripts/validate.sh endpoints"
+
+[tasks.test]
+description = "Run quick checks: generator tests, SDK unit tests, endpoint coverage (no Wiretap)"
+run = "uv run --locked bash generator/scripts/validate.sh quick"
+
+[tasks."test:wiretap"]
+description = "Run local Wiretap mock contract tests (mise-pinned binary; no UpCloud requests)"
+run = "uv run --locked bash generator/scripts/validate.sh wiretap"
+
+[tasks.validate]
+description = "Run quick checks and local Wiretap contract tests (no UpCloud requests)"
+run = "uv run --locked bash generator/scripts/validate.sh all"
+
+[tasks.build]
+description = "Build wheel and source distribution into dist/"
+run = "uv build --out-dir dist"
+
+[tasks.ci]
+description = "Run lint, validate (incl. Wiretap), and build; never run live examples"
+run = "mise run --continue-on-error --jobs 1 lint ::: validate ::: build"
 
 [tasks.generate]
-description = "Generate SDK"
-run = "bash generator/scripts/generate.sh"
+description = "Generate SDK from the checked-in generator/openapi/spec.json"
+run = "uv run --locked bash generator/scripts/generate.sh"
+
+[tasks.lock]
+description = "Update the dependency lockfile"
+run = "uv lock"
+
+[tasks."version:set"]
+description = "Set the package version in pyproject.toml via uv version (modifies source)"
+usage = 'arg "<version>" help="Python package version, for example 3.0.0a1"'
+run = 'uv version --frozen "$usage_version"'
+
+[tasks."spec:download"]
+description = "Download a released spec for CI regeneration (requires SPECS_ACCESS_PAT; overwrites generator/openapi/spec.json)"
+usage = '''
+arg "<version>" help="Spec release version"
+arg "<asset_url>" help="GitHub API release-asset URL"
+flag "--spec-file <file>" default="upcloud-public-openapi.json" help="Spec member inside the tarball"
+'''
+run = 'bash generator/scripts/download_spec.sh --version "$usage_version" --asset-url "$usage_asset_url" --spec-file "$usage_spec_file"'
+
+[tasks.regenerate]
+# Lock must precede validate: validate uses `uv run --locked`, which fails on a stale lock.
+# Steps run in order and stop at the first failure with a non-zero exit.
+description = "Generate, update the lock, then validate; stops at the first failure"
+run = ["mise run generate", "mise run lock", "mise run validate"]
+
+[tasks."examples:file-storage"]
+description = "Run live File Storage examples (requires UPCLOUD_TOKEN and mdtest)"
+run = "bash generator/scripts/run_examples.sh file-storage"
+
+[tasks."examples:object-storage"]
+description = "Run live Object Storage examples (requires UPCLOUD_TOKEN and mdtest)"
+run = "bash generator/scripts/run_examples.sh object-storage"
+
+[tasks."examples:tag"]
+description = "Run live Tag examples (requires UPCLOUD_TOKEN and mdtest)"
+run = "bash generator/scripts/run_examples.sh tag"
+
+[tasks."examples:kubernetes"]
+description = "Run live Kubernetes examples (requires UPCLOUD_TOKEN and mdtest)"
+run = "bash generator/scripts/run_examples.sh kubernetes"
+
+[tasks.examples]
+description = "Run all live examples sequentially (creates real UpCloud resources)"
+run = "bash generator/scripts/run_examples.sh file-storage object-storage tag kubernetes"
