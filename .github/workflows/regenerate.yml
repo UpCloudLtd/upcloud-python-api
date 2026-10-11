@@ -45,7 +45,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          version: 2026.8.6
+          version: 2026.10.3
 
       - name: Download OpenAPI Spec
         env:

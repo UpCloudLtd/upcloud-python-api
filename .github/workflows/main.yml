@@ -25,7 +25,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          version: 2026.8.6
+          version: 2026.10.3
       - name: Integrity gate (must be green)
         run: mise run check
   unit:
@@ -47,7 +47,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          version: 2026.8.6
+          version: 2026.10.3
       - run: mise run test:unit
   findings:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          version: 2026.8.6
+          version: 2026.10.3
       - name: Findings gate (red on known spec or generator defects; does not block release)
         run: mise run findings
       - name: Upload contract diagnostics
@@ -78,7 +78,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
-          version: 2026.8.6
+          version: 2026.10.3
       - name: Set package version from tag
         if: ${{ startsWith(github.ref, 'refs/tags/v3.') }}
         run: |
