@@ -49,6 +49,45 @@ class CaseDerivationTests(unittest.TestCase):
         with self.assertRaises(InvalidExample):
             convert({"invalid": True}, Tag | Unset)
 
+    def test_union_tries_next_model_when_first_drops_input_keys(self):
+        class DropsKey:
+            @classmethod
+            def from_dict(cls, _value):
+                return cls()
+
+            def to_dict(self):
+                return {"kept": {}}
+
+        class PreservesKeys:
+            @classmethod
+            def from_dict(cls, value):
+                instance = cls()
+                instance.value = value
+                return instance
+
+            def to_dict(self):
+                return self.value
+
+        value = {"kept": {"nested": True}, "also_kept": [1, 2]}
+        converted = convert(value, DropsKey | PreservesKeys)
+        self.assertIsInstance(converted, PreservesKeys)
+        self.assertEqual(converted.to_dict(), value)
+
+    def test_union_rejects_models_that_all_drop_input_keys(self):
+        class DropsKeys:
+            @classmethod
+            def from_dict(cls, _value):
+                return cls()
+
+            def to_dict(self):
+                return {}
+
+        class AlsoDropsKeys(DropsKeys):
+            pass
+
+        with self.assertRaises(InvalidExample):
+            convert({"field": "value"}, DropsKeys | AlsoDropsKeys)
+
     def test_scalar_conversions(self):
         value = "00000000-0000-4000-8000-000000000001"
         self.assertEqual(str(convert(value, UUID)), value)

@@ -73,11 +73,12 @@ investigation. Neither task changes `pyproject.toml` or `uv.lock`; a stale lock
 fails the `uv` commands, and only `mise run lock` updates it.
 
 `generate.sh` applies `generator/openapi/overlay.yaml` with
-`speakeasy overlay apply --strict`, runs `generator/scripts/patch_openapi.py` to
-remove schema titles only, writes the result to `generator/openapi/spec.patched.json`,
+`speakeasy overlay apply --strict`, runs the jq filter in
+`generator/scripts/strip_schema_titles.jq` to remove collision-prone schema titles,
+and writes the result to `generator/openapi/spec.patched.json`,
 then recreates only `upcloud_api/`. Spec fixes go in the overlay. Do not hand-edit
 `upcloud_api/` except via the overlay, generator templates, or
-`generator/scripts/patch_openapi.py`. `mise run check:generated` fails
+the title filter. `mise run check:generated` fails
 if regenerating changes either output.
 
 ## Development
@@ -111,7 +112,7 @@ UV_PYTHON=pypy3.11 mise run test:unit
 | `setup` | Install locked development dependencies. |
 | `lint` | Run pre-commit: ruff, shellcheck, and actionlint. |
 | `test:tools` | L1: test the shared shell scripts offline with bats. |
-| `test:preprocess` | L2: test spec patching (`test_patch_openapi.py`, `test_openapi_overlay.py`) and the endpoint checker. |
+| `test:preprocess` | L2: test schema-title filtering (`test_strip_schema_titles.py`), overlay fixes, and the endpoint checker. |
 | `test:unit` | L4: test the generated SDK and the contract-case derivation offline. |
 | `check:generated` | L3: regenerate and fail if `upcloud_api/` or `spec.patched.json` changes. |
 | `check:endpoints` | L3: check that every spec operation has a generated method/path contract. |
@@ -134,7 +135,7 @@ Every check belongs to one layer, and every defect fails exactly one check.
 | Layer | Guards | Members |
 | --- | --- | --- |
 | L1 tools | The shared shell scripts behave safely. | `generator/scripts/tests/*.bats` |
-| L2 preprocess | Spec patches are correct and idempotent. | `generator/tests/test_patch_openapi.py`, `test_openapi_overlay.py`, `test_endpoint_coverage.py` |
+| L2 preprocess | Overlay fixes and title filtering are correct and idempotent. | `generator/tests/test_strip_schema_titles.py`, `test_openapi_overlay.py`, `test_endpoint_coverage.py` |
 | L3 generation | Committed output equals generator output; every spec operation is generated. | `check:generated`, `check:endpoints` |
 | L4 SDK unit | Generated imports, enums, `client.py.jinja` behavior, contract-case derivation. | `tests/test_sdk_smoke.py`, `tests/test_wiretap_cases.py` |
 | L5 contract | SDK calls match the spec on the wire. | `tests/test_wiretap.py` via `wiretap.sh` |
@@ -186,7 +187,7 @@ them:
   `examples/<name>/test_<name with - as _>.md` with mdtest.
 
 The rest is specific to this Python repository: `uv`, `generate.sh`,
-`generator/openapi/overlay.yaml`, `patch_openapi.py`, `check_endpoint_coverage.py`,
+`generator/openapi/overlay.yaml`, `strip_schema_titles.jq`, `check_endpoint_coverage.py`,
 the spec-derived Wiretap cases
 in `tests/wiretap_cases.py`, and the SDK calls in `tests/test_wiretap.py`.
 

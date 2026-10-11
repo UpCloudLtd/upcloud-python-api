@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate the Python SDK: spec.json -> overlay (speakeasy) -> title pass -> spec.patched.json -> upcloud_api/.
+# Generate the Python SDK: spec.json -> overlay (speakeasy) -> title filter (jq) -> spec.patched.json -> upcloud_api/.
 # Python-specific; openapi-python-client, speakeasy, ruff, jq, and uv come from mise.
 # Usage: generate.sh [--force]  (--force overwrites uncommitted upcloud_api/ changes)
 set -euo pipefail
@@ -35,7 +35,7 @@ EOF
 echo "Applying OpenAPI overlay..."
 speakeasy overlay apply --strict --overlay generator/openapi/overlay.yaml --schema "$spec" --out "$tmp/spec.overlaid.json"
 echo "Stripping schema titles..."
-uv run python generator/scripts/patch_openapi.py "$tmp/spec.overlaid.json" "$patched_spec"
+jq -f generator/scripts/strip_schema_titles.jq "$tmp/spec.overlaid.json" >"$patched_spec"
 
 echo "Generating SDK..."
 openapi-python-client generate \

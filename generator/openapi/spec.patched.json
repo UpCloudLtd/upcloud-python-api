@@ -13934,10 +13934,7 @@
             "minimum": 0,
             "format": "int64",
             "description": "The maximum total amount of storage (in GiB) allowed."
-          },
-          "type": {},
-          "required": {},
-          "additionalProperties": {}
+          }
         },
         "description": "Per-resource quota limits for an account."
       },
@@ -14850,7 +14847,7 @@
       },
       "kubernetesIPBlock": {
         "type": "string",
-        "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}($|/(0-32))$",
+        "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(/([0-9]|[12][0-9]|3[0-2]))?$",
         "description": "IP prefix of a single IPv4 address or a network CIDR"
       },
       "kubernetesIPBlocks": {
@@ -15445,16 +15442,18 @@
             "description": "JWT claim to use. Mutually exclusive with expression.",
             "example": "email"
           },
-          "prefix": {
-            "type": "string",
-            "description": "Prefix prepended to the claim's value. Must be set (may be empty) when claim is set. Mutually exclusive with expression.\n",
-            "nullable": true,
-            "example": "oidc:"
-          },
           "expression": {
             "type": "string",
             "description": "CEL expression producing the attribute value. Mutually exclusive with claim and prefix.",
             "example": "claims.email"
+          },
+          "prefix": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Prefix prepended to the claim's value. Must be set (may be empty) when claim is set. Mutually exclusive with expression.\n",
+            "example": "oidc:"
           }
         },
         "description": "Maps a user attribute from either a JWT claim (optionally prefixed) or a CEL expression. Claim and expression are mutually exclusive.\n"
@@ -25089,7 +25088,8 @@
                     "$ref": "#/components/schemas/storageBackupRule"
                   },
                   {
-                    "type": "object"
+                    "type": "object",
+                    "maxProperties": 0
                   }
                 ],
                 "description": "Schedule for automatic backups. An empty object disables automatic         backups."
@@ -25184,7 +25184,8 @@
                     "$ref": "#/components/schemas/storageBackupRule"
                   },
                   {
-                    "type": "object"
+                    "type": "object",
+                    "maxProperties": 0
                   }
                 ],
                 "description": "Schedule for automatic backups of the block storage. An empty object removes the configured schedule."
@@ -25743,7 +25744,8 @@
                 "$ref": "#/components/schemas/storageBackupRule"
               },
               {
-                "type": "object"
+                "type": "object",
+                "maxProperties": 0
               }
             ],
             "description": "Schedule for automatic backups of the storage resource. An empty object indicates that no automatic backup schedule is configured."
@@ -26332,7 +26334,7 @@
           "environment",
           "environment=production"
         ],
-        "pattern": "^(?!_)[\\x20-\\x3C\\x3E-\\x7E]{2,32}(?:=.*)?$",
+        "pattern": "^[\\x20-\\x3C\\x3E-\\x5E\\x60-\\x7E][\\x20-\\x3C\\x3E-\\x7E]{1,31}(?:=.*)?$",
         "description": "Label key or key-value pair to match. A key-only filter matches any value. Repeat the query parameter to require all specified labels; keys are matched case-insensitively."
       },
       "storageSearch": {
@@ -32490,7 +32492,7 @@
           "zone"
         ],
         "additionalProperties": false,
-        "description": "Schema for creating a service \u2014 OpenAPI version."
+        "description": "Schema for creating a service — OpenAPI version."
       },
       "databaseMaintenanceDow": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -33336,7 +33338,7 @@
             "type": "number",
             "maximum": 10,
             "minimum": 0,
-            "description": "The average recent need for new buffers is multiplied by bgwriter_lru_multiplier to arrive at an estimate of the number that will be needed during the next round, (up to bgwriter_lru_maxpages). 1.0 represents a \u201cjust in time\u201d policy of writing exactly the number of buffers predicted to be needed. Larger values provide some cushion against spikes in demand, while smaller values intentionally leave writes to be done by server processes. The default is `2.0`."
+            "description": "The average recent need for new buffers is multiplied by bgwriter_lru_multiplier to arrive at an estimate of the number that will be needed during the next round, (up to bgwriter_lru_maxpages). 1.0 represents a “just in time” policy of writing exactly the number of buffers predicted to be needed. Larger values provide some cushion against spikes in demand, while smaller values intentionally leave writes to be done by server processes. The default is `2.0`."
           },
           "deadlock_timeout": {
             "type": "integer",
@@ -33828,7 +33830,7 @@
               },
               "server_connect_timeout": {
                 "type": "number",
-                "title": "If connection and login don\u2019t finish in this amount of time, the connection will be closed. [seconds]",
+                "title": "If connection and login don’t finish in this amount of time, the connection will be closed. [seconds]",
                 "maximum": 86400,
                 "minimum": 1
               },
@@ -34832,7 +34834,7 @@
                           "type": "string",
                           "title": "The S3 service endpoint to connect",
                           "pattern": "^[^\\r\\n]*$",
-                          "description": "The S3 service endpoint to connect to. If you are using an S3-compatible service then you should set this to the service\u2019s endpoint"
+                          "description": "The S3 service endpoint to connect to. If you are using an S3-compatible service then you should set this to the service’s endpoint"
                         },
                         "max_restore_bytes_per_sec": {
                           "type": "string",
@@ -35416,11 +35418,11 @@
                   "string",
                   "null"
                 ],
-                "title": "The key in the JSON payload that stores the user\u2019s roles",
+                "title": "The key in the JSON payload that stores the user’s roles",
                 "maxLength": 1024,
                 "minLength": 1,
                 "pattern": "^[^\\r\\n]*$",
-                "description": "The key in the JSON payload that stores the user\u2019s roles. The value of this key must be a comma-separated list of roles. Required only if you want to use roles in the JWT"
+                "description": "The key in the JSON payload that stores the user’s roles. The value of this key must be a comma-separated list of roles. Required only if you want to use roles in the JWT"
               },
               "scope": {
                 "type": "string",
@@ -35435,11 +35437,11 @@
                   "string",
                   "null"
                 ],
-                "title": "The key in the JSON payload that stores the user\u2019s name",
+                "title": "The key in the JSON payload that stores the user’s name",
                 "maxLength": 1024,
                 "minLength": 1,
                 "pattern": "^[^\\r\\n]*$",
-                "description": "The key in the JSON payload that stores the user\u2019s name. If not defined, the subject registered claim is used. Most IdP providers use the preferred_username claim. Optional."
+                "description": "The key in the JSON payload that stores the user’s name. If not defined, the subject registered claim is used. Most IdP providers use the preferred_username claim. Optional."
               }
             },
             "required": [
@@ -35476,7 +35478,7 @@
               },
               "session_keepalive": {
                 "type": "boolean",
-                "title": "Determines whether the session TTL resets (is \u201ckept alive\u201d) on each user activity. Optional. Default is true."
+                "title": "Determines whether the session TTL resets (is “kept alive”) on each user activity. Optional. Default is true."
               },
               "session_ttl": {
                 "type": "string",
@@ -35717,9 +35719,9 @@
                   },
                   "heap_variance": {
                     "type": "number",
-                    "title": "The minimum variance required for a single search shard task\u2019s heap usage compared to the rolling average of previously completed tasks before it is considered for cancellation",
+                    "title": "The minimum variance required for a single search shard task’s heap usage compared to the rolling average of previously completed tasks before it is considered for cancellation",
                     "minimum": 0,
-                    "description": "The minimum variance required for a single search shard task\u2019s heap usage compared to the rolling average of previously completed tasks before it is considered for cancellation. Default is 2.0"
+                    "description": "The minimum variance required for a single search shard task’s heap usage compared to the rolling average of previously completed tasks before it is considered for cancellation. Default is 2.0"
                   },
                   "total_heap_percent_threshold": {
                     "type": "number",
@@ -35934,7 +35936,7 @@
               "enforced": {
                 "type": "boolean",
                 "title": "Run shard indexing backpressure in shadow mode or enforced mode",
-                "description": "Run shard indexing backpressure in shadow mode or enforced mode.\n            In shadow mode (value set as false), shard indexing backpressure tracks all granular-level metrics,\n            but it doesn\u2019t actually reject any indexing requests.\n            In enforced mode (value set as true),\n            shard indexing backpressure rejects any requests to the cluster that might cause a dip in its performance.\n            Default is false"
+                "description": "Run shard indexing backpressure in shadow mode or enforced mode.\n            In shadow mode (value set as false), shard indexing backpressure tracks all granular-level metrics,\n            but it doesn’t actually reject any indexing requests.\n            In enforced mode (value set as true),\n            shard indexing backpressure rejects any requests to the cluster that might cause a dip in its performance.\n            Default is false"
               },
               "operating_factor": {
                 "type": "object",
@@ -35949,7 +35951,7 @@
                     "type": "number",
                     "title": "Optimal occupancy of the allocated quota of memory for the shard",
                     "minimum": 0,
-                    "description": "Specify the optimal occupancy of the allocated quota of memory for the shard.\n                    If the total memory usage of a shard is at this level,\n                    shard indexing backpressure doesn\u2019t change the current allocated memory for that shard.\n                    Default is 0.85"
+                    "description": "Specify the optimal occupancy of the allocated quota of memory for the shard.\n                    If the total memory usage of a shard is at this level,\n                    shard indexing backpressure doesn’t change the current allocated memory for that shard.\n                    Default is 0.85"
                   },
                   "upper": {
                     "type": "number",
@@ -36478,7 +36480,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Schema for modifying a service \u2014 OpenAPI version."
+        "description": "Schema for modifying a service — OpenAPI version."
       },
       "databaseServiceTypeModify": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -36606,7 +36608,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Schema for cloning a service \u2014 OpenAPI version."
+        "description": "Schema for cloning a service — OpenAPI version."
       },
       "databaseServiceCloneMysql": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -43274,7 +43276,7 @@
           "query_duration": {
             "type": "integer",
             "format": "int64",
-            "description": "The active query\u2019s current duration, serialized as nanoseconds.",
+            "description": "The active query’s current duration, serialized as nanoseconds.",
             "example": 125000000
           },
           "state": {
@@ -44542,20 +44544,6 @@
         ],
         "additionalProperties": false,
         "description": "Gateway label"
-      },
-      "gatewayLabelValue": {
-        "type": "string",
-        "examples": [
-          "production",
-          "backend",
-          "web-app",
-          "backup",
-          "engineering"
-        ],
-        "maxLength": 255,
-        "pattern": "\\A[\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\p{Z}]*\\z",
-        "description": "The value of a label.",
-        "nullable": true
       },
       "gatewayServiceReplaceRequest": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -51753,7 +51741,7 @@
           "total_http_responses_other": {
             "type": "integer",
             "format": "int32",
-            "description": "Total number of HTTP responses outside the standard 1xx\u20135xx range.",
+            "description": "Total number of HTTP responses outside the standard 1xx–5xx range.",
             "example": 0
           },
           "total_sessions": {
@@ -52269,7 +52257,7 @@
           "http_responses_other": {
             "type": "integer",
             "format": "int32",
-            "description": "Count of HTTP responses with codes outside the 1xx\u20135xx range.",
+            "description": "Count of HTTP responses with codes outside the 1xx–5xx range.",
             "example": 0
           },
           "sessions": {
@@ -52398,7 +52386,7 @@
           "http_responses_other": {
             "type": "integer",
             "format": "int32",
-            "description": "Count of HTTP responses outside the 1xx\u20135xx range.",
+            "description": "Count of HTTP responses outside the 1xx–5xx range.",
             "example": 0
           },
           "sessions": {
@@ -52582,7 +52570,7 @@
           "http_responses_other": {
             "type": "integer",
             "format": "int32",
-            "description": "Count of HTTP responses outside the 1xx\u20135xx range.",
+            "description": "Count of HTTP responses outside the 1xx–5xx range.",
             "example": 0
           },
           "sessions": {
@@ -53929,20 +53917,6 @@
         "additionalProperties": false,
         "description": "Schema for modifying a label with a key-value pair."
       },
-      "firewallRulesetLabelValue": {
-        "type": "string",
-        "examples": [
-          "production",
-          "backend",
-          "web-app",
-          "backup",
-          "engineering"
-        ],
-        "maxLength": 255,
-        "pattern": "\\A[\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\p{Z}]*\\z",
-        "description": "Schema for a label value property, allowing a string or null with specific character constraints.",
-        "nullable": true
-      },
       "firewallRulesetServerMultipleFirewallRulesCreate": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -54966,6 +54940,38 @@
           1
         ],
         "description": "Schema for boolean-like values encoded as 0 or 1."
+      },
+      "gatewayLabelValue": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "examples": [
+          "production",
+          "backend",
+          "web-app",
+          "backup",
+          "engineering"
+        ],
+        "maxLength": 255,
+        "pattern": "\\A[\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\p{Z}]*\\z",
+        "description": "The value of a label."
+      },
+      "firewallRulesetLabelValue": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "examples": [
+          "production",
+          "backend",
+          "web-app",
+          "backup",
+          "engineering"
+        ],
+        "maxLength": 255,
+        "pattern": "\\A[\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\p{Z}]*\\z",
+        "description": "Schema for a label value property, allowing a string or null with specific character constraints."
       }
     },
     "responses": {

@@ -79,6 +79,26 @@ def python_name(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_]", "_", name).lower()
 
 
+def _preserves_input_keys(source, converted) -> bool:
+    if isinstance(source, dict):
+        if hasattr(converted, "to_dict"):
+            converted = converted.to_dict()
+        return isinstance(converted, dict) and all(
+            key in converted and _preserves_input_keys(value, converted[key])
+            for key, value in source.items()
+        )
+    if isinstance(source, list):
+        return (
+            isinstance(converted, list)
+            and len(source) == len(converted)
+            and all(
+                _preserves_input_keys(source_item, converted_item)
+                for source_item, converted_item in zip(source, converted, strict=True)
+            )
+        )
+    return True
+
+
 def convert(value, annotation):
     """Convert wire examples to the types accepted by generated SDK signatures."""
     origin = get_origin(annotation)
@@ -107,7 +127,10 @@ def convert(value, annotation):
     if hasattr(annotation, "from_dict"):
         if not isinstance(value, dict):
             raise TypeError("Expected model object")
-        return annotation.from_dict(value)
+        converted = annotation.from_dict(value)
+        if not _preserves_input_keys(value, converted):
+            raise ValueError(f"{annotation.__name__} conversion drops input keys")
+        return converted
     if origin is list:
         return [convert(item, get_args(annotation)[0]) for item in value]
     if annotation is Any or origin is dict:

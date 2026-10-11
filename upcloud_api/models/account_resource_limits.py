@@ -46,9 +46,6 @@ class AccountResourceLimits:
         storage_maxiops (int | Unset): The maximum amount of MaxiOPS storage (in GiB) allowed.
         storage_standard (int | Unset): The maximum amount of standard storage (in GiB) allowed.
         storage_total (int | Unset): The maximum total amount of storage (in GiB) allowed.
-        type_ (Any | Unset):
-        required (Any | Unset):
-        additional_properties (Any | Unset):
     """
 
     managed_databases: int | Unset = UNSET
@@ -79,9 +76,6 @@ class AccountResourceLimits:
     storage_maxiops: int | Unset = UNSET
     storage_standard: int | Unset = UNSET
     storage_total: int | Unset = UNSET
-    type_: Any | Unset = UNSET
-    required: Any | Unset = UNSET
-    additional_properties: Any | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -149,12 +143,6 @@ class AccountResourceLimits:
 
         storage_total = self.storage_total
 
-        type_ = self.type_
-
-        required = self.required
-
-        additional_properties = self.additional_properties
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -214,12 +202,6 @@ class AccountResourceLimits:
             field_dict["storage_standard"] = storage_standard
         if storage_total is not UNSET:
             field_dict["storage_total"] = storage_total
-        if type_ is not UNSET:
-            field_dict["type"] = type_
-        if required is not UNSET:
-            field_dict["required"] = required
-        if additional_properties is not UNSET:
-            field_dict["additionalProperties"] = additional_properties
 
         return field_dict
 
@@ -300,12 +282,6 @@ class AccountResourceLimits:
 
         storage_total = d.pop("storage_total", UNSET)
 
-        type_ = d.pop("type", UNSET)
-
-        required = d.pop("required", UNSET)
-
-        additional_properties = d.pop("additionalProperties", UNSET)
-
         account_resource_limits = cls(
             managed_databases=managed_databases,
             network_peerings=network_peerings,
@@ -335,9 +311,6 @@ class AccountResourceLimits:
             storage_maxiops=storage_maxiops,
             storage_standard=storage_standard,
             storage_total=storage_total,
-            type_=type_,
-            required=required,
-            additional_properties=additional_properties,
         )
 
         account_resource_limits.additional_properties = d

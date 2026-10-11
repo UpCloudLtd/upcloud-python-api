@@ -34,7 +34,7 @@ run = "bats generator/scripts/tests"
 
 [tasks."test:preprocess"]
 description = "L2: test spec patching and the endpoint checker"
-run = "uv run python -m unittest generator.tests.test_patch_openapi generator.tests.test_openapi_overlay generator.tests.test_endpoint_coverage"
+run = "uv run python -m unittest generator.tests.test_strip_schema_titles generator.tests.test_openapi_overlay generator.tests.test_endpoint_coverage"
 
 [tasks."test:unit"]
 description = "L4: test the generated SDK and contract-case derivation offline"
