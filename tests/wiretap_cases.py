@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Literal, Union, get_args, get_origin, get_type_hints
 from uuid import UUID
 
-from generator.tests.check_endpoint_coverage import generated_operations, operations
+from generator.scripts.check_endpoint_coverage import generated_operations, operations
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -129,13 +129,18 @@ class Case:
     query: dict
 
 
-def derive_cases(spec: dict, api_directory: Path) -> tuple[list[Case], list[dict], list[str]]:
+def derive_cases(
+    spec: dict, api_directory: Path
+) -> tuple[list[Case], list[dict], list[str], list[str]]:
+    """Return cases, unsupported operations, operations without generated code, and errors."""
     generated, errors = generated_operations(api_directory)
     cases = []
     unsupported = []
+    # check:endpoints owns missing-operation failures; they are inventoried here only.
+    missing = []
     for contract, operation in operations(spec).items():
         if contract not in generated:
-            errors.append(f"Missing generated operation: {operation['operationId']}")
+            missing.append(operation["operationId"])
             continue
         path = generated[contract]
         module_name = ".".join(path.relative_to(ROOT).with_suffix("").parts)
@@ -176,15 +181,15 @@ def derive_cases(spec: dict, api_directory: Path) -> tuple[list[Case], list[dict
                 if "application/json" not in content:
                     raise UnsupportedExample(f"Non-JSON request body: {list(content)}")
                 kwargs["body"] = convert(example(spec, content["application/json"]), hints["body"])
-            missing = [
+            missing_arguments = [
                 name
                 for name, param in signature.parameters.items()
                 if name != "client"
                 and param.default is inspect.Parameter.empty
                 and name not in kwargs
             ]
-            if missing:
-                raise UnsupportedExample(f"Missing required SDK arguments: {missing}")
+            if missing_arguments:
+                raise UnsupportedExample(f"Missing required SDK arguments: {missing_arguments}")
             statuses = sorted(
                 int(code)
                 for code in operation["responses"]
@@ -208,7 +213,7 @@ def derive_cases(spec: dict, api_directory: Path) -> tuple[list[Case], list[dict
             unsupported.append({"operation": operation["operationId"], "reason": str(error)})
         except (ValueError, TypeError, KeyError) as error:
             errors.append(f"{operation['operationId']}: invalid example/generated input: {error}")
-    return cases, unsupported, errors
+    return cases, unsupported, missing, errors
 
 
 def load_cases():

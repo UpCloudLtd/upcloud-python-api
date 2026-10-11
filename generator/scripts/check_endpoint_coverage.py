@@ -1,4 +1,8 @@
-"""Compare OpenAPI operations with generated Python endpoint contracts."""
+"""
+Compare OpenAPI operations with generated Python endpoint contracts.
+
+Python-specific: it parses the modules that openapi-python-client generates.
+"""
 
 import ast
 import json
@@ -12,10 +16,12 @@ SURFACES = {"sync_detailed", "asyncio_detailed"}
 
 
 def normalize_path(path: str) -> str:
+    """Replace every path parameter name with `{}`."""
     return re.sub(r"\{[^}]+\}", "{}", path)
 
 
 def operations(spec: dict) -> dict[tuple[str, str], dict]:
+    """Map each (method, normalized path) in the spec to its operation."""
     result = {}
     for path, item in spec["paths"].items():
         for method, operation in item.items():
@@ -33,6 +39,7 @@ def operations(spec: dict) -> dict[tuple[str, str], dict]:
 
 
 def endpoint_contract(path: Path) -> tuple[str, str]:
+    """Return the (method, normalized path) that a generated endpoint module requests."""
     tree = ast.parse(path.read_text(encoding="utf-8"))
     functions = {
         node.name: node
@@ -76,6 +83,7 @@ def endpoint_contract(path: Path) -> tuple[str, str]:
 
 
 def generated_operations(directory: Path) -> tuple[dict[tuple[str, str], Path], list[str]]:
+    """Map each generated endpoint contract to its module, plus parse errors."""
     result = {}
     errors = []
     for path in sorted(directory.glob("*/*.py")):
@@ -97,6 +105,7 @@ def generated_operations(directory: Path) -> tuple[dict[tuple[str, str], Path], 
 
 
 def check_coverage(spec: dict, directory: Path, patched: dict | None = None) -> list[str]:
+    """Return every missing, unexpected, or duplicate operation as an error."""
     expected = operations(spec)
     generated, errors = generated_operations(directory)
     for contract in sorted(expected.keys() - generated.keys()):
@@ -111,6 +120,7 @@ def check_coverage(spec: dict, directory: Path, patched: dict | None = None) -> 
 
 
 def main() -> int:
+    """Check coverage for the command-line arguments; exit 1 on any error."""
     if len(sys.argv) != 4:
         print(
             "Usage: check_endpoint_coverage.py <spec.json> <spec.patched.json> <api-dir>",

@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from generator.tests.check_endpoint_coverage import (
+from generator.scripts.check_endpoint_coverage import (
     check_coverage,
     endpoint_contract,
     normalize_path,

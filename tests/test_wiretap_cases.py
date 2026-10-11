@@ -8,7 +8,15 @@ from uuid import UUID
 from upcloud_api.models.tag import Tag
 from upcloud_api.types import Unset
 
-from .wiretap_cases import InvalidExample, UnsupportedExample, convert, example, resolve
+from .wiretap_cases import (
+    ROOT,
+    InvalidExample,
+    UnsupportedExample,
+    convert,
+    derive_cases,
+    example,
+    resolve,
+)
 
 
 class CaseDerivationTests(unittest.TestCase):
@@ -50,3 +58,18 @@ class CaseDerivationTests(unittest.TestCase):
         self.assertEqual(convert("yes", Literal["yes", "no"]), "yes")
         with self.assertRaises(ValueError):
             convert("invalid", Literal["yes", "no"])
+
+    def test_operation_without_generated_code_is_inventoried_as_missing(self):
+        """A later derivable operation must not erase the missing-operation inventory."""
+        ok = {"responses": {"200": {"description": "ok"}}}
+        spec = {
+            "paths": {
+                "/1.3/not-generated": {"get": {"operationId": "notGenerated", **ok}},
+                "/1.3/account": {"get": {"operationId": "getAccount", **ok}},
+            }
+        }
+        cases, unsupported, missing, errors = derive_cases(spec, ROOT / "upcloud_api/api")
+        self.assertEqual([case.operation_id for case in cases], ["getAccount"])
+        self.assertEqual(unsupported, [])
+        self.assertEqual(missing, ["notGenerated"])
+        self.assertFalse([error for error in errors if "notGenerated" in error], errors)

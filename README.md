@@ -61,16 +61,20 @@ mise install
 mise run generate
 ```
 
-The [mise](https://mise.jdx.dev/) configuration pins `uv` tooling, and its
-`generate` task invokes `generator/scripts/generate.sh` under the selected Python
-environment, using the checked-in `generator/openapi/spec.json` (no download).
-`mise run regenerate` runs `generate`, then `lock`, then `validate` (including
-Wiretap). The lock is updated before validation because validation runs with
-`uv run --locked`. The first failing step stops the task with a non-zero exit,
-and the generated changes and lockfile stay in place for investigation.
+The [mise](https://mise.jdx.dev/) configuration pins `openapi-python-client`, the
+`ruff` its post-hooks use (the same version as the pre-commit hook), `jq`, and `uv`.
+The `generate` task runs `generator/scripts/generate.sh` on the checked-in
+`generator/openapi/spec.json` (no download). It refuses to overwrite uncommitted
+changes in `upcloud_api/` unless you pass `mise run generate --force`.
+`mise run regenerate` runs `generate`, then the `check` gate, and stops at the
+first failure with a non-zero exit; the generated changes stay in place for
+investigation. Neither task changes `pyproject.toml` or `uv.lock`; a stale lock
+fails the `uv` commands, and only `mise run lock` updates it.
 
-`generate.sh` patches the spec, then recreates only `upcloud_api/`. Do not hand-edit
-`upcloud_api/` except via generator templates or `generator/scripts/patch_openapi.py`.
+`generate.sh` patches the spec into `generator/openapi/spec.patched.json`, then
+recreates only `upcloud_api/`. Do not hand-edit `upcloud_api/` except via generator
+templates or `generator/scripts/patch_openapi.py`. `mise run check:generated` fails
+if regenerating changes either output.
 
 ## Development
 
@@ -82,11 +86,12 @@ mise trust .config/mise.toml
 mise install
 mise run setup
 mise run lint
-mise run test
+mise run check
 mise run build
 ```
 
-Local development and CI use the same task entry points and pinned `uv` version.
+Local development and CI use the same task entry points and mise-pinned tools.
+Every `uv` command runs with `UV_LOCKED=1`, so it fails on a stale `uv.lock`.
 Python is selected by `UV_PYTHON`, or `.python-version` when no override is supplied.
 For example:
 
@@ -100,61 +105,85 @@ UV_PYTHON=pypy3.11 mise run test:unit
 | Task | Purpose |
 | --- | --- |
 | `setup` | Install locked development dependencies. |
-| `lint` | Run all pre-commit checks. |
-| `test:preprocess` | Run all generator tests: spec preprocessing, endpoint checker, downloader, example runner, and validation script. |
-| `test:unit` | Run generated SDK smoke and validation-harness unit tests. |
-| `check:endpoints` | Check that every spec operation has a generated method/path contract. |
-| `test` | Run `test:preprocess`, `test:unit`, and `check:endpoints`, collecting failures. No Wiretap needed. |
-| `test:wiretap` | Exercise generated sync/async SDK calls against a local Wiretap mock server. |
-| `validate` | Run `test` checks and Wiretap, even if quick checks fail. |
-| `build` | Build a wheel and source distribution into `dist/`. |
-| `ci` | Run lint, `validate` (including Wiretap), and build; fail if any task fails. |
-| `generate` | Regenerate the SDK from the checked-in spec. |
-| `lock` | Update `uv.lock`. |
+| `lint` | Run pre-commit: ruff, shellcheck, and actionlint. |
+| `test:tools` | L1: test the shared shell scripts offline with bats. |
+| `test:preprocess` | L2: test spec patching and the endpoint checker. |
+| `test:unit` | L4: test the generated SDK and the contract-case derivation offline. |
+| `check:generated` | L3: regenerate and fail if `upcloud_api/` or `spec.patched.json` changes. |
+| `check:endpoints` | L3: check that every spec operation has a generated method/path contract. |
+| `test:contract` | L5: run generated sync/async SDK calls against a local Wiretap mock. |
+| `check` | Integrity gate: `lint`, `test:tools`, `test:preprocess`, `test:unit`, `check:generated`. Must be green. Alias: `test`. |
+| `findings` | Findings gate: `check:endpoints` and `test:contract`, run even if one fails. Red on known defects. |
+| `validate` | Run `check` and `findings`, even if `check` fails. Kept for one release. |
+| `build` | Build a wheel and source distribution into `dist/`, then run `twine check`. |
+| `generate [--force]` | Regenerate the SDK from the checked-in spec. |
+| `regenerate` | Run `generate`, then `check`; stop at the first failure. |
+| `lock` | Update `uv.lock` (the only task that may change it). |
 | `version:set <version>` | Explicitly change `[project].version` in `pyproject.toml` with `uv version --frozen`. |
 | `spec:download <version> <asset_url>` | Download a released spec using `SPECS_ACCESS_PAT` (used by the regeneration workflow). |
-| `regenerate` | Run generate, lock, and validate in order; stop at the first failure. |
-| `examples:<api>` | Run one live mdtest document: `file-storage`, `object-storage`, `tag`, or `kubernetes`. |
-| `examples` | Run all four live examples sequentially. |
+| `examples [name...]` | L6: run live mdtest documents, all four by default. |
 
-`ci` never downloads specs, regenerates source, changes the package version, or
-runs live examples. `mise install` installs the pinned `uv`, `jq`, and `wiretap`
-tools. Wiretap (used by `test:wiretap`, `validate`, `ci`, and `regenerate`) runs
-as a local binary in mock mode; it doesn't need Docker or Podman. No validation
-task needs UpCloud credentials or makes real UpCloud requests, but the first run
-needs network access to install tools and dependencies.
+### Test layers and gates
+
+Every check belongs to one layer, and every defect fails exactly one check.
+
+| Layer | Guards | Members |
+| --- | --- | --- |
+| L1 tools | The shared shell scripts behave safely. | `generator/scripts/tests/*.bats` |
+| L2 preprocess | Spec patches are correct and idempotent. | `generator/tests/test_patch_openapi.py`, `test_endpoint_coverage.py` |
+| L3 generation | Committed output equals generator output; every spec operation is generated. | `check:generated`, `check:endpoints` |
+| L4 SDK unit | Generated imports, enums, `client.py.jinja` behavior, contract-case derivation. | `tests/test_sdk_smoke.py`, `tests/test_wiretap_cases.py` |
+| L5 contract | SDK calls match the spec on the wire. | `tests/test_wiretap.py` via `wiretap.sh` |
+| L6 live | Real API behavior. | `examples/**/*.md` via mdtest |
+
+There are two gates. `check` (integrity) must always be green: a red `check`
+means the pipeline itself is broken. It blocks builds, releases, and regeneration
+PRs. `findings` covers the known spec and generator defects: a red `findings`
+means the spec or generator still has a known defect. It always runs and uploads
+its diagnostics, but it does not block releases. Regeneration PRs are opened as
+drafts while it fails.
+
+`mise install` installs every pinned tool, including `wiretap`, `bats`,
+`shellcheck`, `actionlint`, `twine`, and `mdtest` (built with the pinned Go).
+Wiretap runs as a local binary in mock mode; it doesn't need Docker or Podman.
+No task except `examples` needs UpCloud credentials or makes real UpCloud requests,
+but the first run needs network access to install tools and dependencies.
 
 The existing endpoint and Wiretap findings remain strict failures, not exemptions.
 `generator/scripts/wiretap.sh` starts Wiretap, sends a deliberately invalid canary
 request, runs the Python tests, and then fails if the report is missing, lacks the
 canary, or contains any other violation. It writes `wiretap.log` and
-`wiretap-report.json`; the Python tests add the `coverage.json` case inventory.
-All three go to `validation-artifacts/` (override with `VALIDATION_ARTIFACTS`). CI
-uploads these diagnostics. The Regenerate workflow runs `mise run regenerate` as a plain step
-before its Create PR step, so any generate, lock, or validation failure fails the
-job and no PR is created.
+`wiretap-report.json`; the Python tests add the `coverage.json` case inventory,
+which lists operations without generated code under `missing` (`check:endpoints`
+reports them as failures). All three go to `validation-artifacts/` (override with
+`VALIDATION_ARTIFACTS`). CI uploads these diagnostics.
 
 ### Task names across SDK repositories
 
-The task names (`setup`, `lint`, `test`, `validate`, `build`, `generate`,
-`regenerate`, `spec:download`, `version:set`, `examples:*`, `test:wiretap`) are the
-portable interface. Go and PHP SDK repositories can use the same names.
+The task names, their inputs, and their exit semantics are the portable interface:
+`setup`, `lint`, `generate`, `test:tools`, `test:preprocess`, `test:unit`,
+`check:generated`, `check:endpoints`, `test:contract`, `check`, `findings`,
+`build`, `spec:download`, `regenerate`, `examples`, and `version:set`. Go and PHP
+SDK repositories can use the same names; only the `run` bodies are
+language-specific.
 
-These Bash scripts don't depend on the SDK language and can be copied unchanged
-into other UpCloud SDK repositories (they need `bash`, `curl`, `tar`, and the
-mise-pinned `jq` and `wiretap`):
+Scripts with the header line `Copied unchanged into each UpCloud SDK repository`
+don't depend on the SDK language. They need only `bash`, `git`, `curl`, `tar`, and
+mise-pinned tools, and their bats tests in `generator/scripts/tests/` travel with
+them:
 
 - `generator/scripts/wiretap.sh SPEC COMMAND...` runs `COMMAND` with `WIRETAP_URL`
   pointing at a local Wiretap mock (`WIRETAP_PORT`, default 9090) and writes its
   artifacts to `VALIDATION_ARTIFACTS`. The exit code is the result.
+- `generator/scripts/check_generated.sh PATH... -- CMD...` runs `CMD` and fails,
+  listing the files, if it changed any `PATH`.
 - `generator/scripts/download_spec.sh` downloads and validates a release spec.
 - `generator/scripts/run_examples.sh NAME...` runs
   `examples/<name>/test_<name with - as _>.md` with mdtest.
 
-The rest is specific to this Python repository: `uv`, `validate.sh`,
-`generate.sh`, `patch_openapi.py`, `check_endpoint_coverage.py`, the
-spec-derived Wiretap cases in `tests/wiretap_cases.py`, and the SDK calls in
-`tests/test_wiretap.py`.
+The rest is specific to this Python repository: `uv`, `generate.sh`,
+`patch_openapi.py`, `check_endpoint_coverage.py`, the spec-derived Wiretap cases
+in `tests/wiretap_cases.py`, and the SDK calls in `tests/test_wiretap.py`.
 
 Local generation always uses the checked-in `generator/openapi/spec.json`.
 `spec:download` is only needed by the CI regeneration workflow, or when you
@@ -190,12 +219,12 @@ remain GitHub Actions responsibilities, not local tasks.
 
 ### Live examples
 
-The root is the distributable `upcloud-api` package. Install
-[mdtest](https://github.com/UpCloudLtd/mdtest) and set `UPCLOUD_TOKEN` for a separate
-development account before running a live example:
+The root is the distributable `upcloud-api` package. Set `UPCLOUD_TOKEN` for a
+separate development account before running a live example; `mise install`
+provides [mdtest](https://github.com/UpCloudLtd/mdtest):
 
 ```bash
-mise run examples:tag
+mise run examples tag
 # Explicitly run all four live resource tests:
 mise run examples
 ```
@@ -205,10 +234,9 @@ These tasks create real UpCloud resources and can incur charges. They run
 `examples/<name>/test_<name>.md` (with `-` replaced by `_` in the file name),
 checks the token and mdtest availability before invocation, and sets the absolute
 `UPCLOUD_SDK_PATH` so mdtest imports the local SDK from its temporary
-working directory. CI retains its mdtest/Go setup action and invokes the same tasks.
+working directory. CI runs `mise run examples` for same-repository PRs and manual
+dispatches; fork PRs are skipped because they cannot read the token.
 
-After `mise run generate`, run `mise run lock` to update the lockfile, or use
-`mise run regenerate` to run generate, lock, and validate in order.
 `SPEC_VERSION` follows the OpenAPI spec, while the package version in the root
 `pyproject.toml` defaults to `3.0.0.dev0` for development builds. The v3 release
 workflows replace it with the release tag or manual TestPyPI input (for example,

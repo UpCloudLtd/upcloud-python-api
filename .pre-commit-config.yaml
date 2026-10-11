@@ -1,7 +1,7 @@
 minimum_pre_commit_version: 4.0.0
 ci:
   autofix_prs: false
-exclude: ^(upcloud_api/|generator/(?!tests/))
+exclude: ^upcloud_api/
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.8
@@ -13,3 +13,16 @@ repos:
         types: [python]
       - id: ruff-format
         types: [python]
+  # shellcheck and actionlint are pinned in .config/mise.toml; run via `mise run lint`.
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+      - id: actionlint
+        name: actionlint
+        entry: actionlint
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$

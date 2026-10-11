@@ -21,15 +21,16 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls):
         cls.base_url = os.environ.get("WIRETAP_URL")
         if not cls.base_url:
-            raise RuntimeError("WIRETAP_URL is not set; run via `mise run test:wiretap`")
+            raise RuntimeError("WIRETAP_URL is not set; run via `mise run test:contract`")
         cls.temporary = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.temporary.cleanup)
         cls.artifacts = Path(os.environ.get("VALIDATION_ARTIFACTS", cls.temporary.name)).resolve()
         cls.artifacts.mkdir(parents=True, exist_ok=True)
-        cls.cases, unsupported, errors = load_cases()
+        cls.cases, unsupported, missing, errors = load_cases()
         cls.inventory = {
             "runnable_operations": len(cls.cases),
             "unsupported": unsupported,
+            "missing": missing,
             "discovery_errors": errors,
             "passed": [],
             "failed": [],

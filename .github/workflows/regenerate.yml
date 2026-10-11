@@ -14,26 +14,33 @@ on:
         type: string
       spec_file:
         description: Spec filename inside the released spec tarball
-        required: true
+        required: false
+        default: upcloud-public-openapi.json
         type: string
 
+permissions: {}
+
+concurrency:
+  group: regenerate-${{ inputs.version }}
+
 jobs:
-  regenerate:
+  generate:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
+    outputs:
+      findings: ${{ steps.findings.outcome }}
     env:
-      UV_PYTHON: "3.14"
-      SPEC_VERSION: ${{ github.event.inputs.version }}
-      ASSET_URL: ${{ github.event.inputs.asset_url }}
-      SPEC_FILE: ${{ github.event.inputs.spec_file || 'upcloud-public-openapi.json' }}
+      SPEC_VERSION: ${{ inputs.version }}
+      ASSET_URL: ${{ inputs.asset_url }}
+      SPEC_FILE: ${{ inputs.spec_file }}
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: v3-dev
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Setup mise
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
@@ -45,24 +52,80 @@ jobs:
           SPECS_ACCESS_PAT: ${{ secrets.SPECS_ACCESS_PAT }}
         run: mise run spec:download "$SPEC_VERSION" "$ASSET_URL" --spec-file "$SPEC_FILE"
 
-      - name: Generate, update lockfile, and validate before creating PR
+      # Integrity gate: if generation or `check` fails, no PR is opened.
+      - name: Generate, then run the check gate
+        id: regenerate
         run: mise run regenerate
 
-      - name: Upload contract diagnostics
+      - name: Run the findings gate (reported in the PR; does not block it)
+        id: findings
+        if: ${{ !cancelled() && (steps.regenerate.outcome == 'success' || steps.regenerate.outcome == 'failure') }}
+        continue-on-error: true
+        run: mise run findings
+
+      - name: Save the generated changes as a patch
+        run: |
+          git add -A -- generator/openapi upcloud_api
+          git diff --cached --binary > regenerate.patch
+
+      - name: Upload generated changes and contract diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: regenerated-sdk-validation
-          path: validation-artifacts/
+          name: regenerated-sdk
+          path: |
+            regenerate.patch
+            validation-artifacts/
           if-no-files-found: ignore
 
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v7
+  pull-request:
+    needs: generate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      SPEC_VERSION: ${{ inputs.version }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: v3-dev
+          fetch-depth: 1
+
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0  # v5.0.0
+        with:
+          name: regenerated-sdk
+          path: ${{ runner.temp }}/regenerated-sdk
+
+      # Only generated paths may change; fail if a patch (e.g. a rename) touches anything else.
+      - name: Apply the generated changes
+        run: |
+          git apply --allow-empty --include='generator/openapi/**' --include='upcloud_api/**' \
+            "$RUNNER_TEMP/regenerated-sdk/regenerate.patch"
+          outside="$(git status --porcelain --untracked-files=all -- . ':!generator/openapi' ':!upcloud_api')"
+          if [ -n "$outside" ]; then
+            echo "$outside" >&2
+            echo "::error::The generated patch changed paths outside generator/openapi and upcloud_api"
+            exit 1
+          fi
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          add-paths: |
+            generator/openapi
+            upcloud_api
           commit-message: "chore: regenerate SDK from spec ${{ env.SPEC_VERSION }}"
           branch: "regen/${{ env.SPEC_VERSION }}"
           title: "Regenerate SDK (${{ env.SPEC_VERSION }})"
           base: v3-dev
-          body: >
-            Automated regeneration for spec version
-            `${{ env.SPEC_VERSION }}`.
+          draft: ${{ needs.generate.outputs.findings != 'success' }}
+          body: |
+            Automated regeneration for spec version `${{ env.SPEC_VERSION }}`.
+
+            The integrity gate (`mise run check`) passed.
+            Findings gate (`mise run findings`): **${{ needs.generate.outputs.findings }}**.
+            The PR is a draft while findings fail; see the `regenerated-sdk` artifact
+            of ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            for the Wiretap and endpoint reports.

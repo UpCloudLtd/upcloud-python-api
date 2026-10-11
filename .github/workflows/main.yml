@@ -1,16 +1,23 @@
 name: test
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - v3-dev
+      - main
+    tags:
+      - "v3.*"
+  pull_request:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
-    env:
-      UV_PYTHON: "3.14"
     permissions:
       contents: read
     steps:
@@ -19,9 +26,9 @@ jobs:
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
           version: 2026.8.6
-      - run: mise run setup
-      - run: mise run lint
-  test:
+      - name: Integrity gate (must be green)
+        run: mise run check
+  unit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,13 +48,9 @@ jobs:
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
           version: 2026.8.6
-      - run: mise run setup
-      - name: Validate preprocessing and generated SDK contracts
-        run: mise run test
-  wiretap:
+      - run: mise run test:unit
+  findings:
     runs-on: ubuntu-latest
-    env:
-      UV_PYTHON: "3.14"
     permissions:
       contents: read
     steps:
@@ -56,9 +59,8 @@ jobs:
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
           version: 2026.8.6
-      - run: mise run setup
-      - name: Validate SDK calls against Wiretap
-        run: mise run test:wiretap
+      - name: Findings gate (red on known spec or generator defects; does not block release)
+        run: mise run findings
       - name: Upload contract diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -68,8 +70,7 @@ jobs:
           if-no-files-found: ignore
   build:
     runs-on: ubuntu-latest
-    env:
-      UV_PYTHON: "3.14"
+    needs: [check, unit]
     permissions:
       contents: read
     steps:
@@ -101,7 +102,7 @@ jobs:
           name: dist
           path: dist/
       - name: Create GitHub Release (prerelease)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           files: dist/*
           prerelease: true

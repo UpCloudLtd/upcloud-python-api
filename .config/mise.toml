@@ -1,54 +1,79 @@
+[env]
+# Every uv command must match uv.lock; only the lock task may change it.
+UV_LOCKED = "1"
+
 [tools]
 uv = "0.12.9"
 jq = "1.8.1"
 "github:pb33f/wiretap" = "0.7.3"
+"pipx:openapi-python-client" = "0.29.1"
+# Runs the generator's post-hooks; keep equal to the ruff-pre-commit rev.
+ruff = "0.16.8"
+"pipx:twine" = "7.0.0"
+bats = "1.14.0"
+shellcheck = "0.11.0"
+actionlint = "1.7.12"
+# mdtest has no releases; the go backend builds this commit with the pinned Go.
+go = "1.27.1"
+"go:github.com/UpCloudLtd/mdtest" = "0.0.0-20260807095505-496f17580c1c"
 
 [tasks.setup]
 description = "Install locked development dependencies"
-run = "uv sync --locked"
+run = "uv sync"
 
 [tasks.lint]
-description = "Run all pre-commit checks"
-run = "uv run --locked pre-commit run --all-files"
+description = "Static checks: ruff, shellcheck, and actionlint via pre-commit"
+run = "uv run pre-commit run --all-files"
+
+[tasks."test:tools"]
+description = "L1: test the shared shell scripts offline (bats)"
+run = "bats generator/scripts/tests"
 
 [tasks."test:preprocess"]
-description = "Run all generator tests (spec preprocessing, endpoint checker, helper scripts)"
-run = "uv run --locked bash generator/scripts/validate.sh preprocess"
+description = "L2: test spec patching and the endpoint checker"
+run = "uv run python -m unittest generator.tests.test_patch_openapi generator.tests.test_endpoint_coverage"
 
 [tasks."test:unit"]
-description = "Run SDK smoke and validation harness unit tests"
-run = "uv run --locked bash generator/scripts/validate.sh unit"
+description = "L4: test the generated SDK and contract-case derivation offline"
+run = "uv run python -m unittest tests.test_sdk_smoke tests.test_wiretap_cases"
+
+[tasks."check:generated"]
+description = "L3: fail if regeneration changes upcloud_api/ or the patched spec"
+run = "bash generator/scripts/check_generated.sh upcloud_api generator/openapi/spec.patched.json -- mise run generate --force"
 
 [tasks."check:endpoints"]
-description = "Check complete OpenAPI endpoint coverage"
-run = "uv run --locked bash generator/scripts/validate.sh endpoints"
+description = "L3: check that every spec operation has generated code"
+run = "uv run python generator/scripts/check_endpoint_coverage.py generator/openapi/spec.json generator/openapi/spec.patched.json upcloud_api/api"
 
-[tasks.test]
-description = "Run quick checks: generator tests, SDK unit tests, endpoint coverage (no Wiretap)"
-run = "uv run --locked bash generator/scripts/validate.sh quick"
+[tasks."test:contract"]
+description = "L5: run SDK calls against a local Wiretap mock; writes validation-artifacts/"
+run = 'VALIDATION_ARTIFACTS="${VALIDATION_ARTIFACTS:-validation-artifacts}" bash generator/scripts/wiretap.sh generator/openapi/spec.patched.json uv run python -m unittest tests.test_wiretap'
 
-[tasks."test:wiretap"]
-description = "Run local Wiretap mock contract tests (mise-pinned binary; no UpCloud requests)"
-run = "uv run --locked bash generator/scripts/validate.sh wiretap"
+[tasks.check]
+alias = "test"
+description = "Integrity gate (must be green): lint, test:tools, test:preprocess, test:unit, check:generated"
+run = "mise run --jobs 1 lint ::: test:tools ::: test:preprocess ::: test:unit ::: check:generated"
+
+[tasks.findings]
+description = "Findings gate (red on known spec/generator defects): check:endpoints, test:contract"
+run = "mise run --continue-on-error --jobs 1 check:endpoints ::: test:contract"
 
 [tasks.validate]
-description = "Run quick checks and local Wiretap contract tests (no UpCloud requests)"
-run = "uv run --locked bash generator/scripts/validate.sh all"
+description = "Run check and findings, even if check fails (kept for one release)"
+run = "mise run --continue-on-error --jobs 1 check ::: findings"
 
 [tasks.build]
-description = "Build wheel and source distribution into dist/"
-run = "uv build --out-dir dist"
-
-[tasks.ci]
-description = "Run lint, validate (incl. Wiretap), and build; never run live examples"
-run = "mise run --continue-on-error --jobs 1 lint ::: validate ::: build"
+description = "Build wheel and source distribution into dist/ and check them with twine"
+run = ["uv build --out-dir dist", "twine check dist/*"]
 
 [tasks.generate]
-description = "Generate SDK from the checked-in generator/openapi/spec.json"
-run = "uv run --locked bash generator/scripts/generate.sh"
+description = "Generate the SDK from the checked-in generator/openapi/spec.json"
+usage = 'flag "--force" help="Overwrite uncommitted changes in upcloud_api/"'
+run = 'bash generator/scripts/generate.sh ${usage_force:+--force}'
 
 [tasks.lock]
-description = "Update the dependency lockfile"
+description = "Update uv.lock (the only task that may change it)"
+env = { UV_LOCKED = "false" }
 run = "uv lock"
 
 [tasks."version:set"]
@@ -66,27 +91,10 @@ flag "--spec-file <file>" default="upcloud-public-openapi.json" help="Spec membe
 run = 'bash generator/scripts/download_spec.sh --version "$usage_version" --asset-url "$usage_asset_url" --spec-file "$usage_spec_file"'
 
 [tasks.regenerate]
-# Lock must precede validate: validate uses `uv run --locked`, which fails on a stale lock.
-# Steps run in order and stop at the first failure with a non-zero exit.
-description = "Generate, update the lock, then validate; stops at the first failure"
-run = ["mise run generate", "mise run lock", "mise run validate"]
-
-[tasks."examples:file-storage"]
-description = "Run live File Storage examples (requires UPCLOUD_TOKEN and mdtest)"
-run = "bash generator/scripts/run_examples.sh file-storage"
-
-[tasks."examples:object-storage"]
-description = "Run live Object Storage examples (requires UPCLOUD_TOKEN and mdtest)"
-run = "bash generator/scripts/run_examples.sh object-storage"
-
-[tasks."examples:tag"]
-description = "Run live Tag examples (requires UPCLOUD_TOKEN and mdtest)"
-run = "bash generator/scripts/run_examples.sh tag"
-
-[tasks."examples:kubernetes"]
-description = "Run live Kubernetes examples (requires UPCLOUD_TOKEN and mdtest)"
-run = "bash generator/scripts/run_examples.sh kubernetes"
+description = "Generate, then run the check gate; stops at the first failure"
+run = ["mise run generate", "mise run check"]
 
 [tasks.examples]
-description = "Run all live examples sequentially (creates real UpCloud resources)"
-run = "bash generator/scripts/run_examples.sh file-storage object-storage tag kubernetes"
+description = "L6: run live mdtest examples, all by default (creates real UpCloud resources; requires UPCLOUD_TOKEN)"
+usage = 'arg "[name]..." var=#true help="Directory under examples/ (default: all)"'
+run = 'bash generator/scripts/run_examples.sh ${usage_name:-file-storage object-storage tag kubernetes}'

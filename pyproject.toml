@@ -20,7 +20,6 @@ Homepage = "https://github.com/UpCloudLtd/upcloud-python-api"
 dev = [
     "pre-commit",
     "ruff",
-    "tomlkit",
 ]
 
 [tool.uv]
@@ -42,7 +41,6 @@ exclude = [
     "__pycache__",
     "build",
     "upcloud_api",
-    "generator/scripts",
     "generator/templates",
 ]
 line-length = 99
@@ -76,17 +74,8 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 "*/__init__.py" = ["F401"]
-"test/*" = [
-    "D",
-    "F841",
-    "S101",
-    "S105",
-    "S106",
-    "B011",
-]
 "tests/**" = ["D", "S101", "S105", "S106"]
 "generator/tests/**" = ["D", "S101", "S105", "S106"]
-"tests/test_wiretap.py" = ["S603"]
 
 [tool.ruff.format]
 quote-style = "preserve"

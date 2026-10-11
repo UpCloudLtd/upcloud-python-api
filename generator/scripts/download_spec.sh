@@ -2,6 +2,7 @@
 # Download an OpenAPI spec from a GitHub release asset (a tarball) and replace
 # the output only after it validates. Requires SPECS_ACCESS_PAT, curl, tar, jq.
 # The token goes only to api.github.com; curl drops it on cross-host redirects.
+# Copied unchanged into each UpCloud SDK repository; jq comes from mise.
 set -euo pipefail
 
 usage="Usage: download_spec.sh --version V --asset-url URL [--spec-file NAME] [--output PATH]"

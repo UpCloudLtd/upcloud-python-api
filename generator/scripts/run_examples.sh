@@ -2,6 +2,7 @@
 # Run live mdtest examples against the local SDK: run_examples.sh NAME...
 # Each NAME maps to examples/<name>/test_<name with - as _>.md.
 # Creates real UpCloud resources; requires UPCLOUD_TOKEN and mdtest.
+# Copied unchanged into each UpCloud SDK repository; mdtest comes from mise.
 set -euo pipefail
 
 script="${BASH_SOURCE[0]}"

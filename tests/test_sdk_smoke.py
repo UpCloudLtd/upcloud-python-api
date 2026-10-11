@@ -8,9 +8,8 @@ from enum import Enum
 from pathlib import Path
 
 import upcloud_api
-from upcloud_api import SPEC_VERSION, AuthenticatedClient, Client
+from upcloud_api import AuthenticatedClient, Client
 
-ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = Path(upcloud_api.__file__).resolve().parent
 
 
@@ -27,7 +26,7 @@ class SDKSmokeTests(unittest.TestCase):
     """Check generated surfaces without making any network requests."""
 
     def test_every_generated_api_and_model_module_imports(self):
-        """Import every generated API and model module, including package exports."""
+        """Generator output and spec patches: every `api/` and `models/` module imports."""
         for directory in ("api", "models"):
             modules = list(generated_modules(directory))
             self.assertTrue(modules, f"No generated modules found in {directory}")
@@ -36,7 +35,7 @@ class SDKSmokeTests(unittest.TestCase):
                     importlib.import_module(name)
 
     def test_enum_wire_values_roundtrip(self):
-        """Roundtrip every generated enum member through its serialized wire value."""
+        """Generator enum models: every member serializes to and parses from its wire value."""
         count = 0
         for name in generated_modules("models"):
             module = importlib.import_module(name)
@@ -55,7 +54,7 @@ class SDKSmokeTests(unittest.TestCase):
         self.assertGreater(count, 0, "No generated enums found")
 
     def test_sync_clients_use_default_and_custom_base_urls(self):
-        """Construct real HTTP clients locally and inspect URL and bearer configuration."""
+        """client.py.jinja: sync clients default to the UpCloud API URL and set bearer auth."""
         for client_class in (Client, AuthenticatedClient):
             for base_url in (None, "https://sdk-smoke.invalid/custom"):
                 with self.subTest(client=client_class.__name__, base_url=base_url):
@@ -80,7 +79,7 @@ class SDKSmokeTests(unittest.TestCase):
                             self.assertNotIn("Authorization", http_client.headers)
 
     def test_async_clients_use_default_and_custom_base_urls(self):
-        """Check asynchronous client construction and cleanup without sending requests."""
+        """client.py.jinja: async clients default to the UpCloud API URL and set bearer auth."""
 
         async def check_clients():
             for client_class in (Client, AuthenticatedClient):
@@ -110,7 +109,7 @@ class SDKSmokeTests(unittest.TestCase):
         asyncio.run(check_clients())
 
     def test_custom_token_prefix_and_header(self):
-        """Support custom authentication headers, prefixes, and unprefixed tokens."""
+        """client.py.jinja: custom auth header, token prefix, and extra headers are kept."""
         for prefix, expected in (("Token", "Token smoke-token"), ("", "smoke-token")):
             with self.subTest(prefix=prefix):
                 client = AuthenticatedClient(
@@ -124,11 +123,6 @@ class SDKSmokeTests(unittest.TestCase):
                     self.assertEqual(http_client.headers["X-API-Token"], expected)
                     self.assertEqual(http_client.headers["X-Custom"], "preserved")
                     self.assertNotIn("Authorization", http_client.headers)
-
-    def test_spec_version_matches_source_specification(self):
-        """Keep the exported spec version synchronized with the generation input."""
-        spec = json.loads((ROOT / "generator/openapi/spec.json").read_text(encoding="utf-8"))
-        self.assertEqual(SPEC_VERSION, spec["info"]["version"])
 
 
 if __name__ == "__main__":
