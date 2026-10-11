@@ -1,60 +1,20 @@
 #!/usr/bin/env python3
 """
-Patch the UpCloud OpenAPI spec so openapi-python-client can generate it.
+Strip schema titles from the UpCloud OpenAPI spec so openapi-python-client can generate it.
 
-Python-specific: each fix works around an openapi-python-client limitation.
+Python-specific; runs after generator/openapi/overlay.yaml is applied. Only title
+removal lives here because Overlay 1.0.0 cannot delete primitive-valued keys; every
+other spec fix belongs in the overlay.
 """
 
 import json
 import sys
 from typing import Any
 
-# Exact operations to remove (path, method)
-REMOVE: list[tuple[str, str]] = []
-
 
 def log(msg: str) -> None:
     """Print a message with the script prefix."""
     print(f"[patch_openapi] {msg}")
-
-
-def fix_kubernetes_default_storage_encryption(spec: dict[str, Any]) -> None:
-    """
-    Fix kubernetesDefaultStorageEncryption schema that has invalid allOf.
-
-    The original schema has allOf with:
-    1. $ref to kubernetesStorageEncryption (valid)
-    2. Just a description field (invalid - not a complete schema)
-    3. Just x-go-type extension (invalid - not a complete schema)
-
-    The generator fails because items 2 and 3 are not valid schemas in allOf.
-
-    Since this spec is OpenAPI 3.1 (JSON Schema 2020-12), we can use sibling
-    properties alongside $ref. We flatten the allOf and keep all properties:
-    - $ref: inherit the enum from kubernetesStorageEncryption
-    - description: custom description for this usage
-    - x-go-type: Go code generation hint
-    """
-    schemas = spec.get("components", {}).get("schemas", {})
-    if "kubernetesDefaultStorageEncryption" not in schemas:
-        log("WARNING: kubernetesDefaultStorageEncryption schema not found, skipping fix")
-        return
-
-    original = schemas["kubernetesDefaultStorageEncryption"]
-    if "allOf" not in original:
-        log("INFO: kubernetesDefaultStorageEncryption doesn't have allOf, already fixed?")
-        return
-
-    log("Fixing kubernetesDefaultStorageEncryption schema (flattening invalid allOf)")
-
-    # In OpenAPI 3.1, we can have sibling properties with $ref
-    # This preserves all original intent: inherits enum, overrides description, keeps Go hint
-    schemas["kubernetesDefaultStorageEncryption"] = {
-        "description": "The default storage encryption strategy for all node groups.",
-        "x-go-type": "StorageEncryption",
-        "$ref": "#/components/schemas/kubernetesStorageEncryption",
-    }
-    log("Fixed: Flattened to $ref with sibling properties (preserves description + x-go-type)")
 
 
 def strip_titles_from_top_level_schemas(spec: dict[str, Any]) -> None:
@@ -172,91 +132,6 @@ def strip_titles_from_inline_schemas(spec: dict[str, Any]) -> None:
     )
 
 
-def fix_kubernetes_post_cluster_response_code(spec: dict[str, Any]) -> None:
-    """
-    Fix postCluster response code from 201 to 200.
-
-    The OpenAPI spec defines a 201 Created response, but the actual API returns
-    200 OK when creating a cluster. This mismatch causes the SDK to fail parsing
-    the response because it falls into the error handling path.
-
-    We change the response code from 201 to 200 to match actual API behavior.
-    """
-    paths = spec.get("paths", {})
-    kubernetes_path = paths.get("/1.3/kubernetes")
-
-    if not kubernetes_path or not isinstance(kubernetes_path, dict):
-        log("WARNING: /1.3/kubernetes path not found, skipping postCluster fix")
-        return
-
-    post_op = kubernetes_path.get("post")
-    if not post_op or not isinstance(post_op, dict):
-        log("WARNING: POST /1.3/kubernetes operation not found, skipping postCluster fix")
-        return
-
-    responses = post_op.get("responses")
-    if not responses or not isinstance(responses, dict):
-        log("WARNING: POST /1.3/kubernetes responses not found, skipping postCluster fix")
-        return
-
-    if "201" not in responses:
-        log("INFO: POST /1.3/kubernetes doesn't have 201 response, already fixed?")
-        return
-
-    log("Fixing postCluster response code: 201 → 200 (matches actual API behavior)")
-
-    # Move the 201 response to 200
-    response_201 = responses.pop("201")
-    responses["200"] = response_201
-
-    log("Fixed: postCluster now expects 200 OK response")
-
-
-def fix_firewall_ruleset_error_response(spec: dict[str, Any]) -> None:
-    """
-    Fix firewallRulesetErrorResponse invalid_params field.
-
-    The field is defined as an array but has 'required' and 'properties' at the
-    array level instead of inside 'items'. This is invalid - arrays should define
-    their element structure in 'items'.
-
-    We move the required/properties into a proper items object schema.
-    """
-    schemas = spec.get("components", {}).get("schemas", {})
-    if "firewallRulesetErrorResponse" not in schemas:
-        log("WARNING: firewallRulesetErrorResponse schema not found, skipping fix")
-        return
-
-    schema = schemas["firewallRulesetErrorResponse"]
-    if not isinstance(schema, dict):
-        return
-
-    props = schema.get("properties", {})
-    if "invalid_params" not in props:
-        return
-
-    invalid_params = props["invalid_params"]
-    if not isinstance(invalid_params, dict):
-        return
-
-    # Check if it has the bug (array with properties/required at wrong level)
-    if invalid_params.get("type") == "array" and "properties" in invalid_params:
-        log("Fixing firewallRulesetErrorResponse.invalid_params (moving properties into items)")
-
-        # Extract the incorrectly placed fields
-        properties = invalid_params.pop("properties")
-        required = invalid_params.pop("required", None)
-
-        # Create proper items schema
-        items_schema = {"type": "object", "properties": properties}
-        if required:
-            items_schema["required"] = required
-
-        # Set the items field
-        invalid_params["items"] = items_schema
-        log("Fixed: Restructured array schema to have proper items definition")
-
-
 def main() -> int:
     """Patch the input spec into the output path; return the exit status."""
     if len(sys.argv) != 3:
@@ -284,79 +159,8 @@ def main() -> int:
 
     log(f"Paths in spec: {len(paths)}")
 
-    removed_ops: list[str] = []
-    missing_targets: list[str] = []
-    cleaned_empty_paths: list[str] = []
-
-    for path, method in REMOVE:
-        target = f"{method.upper()} {path}"
-        p = paths.get(path)
-
-        if p is None:
-            missing_targets.append(f"{target} (path missing)")
-            continue
-        if not isinstance(p, dict):
-            missing_targets.append(f"{target} (path value not an object)")
-            continue
-
-        if method not in p:
-            missing_targets.append(f"{target} (method missing)")
-            continue
-
-        op = p.get(method)
-        # Log useful debug details about what we are deleting
-        opid = None
-        if isinstance(op, dict):
-            opid = op.get("operationId")
-
-        log(f"Removing operation: {target}" + (f" (operationId={opid})" if opid else ""))
-
-        del p[method]
-        removed_ops.append(target)
-
-        # If no operations left under this path, remove the path too.
-        # (Keep parameters/servers/etc if you want; your pasted paths look operation-only.)
-        remaining_keys = list(p.keys())
-        # Typical OpenAPI keys in a path item are http methods + optional "parameters"
-        http_methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
-        remaining_http = [k for k in remaining_keys if k in http_methods]
-        if len(remaining_http) == 0:
-            # If there are other keys like 'parameters', you can decide to keep or delete.
-            # We'll delete only if empty or only non-http keys are absent.
-            non_http_keys = [k for k in remaining_keys if k not in http_methods]
-            if len(non_http_keys) == 0:
-                del paths[path]
-                cleaned_empty_paths.append(path)
-                log(f"Removed empty path item: {path}")
-            else:
-                log(
-                    f"Path {path} has no http methods left, but kept non-http keys: {non_http_keys}"
-                )
-
-    spec["paths"] = paths
-
-    # Fix schema issues
-    fix_kubernetes_default_storage_encryption(spec)
     strip_titles_from_top_level_schemas(spec)
     strip_titles_from_inline_schemas(spec)
-    fix_firewall_ruleset_error_response(spec)
-    fix_kubernetes_post_cluster_response_code(spec)
-
-    # Summary logs
-    log("---- Summary ----")
-    log(f"Removed operations: {len(removed_ops)}")
-    for r in removed_ops:
-        log(f"  - removed: {r}")
-
-    if missing_targets:
-        log(f"Targets not removed (not found): {len(missing_targets)}")
-        for m in missing_targets:
-            log(f"  - not found: {m}")
-
-    if cleaned_empty_paths:
-        log(f"Removed empty paths: {len(cleaned_empty_paths)}")
-        for p in cleaned_empty_paths:
-            log(f"  - removed path: {p}")
 
     try:
         with open(out_path, "w", encoding="utf-8") as f:

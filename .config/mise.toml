@@ -3,10 +3,13 @@
 UV_LOCKED = "1"
 
 [tools]
-uv = "0.12.9"
+python = "3.14"
+uv = "0.12.10"
 jq = "1.8.1"
 "github:pb33f/wiretap" = "0.7.3"
 "pipx:openapi-python-client" = "0.29.1"
+# Applies generator/openapi/overlay.yaml; see generate.sh.
+"github:speakeasy-api/speakeasy" = "1.802.0"
 # Runs the generator's post-hooks; keep equal to the ruff-pre-commit rev.
 ruff = "0.16.8"
 "pipx:twine" = "7.0.0"
@@ -31,7 +34,7 @@ run = "bats generator/scripts/tests"
 
 [tasks."test:preprocess"]
 description = "L2: test spec patching and the endpoint checker"
-run = "uv run python -m unittest generator.tests.test_patch_openapi generator.tests.test_endpoint_coverage"
+run = "uv run python -m unittest generator.tests.test_patch_openapi generator.tests.test_openapi_overlay generator.tests.test_endpoint_coverage"
 
 [tasks."test:unit"]
 description = "L4: test the generated SDK and contract-case derivation offline"

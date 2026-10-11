@@ -61,8 +61,9 @@ mise install
 mise run generate
 ```
 
-The [mise](https://mise.jdx.dev/) configuration pins `openapi-python-client`, the
-`ruff` its post-hooks use (the same version as the pre-commit hook), `jq`, and `uv`.
+The [mise](https://mise.jdx.dev/) configuration pins `openapi-python-client`,
+`speakeasy`, the `ruff` its post-hooks use (the same version as the pre-commit hook),
+`jq`, and `uv`.
 The `generate` task runs `generator/scripts/generate.sh` on the checked-in
 `generator/openapi/spec.json` (no download). It refuses to overwrite uncommitted
 changes in `upcloud_api/` unless you pass `mise run generate --force`.
@@ -71,9 +72,12 @@ first failure with a non-zero exit; the generated changes stay in place for
 investigation. Neither task changes `pyproject.toml` or `uv.lock`; a stale lock
 fails the `uv` commands, and only `mise run lock` updates it.
 
-`generate.sh` patches the spec into `generator/openapi/spec.patched.json`, then
-recreates only `upcloud_api/`. Do not hand-edit `upcloud_api/` except via generator
-templates or `generator/scripts/patch_openapi.py`. `mise run check:generated` fails
+`generate.sh` applies `generator/openapi/overlay.yaml` with
+`speakeasy overlay apply --strict`, runs `generator/scripts/patch_openapi.py` to
+remove schema titles only, writes the result to `generator/openapi/spec.patched.json`,
+then recreates only `upcloud_api/`. Spec fixes go in the overlay. Do not hand-edit
+`upcloud_api/` except via the overlay, generator templates, or
+`generator/scripts/patch_openapi.py`. `mise run check:generated` fails
 if regenerating changes either output.
 
 ## Development
@@ -107,7 +111,7 @@ UV_PYTHON=pypy3.11 mise run test:unit
 | `setup` | Install locked development dependencies. |
 | `lint` | Run pre-commit: ruff, shellcheck, and actionlint. |
 | `test:tools` | L1: test the shared shell scripts offline with bats. |
-| `test:preprocess` | L2: test spec patching and the endpoint checker. |
+| `test:preprocess` | L2: test spec patching (`test_patch_openapi.py`, `test_openapi_overlay.py`) and the endpoint checker. |
 | `test:unit` | L4: test the generated SDK and the contract-case derivation offline. |
 | `check:generated` | L3: regenerate and fail if `upcloud_api/` or `spec.patched.json` changes. |
 | `check:endpoints` | L3: check that every spec operation has a generated method/path contract. |
@@ -130,7 +134,7 @@ Every check belongs to one layer, and every defect fails exactly one check.
 | Layer | Guards | Members |
 | --- | --- | --- |
 | L1 tools | The shared shell scripts behave safely. | `generator/scripts/tests/*.bats` |
-| L2 preprocess | Spec patches are correct and idempotent. | `generator/tests/test_patch_openapi.py`, `test_endpoint_coverage.py` |
+| L2 preprocess | Spec patches are correct and idempotent. | `generator/tests/test_patch_openapi.py`, `test_openapi_overlay.py`, `test_endpoint_coverage.py` |
 | L3 generation | Committed output equals generator output; every spec operation is generated. | `check:generated`, `check:endpoints` |
 | L4 SDK unit | Generated imports, enums, `client.py.jinja` behavior, contract-case derivation. | `tests/test_sdk_smoke.py`, `tests/test_wiretap_cases.py` |
 | L5 contract | SDK calls match the spec on the wire. | `tests/test_wiretap.py` via `wiretap.sh` |
@@ -182,7 +186,8 @@ them:
   `examples/<name>/test_<name with - as _>.md` with mdtest.
 
 The rest is specific to this Python repository: `uv`, `generate.sh`,
-`patch_openapi.py`, `check_endpoint_coverage.py`, the spec-derived Wiretap cases
+`generator/openapi/overlay.yaml`, `patch_openapi.py`, `check_endpoint_coverage.py`,
+the spec-derived Wiretap cases
 in `tests/wiretap_cases.py`, and the SDK calls in `tests/test_wiretap.py`.
 
 Local generation always uses the checked-in `generator/openapi/spec.json`.

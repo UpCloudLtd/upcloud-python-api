@@ -26,39 +26,6 @@ class OpenAPIPatchTests(unittest.TestCase):
         with redirect_stdout(io.StringIO()):
             patch(spec)
 
-    def test_storage_encryption_flattens_allof(self):
-        """Preserve the reference, description, and Go hint in the corrected schema."""
-        spec = {
-            "components": {
-                "schemas": {
-                    "kubernetesDefaultStorageEncryption": {
-                        "allOf": [
-                            {"$ref": "#/components/schemas/kubernetesStorageEncryption"},
-                            {
-                                "description": "The default storage encryption strategy for all node groups."
-                            },
-                            {"x-go-type": "StorageEncryption"},
-                        ]
-                    },
-                    "unrelated": {"type": "string", "description": "Keep me"},
-                }
-            }
-        }
-        unrelated = copy.deepcopy(spec["components"]["schemas"]["unrelated"])
-        self.apply(patch_openapi.fix_kubernetes_default_storage_encryption, spec)
-        self.assertEqual(
-            spec["components"]["schemas"]["kubernetesDefaultStorageEncryption"],
-            {
-                "$ref": "#/components/schemas/kubernetesStorageEncryption",
-                "description": "The default storage encryption strategy for all node groups.",
-                "x-go-type": "StorageEncryption",
-            },
-        )
-        self.assertEqual(spec["components"]["schemas"]["unrelated"], unrelated)
-        patched = copy.deepcopy(spec)
-        self.apply(patch_openapi.fix_kubernetes_default_storage_encryption, spec)
-        self.assertEqual(spec, patched)
-
     def test_top_level_titles_only(self):
         """Remove schema titles without altering nested or document metadata."""
         spec = {
@@ -115,70 +82,6 @@ class OpenAPIPatchTests(unittest.TestCase):
         self.apply(patch_openapi.strip_titles_from_inline_schemas, spec)
         self.assertEqual(spec, expected)
 
-    def test_firewall_array_properties_move_into_items(self):
-        """Repair array item structure while retaining array constraints and siblings."""
-        for required in (None, ["name"]):
-            with self.subTest(required=required):
-                invalid_params = {
-                    "type": "array",
-                    "description": "Invalid parameters",
-                    "minItems": 1,
-                    "properties": {"name": {"type": "string"}},
-                }
-                if required is not None:
-                    invalid_params["required"] = required
-                spec = {
-                    "components": {
-                        "schemas": {
-                            "firewallRulesetErrorResponse": {
-                                "type": "object",
-                                "properties": {
-                                    "invalid_params": invalid_params,
-                                    "message": {"type": "string"},
-                                },
-                            }
-                        }
-                    }
-                }
-                expected = copy.deepcopy(spec)
-                expected_array = expected["components"]["schemas"]["firewallRulesetErrorResponse"][
-                    "properties"
-                ]["invalid_params"]
-                expected_array["items"] = {
-                    "type": "object",
-                    "properties": expected_array.pop("properties"),
-                }
-                if required is not None:
-                    expected_array["items"]["required"] = expected_array.pop("required")
-                self.apply(patch_openapi.fix_firewall_ruleset_error_response, spec)
-                self.assertEqual(spec, expected)
-                self.apply(patch_openapi.fix_firewall_ruleset_error_response, spec)
-                self.assertEqual(spec, expected)
-
-    def test_cluster_creation_moves_response_without_changing_other_operations(self):
-        """Move the creation response to 200 without touching other responses or paths."""
-        spec = {
-            "paths": {
-                "/1.3/kubernetes": {
-                    "post": {
-                        "responses": {
-                            "201": {"description": "Created"},
-                            "400": {"description": "Invalid"},
-                        }
-                    },
-                    "get": {"responses": {"201": {"description": "Unrelated"}}},
-                },
-                "/other": {"post": {"responses": {"201": {"description": "Unrelated"}}}},
-            }
-        }
-        expected = copy.deepcopy(spec)
-        responses = expected["paths"]["/1.3/kubernetes"]["post"]["responses"]
-        responses["200"] = responses.pop("201")
-        self.apply(patch_openapi.fix_kubernetes_post_cluster_response_code, spec)
-        self.assertEqual(spec, expected)
-        self.apply(patch_openapi.fix_kubernetes_post_cluster_response_code, spec)
-        self.assertEqual(spec, expected)
-
     def test_absent_patch_targets_are_noops(self):
         """Allow minimal specifications and absent target operations."""
         for spec in (
@@ -187,11 +90,8 @@ class OpenAPIPatchTests(unittest.TestCase):
             {"paths": {"/1.3/kubernetes": {"get": {}}}},
         ):
             for patch in (
-                patch_openapi.fix_kubernetes_default_storage_encryption,
                 patch_openapi.strip_titles_from_top_level_schemas,
                 patch_openapi.strip_titles_from_inline_schemas,
-                patch_openapi.fix_firewall_ruleset_error_response,
-                patch_openapi.fix_kubernetes_post_cluster_response_code,
             ):
                 with self.subTest(spec=spec, patch=patch.__name__):
                     expected = copy.deepcopy(spec)
@@ -240,7 +140,7 @@ class PatchCLITests(unittest.TestCase):
                 self.assertFalse(output_path.exists())
 
     def test_pipeline_preserves_unrelated_data_and_is_idempotent(self):
-        """Apply all patches through the CLI and preserve unrelated document content."""
+        """Strip titles through the CLI and preserve unrelated document content."""
         spec = {
             "openapi": "3.1.0",
             "info": {"title": "Keep title", "version": "test"},
@@ -256,20 +156,6 @@ class PatchCLITests(unittest.TestCase):
             },
             "components": {
                 "schemas": {
-                    "kubernetesDefaultStorageEncryption": {
-                        "allOf": [
-                            {"$ref": "#/components/schemas/kubernetesStorageEncryption"},
-                        ]
-                    },
-                    "firewallRulesetErrorResponse": {
-                        "properties": {
-                            "invalid_params": {
-                                "type": "array",
-                                "properties": {"name": {"type": "string"}},
-                                "required": ["name"],
-                            }
-                        }
-                    },
                     "example": {
                         "title": "Remove",
                         "oneOf": [
@@ -277,29 +163,15 @@ class PatchCLITests(unittest.TestCase):
                         ],
                         "description": "Keep description",
                     },
+                    "plain": {"type": "string", "description": "Keep me"},
                 }
             },
             "x-unrelated": {"title": "Keep extension title", "value": [1, 2]},
         }
         expected = copy.deepcopy(spec)
         schemas = expected["components"]["schemas"]
-        schemas["kubernetesDefaultStorageEncryption"] = {
-            "$ref": "#/components/schemas/kubernetesStorageEncryption",
-            "description": "The default storage encryption strategy for all node groups.",
-            "x-go-type": "StorageEncryption",
-        }
-        schemas["firewallRulesetErrorResponse"]["properties"]["invalid_params"] = {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {"name": {"type": "string"}},
-                "required": ["name"],
-            },
-        }
         del schemas["example"]["title"]
         del schemas["example"]["oneOf"][0]["title"]
-        responses = expected["paths"]["/1.3/kubernetes"]["post"]["responses"]
-        responses["200"] = responses.pop("201")
         input_path = self.directory / "input.json"
         output_path = self.directory / "output.json"
         second_path = self.directory / "second.json"

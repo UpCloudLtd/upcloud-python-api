@@ -1,0 +1,58 @@
+overlay: 1.0.0
+x-speakeasy-jsonpath: rfc9535
+info:
+  title: UpCloud Python SDK spec fixes
+  version: 1.0.0
+# Applied by generate.sh with `speakeasy overlay apply --strict`: when upstream
+# fixes a defect its target stops matching and generation fails; delete that group.
+actions:
+  # kubernetesDefaultStorageEncryption has allOf [$ref, {description}, {}]; the
+  # generator rejects the incomplete branches. OpenAPI 3.1 allows siblings of
+  # $ref, so flatten to $ref + description + x-go-type (Go hint).
+  # Source fix needed: define the schema as a plain $ref with sibling description.
+  - target: $.components.schemas.kubernetesDefaultStorageEncryption.allOf
+    remove: true
+  - target: $.components.schemas.kubernetesDefaultStorageEncryption
+    update:
+      description: The default storage encryption strategy for all node groups.
+      x-go-type: StorageEncryption
+      "$ref": "#/components/schemas/kubernetesStorageEncryption"
+
+  # firewallRulesetErrorResponse.invalid_params is an array with properties and
+  # required at the array level; move them into items.
+  # Source fix needed: define the element schema under items.
+  # Static copy of spec.json values; generator/tests/test_openapi_overlay.py checks drift.
+  - target: $.components.schemas.firewallRulesetErrorResponse.properties.invalid_params
+    update:
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            examples:
+              - zone
+              - networks.0.ip_address
+            description: Path to the field with invalid parameter.
+          reason:
+            type: string
+            examples:
+              - Zone is not valid.
+            description: Human-readable error message.
+        required:
+          - name
+          - reason
+  - target: $.components.schemas.firewallRulesetErrorResponse.properties.invalid_params.properties
+    remove: true
+  - target: $.components.schemas.firewallRulesetErrorResponse.properties.invalid_params.required
+    remove: true
+
+  # POST /1.3/kubernetes documents 201, but the API returns 200 OK, so the SDK
+  # treated successful creation as an error.
+  # Source fix needed: document the 200 response.
+  # Static copy of the 201 response; generator/tests/test_openapi_overlay.py checks drift.
+  - target: $.paths['/1.3/kubernetes'].post.responses
+    update:
+      "200":
+        "$ref": "#/components/responses/kubernetesPostCluster"
+  - target: $.paths['/1.3/kubernetes'].post.responses['201']
+    remove: true
