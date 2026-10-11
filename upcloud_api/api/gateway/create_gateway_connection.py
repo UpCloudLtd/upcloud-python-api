@@ -5,10 +5,10 @@ from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.gateway_connection_create_request import GatewayConnectionCreateRequest
 from ...models.gateway_connection_details_response import GatewayConnectionDetailsResponse
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...types import UNSET, Response, Unset
 
 
@@ -37,21 +37,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GatewayConnectionDetailsResponse | None:
+) -> GatewayConnectionDetailsResponse | GatewayErrorResponse:
     if response.status_code == 200:
         response_200 = GatewayConnectionDetailsResponse.from_dict(response.json())
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GatewayConnectionDetailsResponse]:
+) -> Response[GatewayConnectionDetailsResponse | GatewayErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,7 +64,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayConnectionCreateRequest | Unset = UNSET,
-) -> Response[GatewayConnectionDetailsResponse]:
+) -> Response[GatewayConnectionDetailsResponse | GatewayErrorResponse]:
     """Create Connection
 
      Create a new connection.
@@ -79,7 +78,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayConnectionDetailsResponse]
+        Response[GatewayConnectionDetailsResponse | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -99,7 +98,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayConnectionCreateRequest | Unset = UNSET,
-) -> GatewayConnectionDetailsResponse | None:
+) -> GatewayConnectionDetailsResponse | GatewayErrorResponse | None:
     """Create Connection
 
      Create a new connection.
@@ -113,7 +112,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayConnectionDetailsResponse
+        GatewayConnectionDetailsResponse | GatewayErrorResponse
     """
 
     return sync_detailed(
@@ -128,7 +127,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayConnectionCreateRequest | Unset = UNSET,
-) -> Response[GatewayConnectionDetailsResponse]:
+) -> Response[GatewayConnectionDetailsResponse | GatewayErrorResponse]:
     """Create Connection
 
      Create a new connection.
@@ -142,7 +141,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayConnectionDetailsResponse]
+        Response[GatewayConnectionDetailsResponse | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -160,7 +159,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayConnectionCreateRequest | Unset = UNSET,
-) -> GatewayConnectionDetailsResponse | None:
+) -> GatewayConnectionDetailsResponse | GatewayErrorResponse | None:
     """Create Connection
 
      Create a new connection.
@@ -174,7 +173,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayConnectionDetailsResponse
+        GatewayConnectionDetailsResponse | GatewayErrorResponse
     """
 
     return (

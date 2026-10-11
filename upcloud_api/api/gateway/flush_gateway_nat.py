@@ -1,12 +1,12 @@
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 from urllib.parse import quote
 from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...types import Response
 
 
@@ -24,17 +24,19 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Any | None:
+def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Any | GatewayErrorResponse:
     if response.status_code == 200:
-        return None
+        response_200 = cast(Any, None)
+        return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[Any]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | GatewayErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -47,7 +49,7 @@ def sync_detailed(
     service_uuid: UUID,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Any]:
+) -> Response[Any | GatewayErrorResponse]:
     """Flush NAT
 
      Flush NAT rules.
@@ -60,7 +62,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[Any | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -74,11 +76,11 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 
-async def asyncio_detailed(
+def sync(
     service_uuid: UUID,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Any]:
+) -> Any | GatewayErrorResponse | None:
     """Flush NAT
 
      Flush NAT rules.
@@ -91,7 +93,33 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Any | GatewayErrorResponse
+    """
+
+    return sync_detailed(
+        service_uuid=service_uuid,
+        client=client,
+    ).parsed
+
+
+async def asyncio_detailed(
+    service_uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> Response[Any | GatewayErrorResponse]:
+    """Flush NAT
+
+     Flush NAT rules.
+
+    Args:
+        service_uuid (UUID): The unique identifier for the resource.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Any | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -101,3 +129,31 @@ async def asyncio_detailed(
     response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    service_uuid: UUID,
+    *,
+    client: AuthenticatedClient | Client,
+) -> Any | GatewayErrorResponse | None:
+    """Flush NAT
+
+     Flush NAT rules.
+
+    Args:
+        service_uuid (UUID): The unique identifier for the resource.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Any | GatewayErrorResponse
+    """
+
+    return (
+        await asyncio_detailed(
+            service_uuid=service_uuid,
+            client=client,
+        )
+    ).parsed

@@ -5,8 +5,8 @@ from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...models.gateway_label_details_response import GatewayLabelDetailsResponse
 from ...types import Response
 
@@ -29,21 +29,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GatewayLabelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayLabelDetailsResponse:
     if response.status_code == 200:
         response_200 = GatewayLabelDetailsResponse.from_dict(response.json())
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GatewayLabelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayLabelDetailsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -57,7 +56,7 @@ def sync_detailed(
     label_key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[GatewayLabelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayLabelDetailsResponse]:
     """Get Service Label Details
 
      Get service label details.
@@ -71,7 +70,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayLabelDetailsResponse]
+        Response[GatewayErrorResponse | GatewayLabelDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -91,7 +90,7 @@ def sync(
     label_key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> GatewayLabelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayLabelDetailsResponse | None:
     """Get Service Label Details
 
      Get service label details.
@@ -105,7 +104,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayLabelDetailsResponse
+        GatewayErrorResponse | GatewayLabelDetailsResponse
     """
 
     return sync_detailed(
@@ -120,7 +119,7 @@ async def asyncio_detailed(
     label_key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[GatewayLabelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayLabelDetailsResponse]:
     """Get Service Label Details
 
      Get service label details.
@@ -134,7 +133,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayLabelDetailsResponse]
+        Response[GatewayErrorResponse | GatewayLabelDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -152,7 +151,7 @@ async def asyncio(
     label_key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> GatewayLabelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayLabelDetailsResponse | None:
     """Get Service Label Details
 
      Get service label details.
@@ -166,7 +165,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayLabelDetailsResponse
+        GatewayErrorResponse | GatewayLabelDetailsResponse
     """
 
     return (

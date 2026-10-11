@@ -45275,28 +45275,31 @@
             "examples": [
               []
             ],
-            "properties": {
-              "name": {
-                "type": "string",
-                "examples": [
-                  "zone",
-                  "networks.0.ip_address"
-                ],
-                "description": "Path to the field with invalid parameter."
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "examples": [
+                    "zone",
+                    "networks.0.ip_address"
+                  ],
+                  "description": "Path to the field with invalid parameter."
+                },
+                "reason": {
+                  "type": "string",
+                  "examples": [
+                    "Zone is not valid."
+                  ],
+                  "description": "Human-readable error message."
+                }
               },
-              "reason": {
-                "type": "string",
-                "examples": [
-                  "Zone is not valid."
-                ],
-                "description": "Human-readable error message."
-              }
+              "title": "InvalidParameters",
+              "required": [
+                "name",
+                "reason"
+              ]
             },
-            "title": "InvalidParameters",
-            "required": [
-              "name",
-              "reason"
-            ],
             "description": "List of invalid parameters in the request."
           }
         },

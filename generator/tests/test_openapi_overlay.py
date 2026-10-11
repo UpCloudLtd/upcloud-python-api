@@ -26,6 +26,7 @@ TITLE_FILTER = ROOT / "generator" / "scripts" / "strip_schema_titles.jq"
 
 STORAGE = "kubernetesDefaultStorageEncryption"
 FIREWALL = "firewallRulesetErrorResponse"
+GATEWAY_ERROR = "gatewayErrorResponse"
 CLUSTER_PATH = "/1.3/kubernetes"
 CLUSTER_RESPONSE = {"$ref": "#/components/responses/kubernetesPostCluster"}
 INVALID_PARAM_PROPERTIES = {
@@ -132,6 +133,35 @@ def defective_spec():
                             "description": "List of invalid parameters in the request.",
                         },
                         "message": {"type": "string"},
+                    },
+                },
+                GATEWAY_ERROR: {
+                    "type": "object",
+                    "properties": {
+                        "invalid_params": {
+                            "type": "array",
+                            "examples": [[]],
+                            "properties": copy.deepcopy(INVALID_PARAM_PROPERTIES),
+                            "title": "InvalidParameters",
+                            "required": ["name", "reason"],
+                            "description": "List of invalid parameters in the request.",
+                        },
+                        "status": {"type": "integer"},
+                    },
+                    "required": ["type", "title", "correlation_id", "status"],
+                    "additionalProperties": False,
+                },
+                "unrelatedErrorResponse": {
+                    "type": "object",
+                    "properties": {
+                        "invalid_params": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": copy.deepcopy(INVALID_PARAM_PROPERTIES),
+                                "required": ["name", "reason"],
+                            },
+                        }
                     },
                 },
                 "unrelated": {"title": "Keep", "type": "string"},
@@ -416,6 +446,17 @@ class OpenAPIOverlayTests(unittest.TestCase):
             "properties": invalid_params.pop("properties"),
             "required": invalid_params.pop("required"),
         }
+        schemas[GATEWAY_ERROR]["properties"]["invalid_params"] = {
+            "type": "array",
+            "examples": [[]],
+            "items": {
+                "type": "object",
+                "properties": copy.deepcopy(INVALID_PARAM_PROPERTIES),
+                "title": "InvalidParameters",
+                "required": ["name", "reason"],
+            },
+            "description": "List of invalid parameters in the request.",
+        }
         responses = expected["paths"][CLUSTER_PATH]["post"]["responses"]
         responses["200"] = responses.pop("201")
         schemas["storageLabelFilter"]["pattern"] = NEW_LABEL_FILTER_PATTERN
@@ -503,6 +544,27 @@ class OpenAPIOverlayTests(unittest.TestCase):
         result = self.apply_overlay(fixed_path, self.directory / "again.json")
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_strict_fails_only_on_stale_gateway_action(self):
+        """Fail on the gateway guard alone when only the gateway defect is already fixed."""
+        spec = defective_spec()
+        spec["components"]["schemas"][GATEWAY_ERROR]["properties"]["invalid_params"] = {
+            "type": "array",
+            "examples": [[]],
+            "items": {
+                "type": "object",
+                "properties": copy.deepcopy(INVALID_PARAM_PROPERTIES),
+                "title": "InvalidParameters",
+                "required": ["name", "reason"],
+            },
+            "description": "List of invalid parameters in the request.",
+        }
+        schema_path = self.directory / "gateway-fixed.json"
+        schema_path.write_text(json.dumps(spec, indent=2), encoding="utf-8")
+        result = self.apply_overlay(schema_path, self.directory / "unused.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        target = f"$.components.schemas.{GATEWAY_ERROR}.properties.invalid_params.properties"
+        self.assertIn(f'selector "{target}" did not match any targets', result.stderr)
+
     def test_static_copies_match_the_source_spec(self):
         """Detect drift between the values the overlay duplicates and spec.json."""
         source = json.loads(SPEC.read_text(encoding="utf-8"))
@@ -518,6 +580,20 @@ class OpenAPIOverlayTests(unittest.TestCase):
         ]
         self.assertEqual(output_items["properties"], source_params["properties"])
         self.assertEqual(output_items["required"], source_params["required"])
+
+        source_gateway = source["components"]["schemas"][GATEWAY_ERROR]["properties"][
+            "invalid_params"
+        ]
+        output_gateway = output["components"]["schemas"][GATEWAY_ERROR]["properties"][
+            "invalid_params"
+        ]
+        self.assertEqual(set(output_gateway), {"type", "examples", "items", "description"})
+        self.assertEqual(output_gateway["type"], "array")
+        self.assertEqual(output_gateway["examples"], source_gateway["examples"])
+        self.assertEqual(output_gateway["description"], source_gateway["description"])
+        self.assertEqual(output_gateway["items"]["properties"], source_gateway["properties"])
+        self.assertEqual(output_gateway["items"]["required"], source_gateway["required"])
+        self.assertEqual(output_gateway["items"]["title"], source_gateway["title"])
 
         source_storage = source["components"]["schemas"][STORAGE]["allOf"]
         output_storage = output["components"]["schemas"][STORAGE]

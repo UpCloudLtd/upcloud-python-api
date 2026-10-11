@@ -5,8 +5,8 @@ from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...models.gateway_service_details_response import GatewayServiceDetailsResponse
 from ...models.gateway_service_modify_request import GatewayServiceModifyRequest
 from ...types import UNSET, Response, Unset
@@ -37,21 +37,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GatewayServiceDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayServiceDetailsResponse:
     if response.status_code == 200:
         response_200 = GatewayServiceDetailsResponse.from_dict(response.json())
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GatewayServiceDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayServiceDetailsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,7 +64,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayServiceModifyRequest | Unset = UNSET,
-) -> Response[GatewayServiceDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayServiceDetailsResponse]:
     """Modify Service
 
      Modify service configuration.
@@ -79,7 +78,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayServiceDetailsResponse]
+        Response[GatewayErrorResponse | GatewayServiceDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -99,7 +98,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayServiceModifyRequest | Unset = UNSET,
-) -> GatewayServiceDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayServiceDetailsResponse | None:
     """Modify Service
 
      Modify service configuration.
@@ -113,7 +112,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayServiceDetailsResponse
+        GatewayErrorResponse | GatewayServiceDetailsResponse
     """
 
     return sync_detailed(
@@ -128,7 +127,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayServiceModifyRequest | Unset = UNSET,
-) -> Response[GatewayServiceDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayServiceDetailsResponse]:
     """Modify Service
 
      Modify service configuration.
@@ -142,7 +141,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayServiceDetailsResponse]
+        Response[GatewayErrorResponse | GatewayServiceDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -160,7 +159,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayServiceModifyRequest | Unset = UNSET,
-) -> GatewayServiceDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayServiceDetailsResponse | None:
     """Modify Service
 
      Modify service configuration.
@@ -174,7 +173,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayServiceDetailsResponse
+        GatewayErrorResponse | GatewayServiceDetailsResponse
     """
 
     return (

@@ -5,8 +5,8 @@ from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...models.gateway_tunnel_details_response import GatewayTunnelDetailsResponse
 from ...models.gateway_tunnel_modify_request import GatewayTunnelModifyRequest
 from ...types import UNSET, Response, Unset
@@ -41,21 +41,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GatewayTunnelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayTunnelDetailsResponse:
     if response.status_code == 200:
         response_200 = GatewayTunnelDetailsResponse.from_dict(response.json())
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GatewayTunnelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayTunnelDetailsResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -71,7 +70,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayTunnelModifyRequest | Unset = UNSET,
-) -> Response[GatewayTunnelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayTunnelDetailsResponse]:
     """Modify Tunnel
 
      Modify tunnel configuration.
@@ -87,7 +86,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayTunnelDetailsResponse]
+        Response[GatewayErrorResponse | GatewayTunnelDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -111,7 +110,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayTunnelModifyRequest | Unset = UNSET,
-) -> GatewayTunnelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayTunnelDetailsResponse | None:
     """Modify Tunnel
 
      Modify tunnel configuration.
@@ -127,7 +126,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayTunnelDetailsResponse
+        GatewayErrorResponse | GatewayTunnelDetailsResponse
     """
 
     return sync_detailed(
@@ -146,7 +145,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayTunnelModifyRequest | Unset = UNSET,
-) -> Response[GatewayTunnelDetailsResponse]:
+) -> Response[GatewayErrorResponse | GatewayTunnelDetailsResponse]:
     """Modify Tunnel
 
      Modify tunnel configuration.
@@ -162,7 +161,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayTunnelDetailsResponse]
+        Response[GatewayErrorResponse | GatewayTunnelDetailsResponse]
     """
 
     kwargs = _get_kwargs(
@@ -184,7 +183,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: GatewayTunnelModifyRequest | Unset = UNSET,
-) -> GatewayTunnelDetailsResponse | None:
+) -> GatewayErrorResponse | GatewayTunnelDetailsResponse | None:
     """Modify Tunnel
 
      Modify tunnel configuration.
@@ -200,7 +199,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayTunnelDetailsResponse
+        GatewayErrorResponse | GatewayTunnelDetailsResponse
     """
 
     return (

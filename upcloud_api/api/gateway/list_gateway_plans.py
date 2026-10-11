@@ -3,8 +3,8 @@ from typing import Any
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...models.gateway_plan_details_response import GatewayPlanDetailsResponse
 from ...types import UNSET, Response, Unset
 
@@ -34,7 +34,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> list[GatewayPlanDetailsResponse] | None:
+) -> GatewayErrorResponse | list[GatewayPlanDetailsResponse]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -47,15 +47,14 @@ def _parse_response(
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[list[GatewayPlanDetailsResponse]]:
+) -> Response[GatewayErrorResponse | list[GatewayPlanDetailsResponse]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,7 +68,7 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     limit: int | Unset = UNSET,
     offset: int | Unset = UNSET,
-) -> Response[list[GatewayPlanDetailsResponse]]:
+) -> Response[GatewayErrorResponse | list[GatewayPlanDetailsResponse]]:
     """List Plans
 
      List available plans.
@@ -84,7 +83,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list[GatewayPlanDetailsResponse]]
+        Response[GatewayErrorResponse | list[GatewayPlanDetailsResponse]]
     """
 
     kwargs = _get_kwargs(
@@ -104,7 +103,7 @@ def sync(
     client: AuthenticatedClient | Client,
     limit: int | Unset = UNSET,
     offset: int | Unset = UNSET,
-) -> list[GatewayPlanDetailsResponse] | None:
+) -> GatewayErrorResponse | list[GatewayPlanDetailsResponse] | None:
     """List Plans
 
      List available plans.
@@ -119,7 +118,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list[GatewayPlanDetailsResponse]
+        GatewayErrorResponse | list[GatewayPlanDetailsResponse]
     """
 
     return sync_detailed(
@@ -134,7 +133,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     limit: int | Unset = UNSET,
     offset: int | Unset = UNSET,
-) -> Response[list[GatewayPlanDetailsResponse]]:
+) -> Response[GatewayErrorResponse | list[GatewayPlanDetailsResponse]]:
     """List Plans
 
      List available plans.
@@ -149,7 +148,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list[GatewayPlanDetailsResponse]]
+        Response[GatewayErrorResponse | list[GatewayPlanDetailsResponse]]
     """
 
     kwargs = _get_kwargs(
@@ -167,7 +166,7 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     limit: int | Unset = UNSET,
     offset: int | Unset = UNSET,
-) -> list[GatewayPlanDetailsResponse] | None:
+) -> GatewayErrorResponse | list[GatewayPlanDetailsResponse] | None:
     """List Plans
 
      List available plans.
@@ -182,7 +181,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list[GatewayPlanDetailsResponse]
+        GatewayErrorResponse | list[GatewayPlanDetailsResponse]
     """
 
     return (

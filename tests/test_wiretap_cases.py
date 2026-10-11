@@ -316,12 +316,21 @@ class KnownWiretapLimitationsTests(unittest.TestCase):
         label = next(
             case for case in self.known_cases if case.operation_id == "createGatewayServiceLabel"
         )
+        changed_title = json.loads(documented_body())
+        changed_title["title"] = "Other"
+        # Parse failures before classification surface as the genuine model KeyError, not as
+        # an AssertionError, because only the exact documented response is adapted.
         scenarios = {
-            "wrong status": (self.serve(status=500), label, AssertionError),
+            "wrong status": (self.serve(status=500), label, KeyError),
             "wrong marker": (
                 self.serve(body=documented_body(marker="Response is EMPTY")),
                 label,
-                AssertionError,
+                KeyError,
+            ),
+            "changed body": (
+                self.serve(body=json.dumps(changed_title).encode()),
+                label,
+                KeyError,
             ),
             "unrelated query": (
                 self.serve(),
@@ -339,3 +348,88 @@ class KnownWiretapLimitationsTests(unittest.TestCase):
                     self.assertEqual(harness.inventory["known_limitations"], [])
                     self.assertEqual(harness.inventory["passed"], [])
                     self.assertEqual(len(harness.inventory["failed"]), 1)
+
+
+class ParseFailureRecoveryTests(unittest.TestCase):
+    """Only the exact documented missing-correlation_id parse failure may be adapted."""
+
+    def capture(self, status=200, body=None, method="POST", path=PATH):
+        if body is None:
+            body = documented_body(path, method)
+        return (
+            [httpx.Response(status, content=body)],
+            [httpx.Request(method, f"https://wiretap.invalid{path}")],
+        )
+
+    def recover(self, case, mode, error, responses, requests):
+        return test_wiretap.recover_documented_parse_failure(
+            case, mode, error, responses, requests
+        )
+
+    def test_every_documented_pair_is_adapted_for_its_own_mode(self):
+        for (operation_id, mode), limitation in KNOWN_WIRETAP_LIMITATIONS.items():
+            with self.subTest(operation=operation_id, mode=mode):
+                case = case_for(operation_id, limitation.expected_status)
+                responses, requests = self.capture(method=limitation.method)
+                result = self.recover(case, mode, KeyError("correlation_id"), responses, requests)
+                self.assertIsInstance(result, test_wiretap.UnparsedResult)
+                self.assertEqual(result.status_code, limitation.observed_status)
+                self.assertEqual(result.content, documented_body(PATH, limitation.method))
+                self.assertIsNone(result.parsed)
+
+    def test_every_other_failure_is_reraised_unchanged(self):
+        case = case_for("createGatewayServiceLabel", 201)
+        title_body = json.dumps({**json.loads(documented_body()), "title": "Other"}).encode()
+        scenarios = [
+            (
+                "wrong marker",
+                case,
+                "sync",
+                KeyError("correlation_id"),
+                self.capture(body=documented_body(marker="Response is EMPTY")),
+            ),
+            ("wrong status", case, "sync", KeyError("correlation_id"), self.capture(status=500)),
+            (
+                "changed body",
+                case,
+                "sync",
+                KeyError("correlation_id"),
+                self.capture(body=title_body),
+            ),
+            ("wrong method", case, "sync", KeyError("correlation_id"), self.capture(method="GET")),
+            (
+                "unlisted operation",
+                case_for("getAccount", 200),
+                "sync",
+                KeyError("correlation_id"),
+                self.capture(),
+            ),
+            ("unlisted mode", case, "other", KeyError("correlation_id"), self.capture()),
+            ("unrelated KeyError", case, "sync", KeyError("name"), self.capture()),
+            ("non-KeyError", case, "sync", ValueError("correlation_id"), self.capture()),
+            (
+                "no captured response",
+                case,
+                "sync",
+                KeyError("correlation_id"),
+                ([], [httpx.Request("POST", f"https://wiretap.invalid{PATH}")]),
+            ),
+            (
+                "no captured request",
+                case,
+                "sync",
+                KeyError("correlation_id"),
+                ([httpx.Response(200, content=documented_body())], []),
+            ),
+        ]
+        for name, case, mode, error, (responses, requests) in scenarios:
+            with self.subTest(scenario=name):
+                with self.assertRaises(type(error)) as raised:
+                    self.recover(case, mode, error, responses, requests)
+                self.assertIs(raised.exception, error)
+
+    def test_stale_entry_is_raised_not_adapted(self):
+        case = case_for("createGatewayServiceLabel", 201)
+        responses, requests = self.capture(status=201)
+        with self.assertRaises(StaleKnownLimitation):
+            self.recover(case, "sync", KeyError("correlation_id"), responses, requests)

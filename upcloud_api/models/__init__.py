@@ -622,6 +622,8 @@ from .gateway_connection_route_request import GatewayConnectionRouteRequest
 from .gateway_connection_route_type import GatewayConnectionRouteType
 from .gateway_connection_type import GatewayConnectionType
 from .gateway_diffie_hellman_group_number import GatewayDiffieHellmanGroupNumber
+from .gateway_error_response import GatewayErrorResponse
+from .gateway_error_response_invalid_parameters import GatewayErrorResponseInvalidParameters
 from .gateway_ipsec_authentication_type import GatewayIpsecAuthenticationType
 from .gateway_ipsec_details_response import GatewayIpsecDetailsResponse
 from .gateway_ipsec_ike_sa_metrics_details_response import GatewayIpsecIkeSaMetricsDetailsResponse
@@ -1868,6 +1870,8 @@ __all__ = (
     "GatewayConnectionRouteType",
     "GatewayConnectionType",
     "GatewayDiffieHellmanGroupNumber",
+    "GatewayErrorResponse",
+    "GatewayErrorResponseInvalidParameters",
     "GatewayIpsecAuthenticationType",
     "GatewayIpsecDetailsResponse",
     "GatewayIpsecIkeSaMetricsDetailsResponse",

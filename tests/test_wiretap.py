@@ -5,6 +5,7 @@ import json
 import os
 import tempfile
 import unittest
+from dataclasses import dataclass
 from pathlib import Path
 
 import httpx
@@ -12,6 +13,38 @@ import httpx
 from upcloud_api import AuthenticatedClient
 
 from .wiretap_cases import classify_wiretap_response, load_cases
+
+MISSING_CORRELATION_ID = ("correlation_id",)
+
+
+@dataclass(frozen=True)
+class UnparsedResult:
+    """A documented bodyless response that the generated default-error model could not parse."""
+
+    status_code: int
+    content: bytes
+    parsed: None = None
+
+
+def recover_documented_parse_failure(case, mode, error, responses, requests):
+    """Adapt the exact documented Wiretap response whose model parse failed, or re-raise.
+
+    Wiretap's mock omits correlation_id from the problem body of these bodyless operations, so
+    the generated default-error model raises KeyError before the classifier can run. Recover only
+    that KeyError, and only when the captured response and request are accepted unchanged by
+    classify_wiretap_response. Every other error propagates as raised.
+    """
+    if not isinstance(error, KeyError) or error.args != MISSING_CORRELATION_ID:
+        raise error
+    if not responses or not requests:
+        raise error
+    response, request = responses[-1], requests[-1]
+    limitation = classify_wiretap_response(
+        case, mode, response.status_code, response.content, request.method, request.url.path
+    )
+    if limitation is None:
+        raise error
+    return UnparsedResult(status_code=response.status_code, content=response.content)
 
 
 class WiretapTests(unittest.IsolatedAsyncioTestCase):
@@ -123,9 +156,14 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                             },
                         },
                     ) as client:
-                        result = importlib.import_module(case.module).sync_detailed(
-                            client=client, **case.kwargs
-                        )
+                        try:
+                            result = importlib.import_module(case.module).sync_detailed(
+                                client=client, **case.kwargs
+                            )
+                        except KeyError as error:
+                            result = recover_documented_parse_failure(
+                                case, "sync", error, responses, requests
+                            )
                     limitation = self.assert_result(case, "sync", result, requests[-1])
                 except (
                     AssertionError,
@@ -162,9 +200,14 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                             "event_hooks": {"request": [capture], "response": [capture_response]},
                         },
                     ) as client:
-                        result = await importlib.import_module(case.module).asyncio_detailed(
-                            client=client, **case.kwargs
-                        )
+                        try:
+                            result = await importlib.import_module(case.module).asyncio_detailed(
+                                client=client, **case.kwargs
+                            )
+                        except KeyError as error:
+                            result = recover_documented_parse_failure(
+                                case, "async", error, responses, requests
+                            )
                     limitation = self.assert_result(case, "async", result, requests[-1])
                 except (
                     AssertionError,

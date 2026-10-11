@@ -46,6 +46,39 @@ actions:
   - target: $.components.schemas.firewallRulesetErrorResponse.properties.invalid_params.required
     remove: true
 
+  # gatewayErrorResponse.invalid_params is an array with properties and required at the
+  # array level; move them into items. Static copy of spec.json values, checked by
+  # generator/tests/test_openapi_overlay.py.
+  - target: $.components.schemas.gatewayErrorResponse.properties.invalid_params.properties
+    remove: true
+  - target: $.components.schemas.gatewayErrorResponse.properties.invalid_params
+    remove: true
+  - target: $.components.schemas.gatewayErrorResponse.properties
+    update:
+      invalid_params:
+        type: array
+        examples:
+          - []
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              examples:
+                - zone
+                - networks.0.ip_address
+              description: Path to the field with invalid parameter.
+            reason:
+              type: string
+              examples:
+                - Zone is not valid.
+              description: Human-readable error message.
+          title: InvalidParameters
+          required:
+            - name
+            - reason
+        description: List of invalid parameters in the request.
+
   # POST /1.3/kubernetes documents 201, but the API returns 200 OK, so the SDK
   # treated successful creation as an error.
   # Source fix needed: document the 200 response.

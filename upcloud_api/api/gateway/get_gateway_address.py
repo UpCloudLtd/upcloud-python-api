@@ -5,9 +5,9 @@ from uuid import UUID
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.gateway_address_details_response import GatewayAddressDetailsResponse
+from ...models.gateway_error_response import GatewayErrorResponse
 from ...types import Response
 
 
@@ -29,21 +29,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> GatewayAddressDetailsResponse | None:
+) -> GatewayAddressDetailsResponse | GatewayErrorResponse:
     if response.status_code == 200:
         response_200 = GatewayAddressDetailsResponse.from_dict(response.json())
 
         return response_200
 
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    response_default = GatewayErrorResponse.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[GatewayAddressDetailsResponse]:
+) -> Response[GatewayAddressDetailsResponse | GatewayErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -57,7 +56,7 @@ def sync_detailed(
     address_name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[GatewayAddressDetailsResponse]:
+) -> Response[GatewayAddressDetailsResponse | GatewayErrorResponse]:
     """Get Service Address Details
 
      Get service address details.
@@ -71,7 +70,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayAddressDetailsResponse]
+        Response[GatewayAddressDetailsResponse | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -91,7 +90,7 @@ def sync(
     address_name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> GatewayAddressDetailsResponse | None:
+) -> GatewayAddressDetailsResponse | GatewayErrorResponse | None:
     """Get Service Address Details
 
      Get service address details.
@@ -105,7 +104,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayAddressDetailsResponse
+        GatewayAddressDetailsResponse | GatewayErrorResponse
     """
 
     return sync_detailed(
@@ -120,7 +119,7 @@ async def asyncio_detailed(
     address_name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[GatewayAddressDetailsResponse]:
+) -> Response[GatewayAddressDetailsResponse | GatewayErrorResponse]:
     """Get Service Address Details
 
      Get service address details.
@@ -134,7 +133,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GatewayAddressDetailsResponse]
+        Response[GatewayAddressDetailsResponse | GatewayErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -152,7 +151,7 @@ async def asyncio(
     address_name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> GatewayAddressDetailsResponse | None:
+) -> GatewayAddressDetailsResponse | GatewayErrorResponse | None:
     """Get Service Address Details
 
      Get service address details.
@@ -166,7 +165,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GatewayAddressDetailsResponse
+        GatewayAddressDetailsResponse | GatewayErrorResponse
     """
 
     return (
