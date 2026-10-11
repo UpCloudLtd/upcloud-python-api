@@ -21,7 +21,7 @@ EOF
 
 # Run with only the fake mdtest on PATH, from an unrelated directory.
 examples() {
-  cd "$BATS_TEST_TMPDIR"
+  cd "$BATS_TEST_TMPDIR" || return
   run --separate-stderr env -i PATH="$bin" CALL_LOG="$calls" FAIL_MATCH="${FAIL_MATCH:-}" \
     UPCLOUD_SDK_PATH=/wrong ${TOKEN+UPCLOUD_TOKEN="$TOKEN"} "$BASH" "$script" "$@"
 }

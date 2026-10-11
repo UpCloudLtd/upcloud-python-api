@@ -18,7 +18,7 @@ class StripSchemaTitlesTests(unittest.TestCase):
             raise AssertionError("jq not found on PATH; run `mise install`")
 
     def strip(self, spec):
-        return subprocess.run(
+        return subprocess.run(  # noqa: S603 - jq from PATH and repository-local filter
             [self.jq, "-f", str(FILTER)],
             input=json.dumps(spec),
             capture_output=True,
@@ -91,7 +91,7 @@ class StripSchemaTitlesTests(unittest.TestCase):
         }
         first = self.strip(spec)
         self.assertEqual(first.returncode, 0, first.stderr)
-        second = subprocess.run(
+        second = subprocess.run(  # noqa: S603 - jq from PATH and repository-local filter
             [self.jq, "-f", str(FILTER)],
             input=first.stdout,
             capture_output=True,

@@ -9,7 +9,7 @@ setup() {
   export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
   repo="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$repo/gen"
-  cd "$repo"
+  cd "$repo" || return
   git init -q
   printf '*.cache\n' >.gitignore
   printf a >gen/a.txt

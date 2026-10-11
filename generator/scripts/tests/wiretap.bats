@@ -41,6 +41,8 @@ EOF
 
 # The command records the URL it was given, then exits with $1.
 contract() {
+  # The child sh expands this program, not the test shell.
+  # shellcheck disable=SC2016
   run --separate-stderr bash "$script" spec.json \
     sh -c 'printf %s "$WIRETAP_URL" >"$FAKE_STATE/url"; exit "$1"' sh "${1:-0}"
 }
