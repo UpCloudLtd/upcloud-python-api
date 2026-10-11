@@ -1,2 +1,4 @@
 project_name_override: upcloud-api
 package_name_override: upcloud_api
+# Keep the YAML request media type while generating a raw-content body.
+content_type_overrides: {application/yaml: application/octet-stream}

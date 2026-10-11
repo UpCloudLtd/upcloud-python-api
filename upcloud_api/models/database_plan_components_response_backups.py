@@ -27,7 +27,7 @@ class DatabasePlanComponentsResponseBackups:
 
     Attributes:
         name (DatabasePlanComponentsResponseBackupsName | Unset): Backup tier name for tiered plans. Omitted when the
-            plan retention does not map to a named tier. Example: standard.
+            plan retention does not map to a named tier. Example: regular.
         retention_days (int | Unset): Backup retention in days Example: 15.
         frequent (DatabasePlanComponentsResponseBackupsFrequent | Unset): Frequent backup window, OpenSearch only
         infrequent (DatabasePlanComponentsResponseBackupsInfrequent | Unset): Infrequent backup window, OpenSearch only

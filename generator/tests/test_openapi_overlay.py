@@ -1,13 +1,22 @@
 """Tests for generator/openapi/overlay.yaml applied with the mise-provided Speakeasy CLI."""
 
 import copy
+import functools
 import itertools
 import json
+import operator
 import shutil
 import subprocess
 import unittest
 import uuid
 from pathlib import Path
+
+from upcloud_api.models.gateway_service_log_session_create_response import (
+    GatewayServiceLogSessionCreateResponse,
+)
+from upcloud_api.models.kubernetes_cluster_available_upgrades import (
+    KubernetesClusterAvailableUpgrades,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 OVERLAY = ROOT / "generator" / "openapi" / "overlay.yaml"
@@ -34,11 +43,59 @@ INVALID_PARAM_PROPERTIES = {
 OLD_LABEL_FILTER_PATTERN = r"^(?!_)[\x20-\x3C\x3E-\x7E]{2,32}(?:=.*)?$"
 NEW_LABEL_FILTER_PATTERN = r"^[\x20-\x3C\x3E-\x5E\x60-\x7E][\x20-\x3C\x3E-\x7E]{1,31}(?:=.*)?$"
 IP_BLOCK_PATTERN = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(/([0-9]|[12][0-9]|3[0-2]))?$"
+GATEWAY_ROUTER = {"uuid": "fedcba98-7654-3210-fedc-ba9876543210"}
+EMPTY_STRING_BRANCH = {"type": "string", "maxLength": 0}
+DATABASE_EXAMPLES = {
+    "databaseServiceCreateOpenAPI": ("8", "8.4"),
+    "databaseServiceModifyOpenAPI": ("8", "8.4"),
+    "databaseServiceCloneOpenAPI": ("13", "15"),
+}
+CLUSTER_VERSION = "1.26"
+CLUSTER_LABELS = [{"key": "env", "value": "prod"}, {"key": "app", "value": "cats-dating-app"}]
+CLUSTER_RESPONSES = (
+    "kubernetesGetClusters",
+    "kubernetesGetCluster",
+    "kubernetesPatchCluster",
+    "kubernetesPostCluster",
+)
+TUNNEL_REQUESTS = ("gatewayTunnelCreateRequest", "gatewayTunnelModifyRequest")
+OLD_TUNNEL_AUTH = {"type": "psk", "psk": "MySecretPsk123"}
+NEW_TUNNEL_AUTH = {"authentication": "psk", "psk": "MySecretPsk123"}
+DATABASE_TYPE_PROPERTIES = {
+    "automatic_utility_network_ip_filter": False,
+    "ip_filter": ["0.0.0.0/0"],
+    "public_access": True,
+    "version": "13",
+}
+
+
+def json_example(example):
+    """Return an application/json content map holding the given example."""
+    return {"application/json": {"example": example}}
+
+
+def cluster_examples(components):
+    """Yield every Kubernetes cluster object in the cluster response examples."""
+    for name in CLUSTER_RESPONSES:
+        example = components["responses"][name]["content"]["application/json"]["example"]
+        yield from example if isinstance(example, list) else [example]
+
+
+def database_example(version):
+    """Return a database request schema whose example carries the given engine version."""
+    return {
+        "examples": [
+            {
+                "title": "db",
+                "properties": {"automatic_utility_network_ip_filter": True, "version": version},
+            }
+        ]
+    }
 
 
 def defective_spec():
-    """Return a minimal spec with the three defects the overlay fixes, plus unrelated data."""
-    return {
+    """Return a minimal spec with the defects the overlay fixes, plus unrelated data."""
+    spec = {
         "openapi": "3.1.1",
         "info": {"title": "Fixture", "version": "test"},
         "paths": {
@@ -158,10 +215,140 @@ def defective_spec():
                         "cores": {"type": "integer"},
                     }
                 },
+                "accounts": {
+                    "example": {
+                        "accounts": {
+                            "account": [
+                                {"type": "mymain", "username": "test"},
+                                {"type": "sub", "username": "other"},
+                            ]
+                        }
+                    }
+                },
+                "databasePlanComponentsResponse": {
+                    "properties": {
+                        "backups": {
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "enum": ["mini", "regular", "extended"],
+                                    "example": "standard",
+                                }
+                            }
+                        }
+                    }
+                },
+                "gatewayServiceCreateRequest": {
+                    "examples": [{"name": "gw", "features": [], "routers": [], "addresses": []}]
+                },
+                "gatewayServiceModifyRequest": {
+                    "examples": [{"name": "gw", "features": [], "labels": []}],
+                    "properties": {"features": {"examples": [[]], "minItems": 1}},
+                },
+                **{name: database_example(old) for name, (old, _) in DATABASE_EXAMPLES.items()},
+                "serverVncPort": {
+                    "oneOf": [{"type": "integer"}, {"type": "string", "const": ""}],
+                    "example": 5901,
+                },
+                "storageImport": {
+                    "properties": {
+                        "completed": {
+                            "oneOf": [{"const": ""}, {"type": "string", "format": "date-time"}]
+                        }
+                    }
+                },
+                "auditLogsFilterOptionsResponse": {
+                    "properties": {
+                        "resource_types": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": ["account", "server"]},
+                        }
+                    }
+                },
+                "auditLogsResourceTypesParameter": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": ["account", "server"]},
+                },
+                "objectStorage2EndpointResponse": {
+                    "properties": {"type": {"type": "string", "enum": ["public", "private"]}}
+                },
+                "databaseAvailableServiceTypesResponse": {
+                    "examples": [
+                        {"postgres": {"name": "postgresql", "properties": {"version": "13"}}}
+                    ]
+                },
+                "databaseServiceTypeResponse": {
+                    "examples": [{"name": "postgresql", "properties": {"version": "13"}}]
+                },
+                "loadBalancerProblemResponse": {
+                    "properties": {
+                        "correlation_id": {"type": "string", "format": "uuid", "example": "req-1"}
+                    }
+                },
+                **{
+                    name: {
+                        "examples": [
+                            {"name": "tunnel", "ipsec": {"authentication": dict(OLD_TUNNEL_AUTH)}}
+                        ]
+                    }
+                    for name in TUNNEL_REQUESTS
+                },
+                "gatewayServiceLogSessionCreateResponse": {"examples": [{"sessions": ["vpn"]}]},
+                "databaseNetworkCreate": {
+                    "examples": [
+                        {"name": "my-network", "type": "public", "family": "IPv4"},
+                        {
+                            "uuid": "123e4567-e89b-12d3-a456-426614174000",
+                            "name": "my-network",
+                            "type": "public",
+                            "family": "IPv4",
+                        },
+                    ]
+                },
+                "firewallRulesetFirewallMultipleRuleCreate": {
+                    "examples": [
+                        [
+                            {
+                                "direction": "in",
+                                "action": "accept",
+                                "family": "IPv4",
+                                "protocol": "tcp",
+                                "enabled": False,
+                            },
+                            {"direction": "out", "action": "drop", "family": "IPv6"},
+                        ]
+                    ]
+                },
             },
-            "responses": {"kubernetesPostCluster": {"description": "Created cluster"}},
+            "responses": {
+                "kubernetesPostCluster": {
+                    "description": "Created cluster",
+                    "content": json_example({"name": "created"}),
+                },
+                "kubernetesGetClusters": {
+                    "content": json_example([{"name": "first"}, {"name": "second"}])
+                },
+                "kubernetesGetCluster": {"content": json_example({"name": "one"})},
+                "kubernetesPatchCluster": {"content": json_example({"name": "patched"})},
+                "kubernetesGetAvailableUpgrades": {
+                    "content": json_example([{"versions": ["1.31.8", "1.32.0"]}])
+                },
+            },
+            "requestBodies": {
+                "kubernetesPostCluster": {
+                    "content": json_example(
+                        {"name": "new", "labels": copy.deepcopy(CLUSTER_LABELS)}
+                    )
+                }
+            },
         },
     }
+    spec["components"]["schemas"]["databaseServiceCloneOpenAPI"].update(
+        type="object",
+        oneOf=[{"$ref": "#/components/schemas/databaseServiceClonePg"}],
+        additionalProperties=False,
+    )
+    return spec
 
 
 class OpenAPIOverlayTests(unittest.TestCase):
@@ -246,6 +433,54 @@ class OpenAPIOverlayTests(unittest.TestCase):
         schemas["storageDetails"]["properties"]["backup_rule"]["oneOf"][1]["maxProperties"] = 0
         for name in ("type", "required", "additionalProperties"):
             schemas["accountResourceLimits"]["properties"].pop(name)
+        schemas["accounts"]["example"]["accounts"]["account"][0]["type"] = "main"
+        schemas["databasePlanComponentsResponse"]["properties"]["backups"]["properties"]["name"][
+            "example"
+        ] = "regular"
+        create_example = schemas["gatewayServiceCreateRequest"]["examples"][0]
+        create_example["features"] = ["nat"]
+        create_example["routers"] = [GATEWAY_ROUTER]
+        schemas["gatewayServiceModifyRequest"]["examples"][0].pop("features")
+        for name, (_, new) in DATABASE_EXAMPLES.items():
+            schemas[name]["examples"][0]["properties"]["version"] = new
+        schemas["serverVncPort"]["oneOf"][1] = EMPTY_STRING_BRANCH
+        schemas["storageImport"]["properties"]["completed"]["oneOf"][0] = EMPTY_STRING_BRANCH
+        schemas["auditLogsFilterOptionsResponse"]["properties"]["resource_types"]["items"][
+            "enum"
+        ].append("network")
+        schemas["auditLogsResourceTypesParameter"]["items"]["enum"].append("network")
+        schemas["objectStorage2EndpointResponse"]["properties"]["type"]["enum"].append("static")
+        for example in cluster_examples(expected["components"]):
+            example.update(version=CLUSTER_VERSION, labels=CLUSTER_LABELS)
+        request_bodies = expected["components"]["requestBodies"]
+        request_bodies["kubernetesPostCluster"]["content"]["application/json"]["example"][
+            "version"
+        ] = CLUSTER_VERSION
+        schemas["databaseAvailableServiceTypesResponse"]["examples"][0]["postgres"][
+            "properties"
+        ] = {}
+        schemas["databaseServiceTypeResponse"]["examples"][0]["properties"] = {}
+        schemas["loadBalancerProblemResponse"]["properties"]["correlation_id"].pop("format")
+        for name in TUNNEL_REQUESTS:
+            schemas[name]["examples"][0]["ipsec"]["authentication"] = NEW_TUNNEL_AUTH
+        schemas["databaseServiceCloneOpenAPI"].pop("additionalProperties")
+        schemas["databaseServiceCloneOpenAPI"]["unevaluatedProperties"] = False
+        schemas["gatewayServiceLogSessionCreateResponse"]["examples"][0]["sessions"] = [
+            {
+                "session_id": "01234567-89ab-cdef-0123-456789abcdef",
+                "token": "01234567-89ab-cdef-0123-456789abcdef",
+            }
+        ]
+        schemas["databaseNetworkCreate"]["examples"] = [
+            {**example, "type": "private"}
+            for example in schemas["databaseNetworkCreate"]["examples"]
+        ]
+        schemas["firewallRulesetFirewallMultipleRuleCreate"]["examples"] = [
+            {"rules": schemas["firewallRulesetFirewallMultipleRuleCreate"]["examples"][0]}
+        ]
+        expected["components"]["responses"]["kubernetesGetAvailableUpgrades"]["content"][
+            "application/json"
+        ]["example"] = {"versions": ["1.31.8", "1.32.0"]}
 
         output = self.overlay_document(spec)
         self.assertEqual(output, expected)
@@ -346,6 +581,149 @@ class OpenAPIOverlayTests(unittest.TestCase):
             self.assertEqual(source_limits["properties"][name], {})
             self.assertNotIn(name, output_limits["properties"])
 
+    def test_example_fixes_match_the_source_spec(self):
+        """Each example fix replaces the upstream value it expects with an in-schema value."""
+        source = json.loads(SPEC.read_text(encoding="utf-8"))["components"]["schemas"]
+        output = self.overlay_document(json.loads(SPEC.read_text(encoding="utf-8")))
+        output = output["components"]["schemas"]
+
+        account_enum = source["accounts"]["properties"]["accounts"]["properties"]["account"][
+            "items"
+        ]["properties"]["type"]["enum"]
+        source_account = source["accounts"]["example"]["accounts"]["account"][0]
+        output_account = output["accounts"]["example"]["accounts"]["account"][0]
+        self.assertEqual(source_account["type"], "mymain")
+        self.assertEqual(output_account["type"], "main")
+        self.assertIn(output_account["type"], account_enum)
+
+        source_plan = source["databasePlanComponentsResponse"]
+        source_name = source_plan["properties"]["backups"]["properties"]["name"]
+        output_name = output["databasePlanComponentsResponse"]["properties"]["backups"][
+            "properties"
+        ]["name"]
+        self.assertEqual(source_name["example"], "standard")
+        self.assertEqual(output_name["example"], source_plan["examples"][0]["backups"]["name"])
+        self.assertIn(output_name["example"], source_name["enum"])
+
+        source_create = source["gatewayServiceCreateRequest"]
+        output_create = output["gatewayServiceCreateRequest"]["examples"][0]
+        for name in ("features", "routers"):
+            self.assertEqual(source_create["examples"][0][name], [])
+            self.assertIn(name, source_create["required"])
+            self.assertEqual(output_create[name], source_create["properties"][name]["examples"][0])
+            self.assertGreaterEqual(
+                len(output_create[name]), source_create["properties"][name]["minItems"]
+            )
+
+        source_modify = source["gatewayServiceModifyRequest"]
+        self.assertEqual(source_modify["examples"][0]["features"], [])
+        self.assertEqual(source_modify["properties"]["features"]["minItems"], 1)
+        self.assertNotIn("features", source_modify.get("required", []))
+        output_modify = output["gatewayServiceModifyRequest"]
+        self.assertNotIn("features", output_modify["examples"][0])
+        self.assertEqual(output_modify["properties"], source_modify["properties"])
+
+        engine_enums = {
+            "8.4": source["databaseServicePropertiesMysql"]["properties"]["version"]["enum"],
+            "15": source["databaseServicePropertiesPg"]["properties"]["version"]["enum"],
+        }
+        for name, (old, new) in DATABASE_EXAMPLES.items():
+            with self.subTest(schema=name):
+                source_properties = source[name]["examples"][0]["properties"]
+                output_properties = output[name]["examples"][0]["properties"]
+                self.assertEqual(source_properties["version"], old)
+                self.assertEqual(output_properties, {**source_properties, "version": new})
+                self.assertIn(new, engine_enums[new])
+
+        self.assertEqual(source["serverVncPort"]["oneOf"][1], {"type": "string", "const": ""})
+        self.assertEqual(output["serverVncPort"]["oneOf"][1], EMPTY_STRING_BRANCH)
+        self.assertEqual(output["serverVncPort"]["oneOf"][0], source["serverVncPort"]["oneOf"][0])
+        source_completed = source["storageImport"]["properties"]["completed"]["oneOf"]
+        output_completed = output["storageImport"]["properties"]["completed"]["oneOf"]
+        self.assertEqual(source_completed[0], {"const": ""})
+        self.assertEqual(output_completed, [EMPTY_STRING_BRANCH, source_completed[1]])
+
+    def test_contract_fixes_match_the_source_spec(self):
+        """Each enum, format, example and wrapper fix starts from the upstream value it expects."""
+        source = json.loads(SPEC.read_text(encoding="utf-8"))
+        output = self.overlay_document(json.loads(SPEC.read_text(encoding="utf-8")))
+        source_schemas = source["components"]["schemas"]
+        output_schemas = output["components"]["schemas"]
+
+        enum_paths = {
+            ("auditLogsFilterOptionsResponse", "properties", "resource_types", "items"): "network",
+            ("auditLogsResourceTypesParameter", "items"): "network",
+            ("objectStorage2EndpointResponse", "properties", "type"): "static",
+        }
+        for path, value in enum_paths.items():
+            with self.subTest(enum=path[0]):
+                source_enum = functools.reduce(operator.getitem, path, source_schemas)["enum"]
+                output_enum = functools.reduce(operator.getitem, path, output_schemas)["enum"]
+                self.assertNotIn(value, source_enum)
+                self.assertEqual(output_enum, [*source_enum, value])
+
+        self.assertEqual(source_schemas["kubernetesClusterVersion"]["default"], CLUSTER_VERSION)
+        required = source_schemas["kubernetesCluster"]["required"]
+        request_path = ("requestBodies", "kubernetesPostCluster", "content", "application/json")
+        source_request = functools.reduce(operator.getitem, request_path, source["components"])
+        output_request = functools.reduce(operator.getitem, request_path, output["components"])
+        self.assertNotIn("version", source_request["example"])
+        self.assertEqual(source_request["example"]["labels"], CLUSTER_LABELS)
+        self.assertEqual(
+            output_request["example"], {**source_request["example"], "version": CLUSTER_VERSION}
+        )
+        source_clusters = list(cluster_examples(source["components"]))
+        output_clusters = list(cluster_examples(output["components"]))
+        self.assertEqual(len(output_clusters), 5)
+        for source_cluster, output_cluster in zip(source_clusters, output_clusters, strict=True):
+            self.assertNotIn("version", source_cluster)
+            self.assertNotIn("labels", source_cluster)
+            self.assertEqual(
+                output_cluster,
+                {**source_cluster, "version": CLUSTER_VERSION, "labels": CLUSTER_LABELS},
+            )
+            self.assertLessEqual(set(required), set(output_cluster))
+
+        database_types = (
+            ("databaseAvailableServiceTypesResponse", "examples", 0, "postgres"),
+            ("databaseServiceTypeResponse", "examples", 0),
+        )
+        for path in database_types:
+            with self.subTest(example=path[0]):
+                source_example = functools.reduce(operator.getitem, path, source_schemas)
+                output_example = functools.reduce(operator.getitem, path, output_schemas)
+                self.assertEqual(source_example["properties"], DATABASE_TYPE_PROPERTIES)
+                self.assertEqual(output_example, {**source_example, "properties": {}})
+
+        source_id = source_schemas["loadBalancerProblemResponse"]["properties"]["correlation_id"]
+        output_id = output_schemas["loadBalancerProblemResponse"]["properties"]["correlation_id"]
+        self.assertEqual(source_id["format"], "uuid")
+        self.assertEqual(output_id, {k: v for k, v in source_id.items() if k != "format"})
+
+        auth_types = source_schemas["gatewayIpsecAuthenticationType"]["enum"]
+        for name in TUNNEL_REQUESTS:
+            with self.subTest(schema=name):
+                source_ipsec = source_schemas[name]["examples"][0]["ipsec"]
+                output_ipsec = output_schemas[name]["examples"][0]["ipsec"]
+                self.assertEqual(source_ipsec["authentication"], OLD_TUNNEL_AUTH)
+                self.assertEqual(output_ipsec, {**source_ipsec, "authentication": NEW_TUNNEL_AUTH})
+                auth = source_schemas[name]["properties"]["ipsec"]["properties"]["authentication"]
+                self.assertIs(auth["additionalProperties"], False)
+                self.assertLessEqual(set(auth["required"]), set(NEW_TUNNEL_AUTH))
+                self.assertLessEqual(set(NEW_TUNNEL_AUTH), set(auth["properties"]))
+                self.assertIn(NEW_TUNNEL_AUTH["authentication"], auth_types)
+                self.assertRegex(NEW_TUNNEL_AUTH["psk"], auth["properties"]["psk"]["pattern"])
+
+        source_clone = source_schemas["databaseServiceCloneOpenAPI"]
+        output_clone = output_schemas["databaseServiceCloneOpenAPI"]
+        self.assertIs(source_clone["additionalProperties"], False)
+        self.assertNotIn("unevaluatedProperties", source_clone)
+        self.assertNotIn("additionalProperties", output_clone)
+        self.assertIs(output_clone["unevaluatedProperties"], False)
+        self.assertEqual(len(source_clone["oneOf"]), 5)
+        self.assertEqual(output_clone["oneOf"], source_clone["oneOf"])
+        self.assertEqual(output_clone["properties"], source_clone["properties"])
+
     def test_rewritten_patterns_preserve_intended_matching(self):
         import re
 
@@ -370,6 +748,68 @@ class OpenAPIOverlayTests(unittest.TestCase):
             self.assertIsNotNone(ip_block.fullmatch(candidate))
         for candidate in ("1.2.3.4/33", "1.2.3.4/0-32"):
             self.assertIsNone(ip_block.fullmatch(candidate))
+
+    def test_corrected_examples_preserve_contract_shapes(self):
+        source = json.loads(SPEC.read_text(encoding="utf-8"))
+        output = self.overlay_document(source)
+        source_components = source["components"]
+        output_components = output["components"]
+
+        source_upgrade = source_components["responses"]["kubernetesGetAvailableUpgrades"][
+            "content"
+        ]["application/json"]["example"]
+        output_upgrade = output_components["responses"]["kubernetesGetAvailableUpgrades"][
+            "content"
+        ]["application/json"]["example"]
+        self.assertEqual(len(source_upgrade), 1)
+        self.assertEqual(output_upgrade, source_upgrade[0])
+        self.assertEqual(
+            KubernetesClusterAvailableUpgrades.from_dict(output_upgrade).to_dict(), output_upgrade
+        )
+
+        source_schemas = source_components["schemas"]
+        output_schemas = output_components["schemas"]
+        source_sessions = source_schemas["gatewayServiceLogSessionCreateResponse"]["examples"][0][
+            "sessions"
+        ]
+        details_sessions = source_schemas["gatewayServiceLogSessionDetailsResponse"]["examples"][
+            0
+        ]["sessions"]
+        output_sessions_schema = output_schemas["gatewayServiceLogSessionCreateResponse"]
+        output_sessions = output_sessions_schema["examples"][0]["sessions"]
+        self.assertEqual(source_sessions, ["vpn"])
+        self.assertEqual(details_sessions[0].keys(), {"session_id", "token"})
+        self.assertEqual(output_sessions, details_sessions)
+        self.assertEqual(
+            GatewayServiceLogSessionCreateResponse.from_dict(
+                output_sessions_schema["examples"][0]
+            ).to_dict(),
+            output_sessions_schema["examples"][0],
+        )
+
+        source_network = source_schemas["databaseNetworkCreate"]
+        output_network = output_schemas["databaseNetworkCreate"]
+        allowed_types = source_schemas["databaseNetworkType"]["enum"]
+        self.assertEqual(
+            [example["type"] for example in source_network["examples"]], ["public"] * 2
+        )
+        self.assertEqual(allowed_types, ["private"])
+        self.assertEqual(
+            output_network["examples"],
+            [{**example, "type": "private"} for example in source_network["examples"]],
+        )
+        self.assertTrue(
+            all(example["type"] in allowed_types for example in output_network["examples"])
+        )
+
+        source_firewall = source_schemas["firewallRulesetFirewallMultipleRuleCreate"]["examples"][
+            0
+        ]
+        output_firewall = output_schemas["firewallRulesetFirewallMultipleRuleCreate"]["examples"][
+            0
+        ]
+        self.assertIsInstance(source_firewall, list)
+        self.assertEqual(output_firewall, {"rules": source_firewall})
 
     def test_overlay_then_title_filter_matches_committed_patched_spec(self):
         """Overlay followed by the jq title filter reproduces spec.patched.json."""

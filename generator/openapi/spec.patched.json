@@ -13596,7 +13596,7 @@
                     "technical"
                   ]
                 },
-                "type": "mymain",
+                "type": "main",
                 "username": "test"
               },
               {
@@ -17866,7 +17866,8 @@
             "server",
             "storage",
             "uks",
-            "ssh-key"
+            "ssh-key",
+            "network"
           ]
         },
         "description": "List of resource types to filter by"
@@ -18212,7 +18213,8 @@
                 "server",
                 "storage",
                 "uks",
-                "ssh-key"
+                "ssh-key",
+                "network"
               ]
             },
             "description": "List of available resource types"
@@ -24408,7 +24410,7 @@
           },
           {
             "type": "string",
-            "const": ""
+            "maxLength": 0
           }
         ],
         "description": "VNC or noVNC proxy port. Empty when no VNC endpoint is assigned.",
@@ -26140,7 +26142,8 @@
           "completed": {
             "oneOf": [
               {
-                "const": ""
+                "type": "string",
+                "maxLength": 0
               },
               {
                 "type": "string",
@@ -29741,7 +29744,8 @@
             "type": "string",
             "enum": [
               "public",
-              "private"
+              "private",
+              "static"
             ],
             "description": "The network access type of the endpoint",
             "example": "public"
@@ -32290,7 +32294,7 @@
             "termination_protection": false,
             "properties": {
               "automatic_utility_network_ip_filter": true,
-              "version": "8",
+              "version": "8.4",
               "ip_filter": []
             },
             "networks": [
@@ -32533,13 +32537,13 @@
         "examples": [
           {
             "name": "my-network",
-            "type": "public",
+            "type": "private",
             "family": "IPv4"
           },
           {
             "uuid": "123e4567-e89b-12d3-a456-426614174000",
             "name": "my-network",
-            "type": "public",
+            "type": "private",
             "family": "IPv4"
           }
         ],
@@ -36320,7 +36324,7 @@
             "termination_protection": false,
             "properties": {
               "automatic_utility_network_ip_filter": true,
-              "version": "8",
+              "version": "8.4",
               "ip_filter": []
             },
             "networks": [
@@ -36547,7 +36551,7 @@
             },
             "properties": {
               "automatic_utility_network_ip_filter": false,
-              "version": "13",
+              "version": "15",
               "public_access": true,
               "ip_filter": [
                 "0.0.0.0/0"
@@ -36607,8 +36611,8 @@
             "deprecated": true
           }
         },
-        "additionalProperties": false,
-        "description": "Schema for cloning a service — OpenAPI version."
+        "description": "Schema for cloning a service — OpenAPI version.",
+        "unevaluatedProperties": false
       },
       "databaseServiceCloneMysql": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -38505,15 +38509,8 @@
                   }
                 }
               ],
-              "properties": {
-                "automatic_utility_network_ip_filter": false,
-                "ip_filter": [
-                  "0.0.0.0/0"
-                ],
-                "public_access": true,
-                "version": "13"
-              },
-              "dependencies": {}
+              "dependencies": {},
+              "properties": {}
             }
           }
         ],
@@ -38591,15 +38588,8 @@
                 "memory_amount": 1024
               }
             ],
-            "properties": {
-              "automatic_utility_network_ip_filter": false,
-              "ip_filter": [
-                "0.0.0.0/0"
-              ],
-              "public_access": true,
-              "version": "13"
-            },
-            "dependencies": {}
+            "dependencies": {},
+            "properties": {}
           }
         ],
         "properties": {
@@ -38935,7 +38925,7 @@
                   "extended"
                 ],
                 "description": "Backup tier name for tiered plans. Omitted when the plan retention does not map to a named tier.",
-                "example": "standard"
+                "example": "regular"
               },
               "retention_days": {
                 "type": "integer",
@@ -43792,8 +43782,14 @@
             "name": "gateway-service",
             "plan": "development-gwaas-1c2g",
             "zone": "fi-hel1",
-            "features": [],
-            "routers": [],
+            "features": [
+              "nat"
+            ],
+            "routers": [
+              {
+                "uuid": "fedcba98-7654-3210-fedc-ba9876543210"
+              }
+            ],
             "addresses": [],
             "connections": [],
             "labels": [],
@@ -44142,8 +44138,8 @@
             },
             "ipsec": {
               "authentication": {
-                "type": "psk",
-                "psk": "MySecretPsk123"
+                "psk": "MySecretPsk123",
+                "authentication": "psk"
               },
               "phase1_algorithms": [],
               "phase2_algorithms": [],
@@ -44615,7 +44611,6 @@
         "examples": [
           {
             "name": "gateway-service",
-            "features": [],
             "plan": "development-gwaas-1c2g",
             "configured_status": "started",
             "connections": [],
@@ -44773,8 +44768,8 @@
             },
             "ipsec": {
               "authentication": {
-                "type": "psk",
-                "psk": "MySecretPsk123"
+                "psk": "MySecretPsk123",
+                "authentication": "psk"
               },
               "phase1_algorithms": [],
               "phase2_algorithms": [],
@@ -46559,7 +46554,10 @@
         "examples": [
           {
             "sessions": [
-              "vpn"
+              {
+                "session_id": "01234567-89ab-cdef-0123-456789abcdef",
+                "token": "01234567-89ab-cdef-0123-456789abcdef"
+              }
             ]
           }
         ],
@@ -52879,7 +52877,6 @@
           },
           "correlation_id": {
             "type": "string",
-            "format": "uuid",
             "description": "A unique identifier for this error instance, useful for tracing or debugging requests.",
             "example": "req-8b29d3a6a4cf4d22a17e2b8e31cd4a12"
           }
@@ -53617,22 +53614,6 @@
       "firewallRulesetFirewallMultipleRuleCreate": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
-        "examples": [
-          [
-            {
-              "direction": "in",
-              "action": "accept",
-              "family": "IPv4",
-              "protocol": "tcp",
-              "enabled": false
-            },
-            {
-              "direction": "out",
-              "action": "drop",
-              "family": "IPv6"
-            }
-          ]
-        ],
         "properties": {
           "rules": {
             "type": "array",
@@ -53644,7 +53625,25 @@
         "required": [
           "rules"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "examples": [
+          {
+            "rules": [
+              {
+                "direction": "in",
+                "action": "accept",
+                "family": "IPv4",
+                "protocol": "tcp",
+                "enabled": false
+              },
+              {
+                "direction": "out",
+                "action": "drop",
+                "family": "IPv6"
+              }
+            ]
+          }
+        ]
       },
       "firewallRulesetFirewallRuleCreate": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -55361,7 +55360,18 @@
               ],
               "uuid": "11111111-1111-1111-1111-111111111111",
               "state": "running",
-              "zone": "de-fra1"
+              "zone": "de-fra1",
+              "version": "1.26",
+              "labels": [
+                {
+                  "key": "env",
+                  "value": "prod"
+                },
+                {
+                  "key": "app",
+                  "value": "cats-dating-app"
+                }
+              ]
             }
           }
         }
@@ -55396,14 +55406,12 @@
             "schema": {
               "$ref": "#/components/schemas/kubernetesClusterAvailableUpgrades"
             },
-            "example": [
-              {
-                "versions": [
-                  "1.31.8",
-                  "1.32.0"
-                ]
-              }
-            ]
+            "example": {
+              "versions": [
+                "1.31.8",
+                "1.32.0"
+              ]
+            }
           }
         }
       },
@@ -55587,7 +55595,18 @@
                 ],
                 "uuid": "11111111-1111-1111-1111-111111111111",
                 "state": "running",
-                "zone": "de-fra1"
+                "zone": "de-fra1",
+                "version": "1.26",
+                "labels": [
+                  {
+                    "key": "env",
+                    "value": "prod"
+                  },
+                  {
+                    "key": "app",
+                    "value": "cats-dating-app"
+                  }
+                ]
               },
               {
                 "name": "another-example-cluster",
@@ -55607,7 +55626,18 @@
                 ],
                 "uuid": "22222222-2222-2222-2222-222222222222",
                 "state": "pending",
-                "zone": "de-fra1"
+                "zone": "de-fra1",
+                "version": "1.26",
+                "labels": [
+                  {
+                    "key": "env",
+                    "value": "prod"
+                  },
+                  {
+                    "key": "app",
+                    "value": "cats-dating-app"
+                  }
+                ]
               }
             ]
           }
@@ -55790,7 +55820,18 @@
               ],
               "uuid": "11111111-1111-1111-1111-111111111111",
               "state": "pending",
-              "zone": "de-fra1"
+              "zone": "de-fra1",
+              "version": "1.26",
+              "labels": [
+                {
+                  "key": "env",
+                  "value": "prod"
+                },
+                {
+                  "key": "app",
+                  "value": "cats-dating-app"
+                }
+              ]
             }
           }
         }
@@ -55880,7 +55921,18 @@
               ],
               "uuid": "11111111-1111-1111-1111-111111111111",
               "state": "running",
-              "zone": "de-fra1"
+              "zone": "de-fra1",
+              "version": "1.26",
+              "labels": [
+                {
+                  "key": "env",
+                  "value": "prod"
+                },
+                {
+                  "key": "app",
+                  "value": "cats-dating-app"
+                }
+              ]
             }
           }
         }
@@ -73825,7 +73877,8 @@
                   ]
                 }
               ],
-              "zone": "de-fra1"
+              "zone": "de-fra1",
+              "version": "1.26"
             }
           }
         }

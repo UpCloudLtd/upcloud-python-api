@@ -17,10 +17,10 @@ class Accounts:
     """Main account and subaccounts accessible to the authenticated account.
 
     Example:
-        {'accounts': {'account': [{'labels': [], 'roles': {'role': ['technical']}, 'type': 'mymain', 'username':
-            'test'}, {'labels': [], 'roles': {'role': ['technical']}, 'type': 'sub', 'username': 'my_sub_account'},
-            {'labels': [{'key': 'to_be_removed', 'value': 'after 2022-31-12'}], 'roles': {'role': []}, 'type': 'sub',
-            'username': 'my_temp_account'}, {'labels': [], 'roles': {'role': ['billing']}, 'type': 'sub', 'username':
+        {'accounts': {'account': [{'labels': [], 'roles': {'role': ['technical']}, 'type': 'main', 'username': 'test'},
+            {'labels': [], 'roles': {'role': ['technical']}, 'type': 'sub', 'username': 'my_sub_account'}, {'labels':
+            [{'key': 'to_be_removed', 'value': 'after 2022-31-12'}], 'roles': {'role': []}, 'type': 'sub', 'username':
+            'my_temp_account'}, {'labels': [], 'roles': {'role': ['billing']}, 'type': 'sub', 'username':
             'my_billing_account'}]}}
 
     Attributes:

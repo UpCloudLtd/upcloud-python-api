@@ -242,3 +242,99 @@ def derive_cases(
 def load_cases():
     spec = json.loads((ROOT / "generator/openapi/spec.patched.json").read_text())
     return derive_cases(spec, ROOT / "upcloud_api/api")
+
+
+EMPTY_PROBLEM_TYPE = "https://pb33f.io/wiretap/errors#empty"
+EMPTY_PROBLEM_TITLE = "Response is empty (200)"
+EMPTY_PROBLEM_MARKER = "Response is empty"
+BODYLESS_MOCK_REASON = (
+    "Wiretap's bodyless mock branch returns 200 before the wiretap-status-code override"
+)
+BODYLESS_MOCK_REFERENCE = (
+    "https://github.com/pb33f/wiretap/blob/v0.7.3/mock/mock_engine.go#L429-L443"
+)
+
+
+@dataclass(frozen=True)
+class KnownLimitation:
+    """A documented Wiretap mock defect for one bodyless operation and harness mode."""
+
+    method: str
+    expected_status: int
+    observed_status: int
+    observed_body_marker: str
+    reason: str
+    reference: str
+
+
+class StaleKnownLimitation(AssertionError):
+    """A documented limitation returned the spec status, so its table entry is stale."""
+
+
+_BODYLESS_POST_200 = {
+    "method": "POST",
+    "observed_status": 200,
+    "observed_body_marker": EMPTY_PROBLEM_MARKER,
+    "reason": BODYLESS_MOCK_REASON,
+    "reference": BODYLESS_MOCK_REFERENCE,
+}
+
+# Only these exact operation/mode pairs may pass with a non-spec status. Each entry needs a
+# bodyless spec response and an exact Wiretap problem body (see _is_documented_empty_problem).
+KNOWN_WIRETAP_LIMITATIONS: dict[tuple[str, str], KnownLimitation] = {
+    ("createGatewayServiceLabel", "sync"): KnownLimitation(
+        expected_status=201, **_BODYLESS_POST_200
+    ),
+    ("createGatewayServiceLabel", "async"): KnownLimitation(
+        expected_status=201, **_BODYLESS_POST_200
+    ),
+    ("releaseGatewayFloatingIp", "sync"): KnownLimitation(
+        expected_status=202, **_BODYLESS_POST_200
+    ),
+    ("releaseGatewayFloatingIp", "async"): KnownLimitation(
+        expected_status=202, **_BODYLESS_POST_200
+    ),
+}
+
+
+def classify_wiretap_response(
+    case: Case, mode: str, status: int, body: bytes, method: str, path: str
+) -> KnownLimitation | None:
+    """Return the documented limitation for this exact response, or None if it is not one."""
+    limitation = KNOWN_WIRETAP_LIMITATIONS.get((case.operation_id, mode))
+    if limitation is None:
+        return None
+    if status == case.status:
+        raise StaleKnownLimitation(
+            f"{case.operation_id} ({mode}) returned the spec status {case.status}; "
+            "remove its entry from KNOWN_WIRETAP_LIMITATIONS"
+        )
+    if (
+        case.has_body
+        or case.status != limitation.expected_status
+        or status != limitation.observed_status
+        or method != limitation.method
+        or not _is_documented_empty_problem(body, limitation, path)
+    ):
+        return None
+    return limitation
+
+
+def _is_documented_empty_problem(body: bytes, limitation: KnownLimitation, path: str) -> bool:
+    try:
+        problem = json.loads(body)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    detail = (
+        f"Nothing was generated for the request '{path}' with the method "
+        f"'{limitation.method}'. {limitation.observed_body_marker}"
+    )
+    return (
+        isinstance(problem, dict)
+        and set(problem) == {"type", "title", "status", "detail"}
+        and problem["type"] == EMPTY_PROBLEM_TYPE
+        and problem["title"] == EMPTY_PROBLEM_TITLE
+        and type(problem["status"]) is int
+        and problem["status"] == limitation.observed_status
+        and problem["detail"] == detail
+    )

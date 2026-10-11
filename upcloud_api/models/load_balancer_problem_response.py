@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar
-from uuid import UUID
 
 from attrs import define as _attrs_define
 
@@ -37,7 +36,7 @@ class LoadBalancerProblemResponse:
             invalid_params (list[LoadBalancerProblemInvalidParamResponse] | Unset): A list of invalid parameters that caused
                 the problem. Used to provide detailed feedback for validation errors. Example: [{'name': 'hostnames[0]',
                 'reason': 'Invalid domain name format'}].
-            correlation_id (UUID | Unset): A unique identifier for this error instance, useful for tracing or debugging
+            correlation_id (str | Unset): A unique identifier for this error instance, useful for tracing or debugging
                 requests. Example: req-8b29d3a6a4cf4d22a17e2b8e31cd4a12.
     """
 
@@ -46,7 +45,7 @@ class LoadBalancerProblemResponse:
     status: int
     detail: str | Unset = UNSET
     invalid_params: list[LoadBalancerProblemInvalidParamResponse] | Unset = UNSET
-    correlation_id: UUID | Unset = UNSET
+    correlation_id: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         type_ = self.type_
@@ -64,9 +63,7 @@ class LoadBalancerProblemResponse:
                 invalid_params_item = invalid_params_item_data.to_dict()
                 invalid_params.append(invalid_params_item)
 
-        correlation_id: str | Unset = UNSET
-        if not isinstance(self.correlation_id, Unset):
-            correlation_id = str(self.correlation_id)
+        correlation_id = self.correlation_id
 
         field_dict: dict[str, Any] = {}
 
@@ -110,12 +107,7 @@ class LoadBalancerProblemResponse:
 
                 invalid_params.append(invalid_params_item)
 
-        _correlation_id = d.pop("correlation_id", UNSET)
-        correlation_id: UUID | Unset
-        if isinstance(_correlation_id, Unset):
-            correlation_id = UNSET
-        else:
-            correlation_id = UUID(_correlation_id)
+        correlation_id = d.pop("correlation_id", UNSET)
 
         load_balancer_problem_response = cls(
             type_=type_,

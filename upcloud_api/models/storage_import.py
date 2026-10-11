@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, Literal, TypeVar, cast
+from typing import Any, TypeVar, cast
 from uuid import UUID
 
 from attrs import define as _attrs_define
@@ -28,8 +28,7 @@ class StorageImport:
     Attributes:
         client_content_length (int): Content length reported by the import client, in bytes.
         client_content_type (str): Content type reported by the import client.
-        completed (datetime.datetime | Literal['']): Completion time in RFC 3339 format, or an empty string while
-            unfinished.
+        completed (datetime.datetime | str): Completion time in RFC 3339 format, or an empty string while unfinished.
         created (datetime.datetime): Time when the import task was created.
         error_code (StorageImportErrorCode): Failure category, empty unless the task failed.
         error_message (str): Failure details, empty unless the task failed.
@@ -46,7 +45,7 @@ class StorageImport:
 
     client_content_length: int
     client_content_type: str
-    completed: datetime.datetime | Literal[""]
+    completed: datetime.datetime | str
     created: datetime.datetime
     error_code: StorageImportErrorCode
     error_message: str
@@ -65,7 +64,7 @@ class StorageImport:
 
         client_content_type = self.client_content_type
 
-        completed: Literal[""] | str
+        completed: str
         if isinstance(self.completed, datetime.datetime):
             completed = self.completed.isoformat()
         else:
@@ -128,16 +127,16 @@ class StorageImport:
 
         client_content_type = d.pop("client_content_type")
 
-        def _parse_completed(data: object) -> datetime.datetime | Literal[""]:
-            completed_type_0 = cast(Literal[""], data)
-            if completed_type_0 != "":
-                raise ValueError(f"completed_type_0 must match const '', got '{completed_type_0}'")
-            return completed_type_0
-            if not isinstance(data, str):
-                raise TypeError()
-            completed_type_1 = datetime.datetime.fromisoformat(data)
+        def _parse_completed(data: object) -> datetime.datetime | str:
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                completed_type_1 = datetime.datetime.fromisoformat(data)
 
-            return completed_type_1
+                return completed_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | str, data)
 
         completed = _parse_completed(d.pop("completed"))
 

@@ -138,3 +138,168 @@ actions:
     remove: true
   - target: $.components.schemas.accountResourceLimits.properties.additionalProperties
     remove: true
+
+  # Example values below break their own schemas, so mocks and example-driven tests fail.
+  # Source fix needed: make each example match its schema.
+  # Account type "mymain" is not in enum [main, sub].
+  - target: $.components.schemas.accounts.example.accounts.account[0]
+    update:
+      type: main
+  # backups.name example "standard" is not in enum [mini, regular, extended].
+  - target: $.components.schemas.databasePlanComponentsResponse.properties.backups.properties.name
+    update:
+      example: regular
+  # Required features and routers are [] despite minItems 1; use the property examples.
+  # Overlay appends to arrays; generator/tests/test_openapi_overlay.py checks both start empty.
+  - target: $.components.schemas.gatewayServiceCreateRequest.examples[0]
+    update:
+      features:
+        - nat
+      routers:
+        - uuid: fedcba98-7654-3210-fedc-ba9876543210
+  # Optional features is [] despite minItems 1; omit it rather than guess PATCH semantics.
+  - target: $.components.schemas.gatewayServiceModifyRequest.examples[0].features
+    remove: true
+  # MySQL version "8" is not in enum ["8.4"]; PostgreSQL clone "13" is not in 15-18.
+  - target: $.components.schemas.databaseServiceCreateOpenAPI.examples[0].properties
+    update:
+      version: "8.4"
+  - target: $.components.schemas.databaseServiceModifyOpenAPI.examples[0].properties
+    update:
+      version: "8.4"
+  - target: $.components.schemas.databaseServiceCloneOpenAPI.examples[0].properties
+    update:
+      version: "15"
+
+  # openapi-python-client 0.29.1 parses a const-in-union branch with an unguarded
+  # raise, so every non-empty value fails. maxLength 0 is the equivalent empty string.
+  # Source fix needed: none; drop this group once the generator handles const branches.
+  - target: $.components.schemas.serverVncPort.oneOf[1].const
+    remove: true
+  - target: $.components.schemas.serverVncPort.oneOf[1]
+    update:
+      maxLength: 0
+  - target: $.components.schemas.storageImport.properties.completed.oneOf[0].const
+    remove: true
+  - target: $.components.schemas.storageImport.properties.completed.oneOf[0]
+    update:
+      type: string
+      maxLength: 0
+
+  # Audit log examples use resource type "network", which both resource type enums omit.
+  # Source fix needed: add network to the audit log resource type enums.
+  - target: $.components.schemas.auditLogsFilterOptionsResponse.properties.resource_types.items
+    update:
+      enum:
+        - network
+  - target: $.components.schemas.auditLogsResourceTypesParameter.items
+    update:
+      enum:
+        - network
+
+  # The object storage list example has a "static" endpoint, which the type enum omits.
+  # Source fix needed: add static to the endpoint type enum.
+  - target: $.components.schemas.objectStorage2EndpointResponse.properties.type
+    update:
+      enum:
+        - static
+
+  # Cluster examples omit the required version (and labels); use the default version.
+  # Source fix needed: include every required kubernetesCluster field in the examples.
+  # Static copy of the create request labels; generator/tests/test_openapi_overlay.py checks drift.
+  - target: $.components.responses.kubernetesGetClusters.content['application/json'].example[*]
+    update:
+      version: "1.26"
+      labels:
+        - key: env
+          value: prod
+        - key: app
+          value: cats-dating-app
+  - target: $.components.responses['kubernetesGetCluster','kubernetesPatchCluster','kubernetesPostCluster'].content['application/json'].example
+    update:
+      version: "1.26"
+      labels:
+        - key: env
+          value: prod
+        - key: app
+          value: cats-dating-app
+  - target: $.components.requestBodies.kubernetesPostCluster.content['application/json'].example
+    update:
+      version: "1.26"
+
+  # Database type examples put property values where the schema expects property definitions.
+  # Source fix needed: give the examples property definitions, not configured values.
+  - target: $.components.schemas.databaseAvailableServiceTypesResponse.examples[0].postgres.properties
+    remove: true
+  - target: $.components.schemas.databaseAvailableServiceTypesResponse.examples[0].postgres
+    update:
+      properties: {}
+  - target: $.components.schemas.databaseServiceTypeResponse.examples[0].properties
+    remove: true
+  - target: $.components.schemas.databaseServiceTypeResponse.examples[0]
+    update:
+      properties: {}
+
+  # correlation_id is declared a UUID, but its examples are "req-..." strings.
+  # Source fix needed: drop format uuid or use UUID examples.
+  - target: $.components.schemas.loadBalancerProblemResponse.properties.correlation_id.format
+    remove: true
+
+  # Tunnel examples name the authentication type key "type"; the schema calls it authentication.
+  # Source fix needed: rename the example key to authentication.
+  - target: $.components.schemas['gatewayTunnelCreateRequest','gatewayTunnelModifyRequest'].examples[0].ipsec.authentication.type
+    remove: true
+  - target: $.components.schemas['gatewayTunnelCreateRequest','gatewayTunnelModifyRequest'].examples[0].ipsec.authentication
+    update:
+      authentication: psk
+
+  # additionalProperties does not see oneOf branch properties, so it rejects every clone body.
+  # Source fix needed: use unevaluatedProperties false on the clone request wrapper.
+  - target: $.components.schemas.databaseServiceCloneOpenAPI.additionalProperties
+    remove: true
+  - target: $.components.schemas.databaseServiceCloneOpenAPI
+    update:
+      unevaluatedProperties: false
+
+  # The available-upgrades response is an object, not a singleton array.
+  # Source fix needed: make the example match the response schema.
+  - target: $.components.responses.kubernetesGetAvailableUpgrades.content['application/json'].example
+    remove: true
+  - target: $.components.responses.kubernetesGetAvailableUpgrades.content['application/json']
+    update:
+      example:
+        versions:
+          - 1.31.8
+          - 1.32.0
+
+  # Created log sessions must use the session details object shape.
+  # Source fix needed: return session identifiers and tokens in the example.
+  - target: $.components.schemas.gatewayServiceLogSessionCreateResponse.examples[0].sessions
+    remove: true
+  - target: $.components.schemas.gatewayServiceLogSessionCreateResponse.examples[0]
+    update:
+      sessions:
+        - session_id: 01234567-89ab-cdef-0123-456789abcdef
+          token: 01234567-89ab-cdef-0123-456789abcdef
+
+  # Database network create examples must use the only allowed request type.
+  # Source fix needed: use the private network type in both examples.
+  - target: $.components.schemas.databaseNetworkCreate.examples[*].type
+    update: private
+
+  # Multiple firewall rules are wrapped in an object with a rules property.
+  # Source fix needed: wrap the existing rule array without changing its values.
+  - target: $.components.schemas.firewallRulesetFirewallMultipleRuleCreate.examples
+    remove: true
+  - target: $.components.schemas.firewallRulesetFirewallMultipleRuleCreate
+    update:
+      examples:
+        - rules:
+            - direction: in
+              action: accept
+              family: IPv4
+              protocol: tcp
+              enabled: false
+            - direction: out
+              action: drop
+              family: IPv6

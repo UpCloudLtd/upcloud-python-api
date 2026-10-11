@@ -9,6 +9,7 @@ class AuditLogsFilterOptionsResponseResourceTypesItem(StrEnum):
     MANAGED_LOADBALANCER = "managed-loadbalancer"
     MANAGED_LOADBALANCER_CERTIFICATE_BUNDLE = "managed-loadbalancer-certificate-bundle"
     MANAGED_OBJECT_STORAGE = "managed-object-storage"
+    NETWORK = "network"
     NETWORK_GATEWAY = "network-gateway"
     SERVER = "server"
     SSH_KEY = "ssh-key"

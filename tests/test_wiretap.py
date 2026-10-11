@@ -11,7 +11,7 @@ import httpx
 
 from upcloud_api import AuthenticatedClient
 
-from .wiretap_cases import load_cases
+from .wiretap_cases import classify_wiretap_response, load_cases
 
 
 class WiretapTests(unittest.IsolatedAsyncioTestCase):
@@ -34,6 +34,7 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
             "discovery_errors": errors,
             "passed": [],
             "failed": [],
+            "known_limitations": [],
         }
         cls.addClassCleanup(cls.write_inventory)
 
@@ -43,11 +44,17 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
         print(
             f"\nWiretap: {len(cls.cases)} operations runnable; "
             f"{len(cls.inventory['unsupported'])} unsupported; "
-            f"{len(cls.inventory['failed'])} failed calls. Inventory: {cls.artifacts / 'coverage.json'}"
+            f"{len(cls.inventory['known_limitations'])} known Wiretap limitations; "
+            f"{len(cls.inventory['failed'])} failed calls. "
+            f"Inventory: {cls.artifacts / 'coverage.json'}"
         )
 
-    def assert_result(self, case, result, request):
-        self.assertEqual(result.status_code, case.status)
+    def assert_result(self, case, mode, result, request):
+        limitation = classify_wiretap_response(
+            case, mode, result.status_code, result.content, request.method, request.url.path
+        )
+        if limitation is None:
+            self.assertEqual(result.status_code, case.status)
         self.assertEqual(request.headers.get("Authorization"), "Bearer sdk-validation")
         for name, value in case.query.items():
             self.assertEqual(request.url.params.get(name), value, f"Dropped/changed query {name}")
@@ -59,6 +66,23 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
         if hasattr(result.parsed, "to_dict"):
             encoded = result.parsed.to_dict()
             self.assertEqual(type(result.parsed).from_dict(encoded).to_dict(), encoded)
+        return limitation
+
+    def record_outcome(self, case, mode, result, limitation):
+        if limitation is None:
+            self.inventory["passed"].append({"operation": case.operation_id, "mode": mode})
+            return
+        self.inventory["known_limitations"].append(
+            {
+                "operation": case.operation_id,
+                "mode": mode,
+                "expected_status": limitation.expected_status,
+                "observed_status": int(result.status_code),
+                "observed_body_marker": limitation.observed_body_marker,
+                "reason": limitation.reason,
+                "reference": limitation.reference,
+            }
+        )
 
     def record_failure(self, case, mode, error, responses):
         failure = {
@@ -102,7 +126,7 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                         result = importlib.import_module(case.module).sync_detailed(
                             client=client, **case.kwargs
                         )
-                    self.assert_result(case, result, requests[-1])
+                    limitation = self.assert_result(case, "sync", result, requests[-1])
                 except (
                     AssertionError,
                     ValueError,
@@ -113,7 +137,7 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                 ) as error:
                     self.record_failure(case, "sync", error, responses)
                     raise
-                self.inventory["passed"].append({"operation": case.operation_id, "mode": "sync"})
+                self.record_outcome(case, "sync", result, limitation)
 
     async def test_async_examples(self):
         for case in self.cases:
@@ -141,7 +165,7 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                         result = await importlib.import_module(case.module).asyncio_detailed(
                             client=client, **case.kwargs
                         )
-                    self.assert_result(case, result, requests[-1])
+                    limitation = self.assert_result(case, "async", result, requests[-1])
                 except (
                     AssertionError,
                     ValueError,
@@ -152,4 +176,4 @@ class WiretapTests(unittest.IsolatedAsyncioTestCase):
                 ) as error:
                     self.record_failure(case, "async", error, responses)
                     raise
-                self.inventory["passed"].append({"operation": case.operation_id, "mode": "async"})
+                self.record_outcome(case, "async", result, limitation)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, Literal, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -20,7 +20,7 @@ class ServerRemoteAccessDetailsServer:
         vnc_host (str): VNC host IP address or noVNC proxy hostname. Empty when no VNC endpoint is assigned. Example:
             94.237.1.20.
         vnc_password (str): VNC password Example: A1b2C3d4.
-        vnc_port (int | Literal['']): VNC or noVNC proxy port. Empty when no VNC endpoint is assigned. Example: 5901.
+        vnc_port (int | str): VNC or noVNC proxy port. Empty when no VNC endpoint is assigned. Example: 5901.
         remote_access_type (ServerRemoteAccessType): Protocol used for remote access Example: vnc.
         remote_access_enabled (ServerRemoteAccessEnabled): Whether remote access is enabled Example: yes.
         remote_access_password (str): Eight-character alphanumeric password used to authenticate remote access Example:
@@ -30,7 +30,7 @@ class ServerRemoteAccessDetailsServer:
     state: ServerState
     vnc_host: str
     vnc_password: str
-    vnc_port: int | Literal[""]
+    vnc_port: int | str
     remote_access_type: ServerRemoteAccessType
     remote_access_enabled: ServerRemoteAccessEnabled
     remote_access_password: str
@@ -42,7 +42,7 @@ class ServerRemoteAccessDetailsServer:
 
         vnc_password = self.vnc_password
 
-        vnc_port: int | Literal[""]
+        vnc_port: int | str
         vnc_port = self.vnc_port
 
         remote_access_type = self.remote_access_type.value
@@ -76,14 +76,8 @@ class ServerRemoteAccessDetailsServer:
 
         vnc_password = d.pop("vnc_password")
 
-        def _parse_vnc_port(data: object) -> int | Literal[""]:
-            componentsschemasserver_vnc_port_type_1 = cast(Literal[""], data)
-            if componentsschemasserver_vnc_port_type_1 != "":
-                raise ValueError(
-                    f"/components/schemas/serverVncPort_type_1 must match const '', got '{componentsschemasserver_vnc_port_type_1}'"
-                )
-            return componentsschemasserver_vnc_port_type_1
-            return cast(int | Literal[""], data)
+        def _parse_vnc_port(data: object) -> int | str:
+            return cast(int | str, data)
 
         vnc_port = _parse_vnc_port(d.pop("vnc_port"))
 
