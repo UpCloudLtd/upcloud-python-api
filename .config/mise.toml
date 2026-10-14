@@ -1,5 +1,5 @@
 [env]
-# Every uv command must match uv.lock; only the lock task may change it.
+# Every uv command must match uv.lock. Only lock and version:set may change it.
 UV_LOCKED = "1"
 
 [tools]
@@ -75,14 +75,15 @@ usage = 'flag "--force" help="Overwrite uncommitted changes in upcloud_api/"'
 run = 'bash generator/scripts/generate.sh ${usage_force:+--force}'
 
 [tasks.lock]
-description = "Update uv.lock (the only task that may change it)"
+description = "Update uv.lock"
 env = { UV_LOCKED = "false" }
 run = "uv lock"
 
 [tasks."version:set"]
-description = "Set the package version in pyproject.toml via uv version (modifies source)"
+description = "Set the package version in pyproject.toml and uv.lock via uv version (modifies source)"
+env = { UV_LOCKED = "false" }
 usage = 'arg "<version>" help="Python package version, for example 3.0.0a1"'
-run = 'uv version --frozen "$usage_version"'
+run = 'uv version --no-sync "$usage_version"'
 
 [tasks."spec:download"]
 description = "Download a released spec for CI regeneration (requires SPECS_ACCESS_PAT; overwrites generator/openapi/spec.json)"

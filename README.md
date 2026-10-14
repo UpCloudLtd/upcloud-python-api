@@ -68,9 +68,9 @@ The `generate` task runs `generator/scripts/generate.sh` on the checked-in
 `generator/openapi/spec.json` (no download). It refuses to overwrite uncommitted
 changes in `upcloud_api/` unless you pass `mise run generate --force`.
 `mise run regenerate` runs `generate`, then the `check` gate, and stops at the
-first failure with a non-zero exit; the generated changes stay in place for
-investigation. Neither task changes `pyproject.toml` or `uv.lock`; a stale lock
-fails the `uv` commands, and only `mise run lock` updates it.
+first failure with a non-zero exit. The generated changes stay in place for
+investigation. Neither task changes `pyproject.toml` or `uv.lock`. A stale lock
+fails the `uv` commands, and only `mise run lock` and `mise run version:set` update it.
 
 `generate.sh` applies `generator/openapi/overlay.yaml` with
 `speakeasy overlay apply --strict`, runs the jq filter in
@@ -122,9 +122,9 @@ UV_PYTHON=pypy3.11 mise run test:unit
 | `validate` | Run `check` and `findings`, even if `check` fails. Kept for one release. |
 | `build` | Build a wheel and source distribution into `dist/`, then run `twine check`. |
 | `generate [--force]` | Regenerate the SDK from the checked-in spec. |
-| `regenerate` | Run `generate`, then `check`; stop at the first failure. |
-| `lock` | Update `uv.lock` (the only task that may change it). |
-| `version:set <version>` | Explicitly change `[project].version` in `pyproject.toml` with `uv version --frozen`. |
+| `regenerate` | Run `generate`, then `check`, and stop at the first failure. |
+| `lock` | Update `uv.lock`. |
+| `version:set <version>` | Explicitly change `[project].version` in `pyproject.toml` and `uv.lock` with `uv version --no-sync`. |
 | `spec:download <version> <asset_url>` | Download a released spec using `SPECS_ACCESS_PAT` (used by the regeneration workflow). |
 | `examples [name...]` | L6: run live mdtest documents, all four by default. |
 
@@ -136,7 +136,7 @@ Every check belongs to one layer, and every defect fails exactly one check.
 | --- | --- | --- |
 | L1 tools | The shared shell scripts behave safely. | `generator/scripts/tests/*.bats` |
 | L2 preprocess | Overlay fixes and title filtering are correct and idempotent. | `generator/tests/test_strip_schema_titles.py`, `test_openapi_overlay.py`, `test_endpoint_coverage.py` |
-| L3 generation | Committed output equals generator output; every spec operation is generated. | `check:generated`, `check:endpoints` |
+| L3 generation | Committed output equals generator output, and every spec operation is generated. | `check:generated`, `check:endpoints` |
 | L4 SDK unit | Generated imports, enums, `client.py.jinja` behavior, contract-case derivation. | `tests/test_sdk_smoke.py`, `tests/test_wiretap_cases.py` |
 | L5 contract | SDK calls match the spec on the wire. | `tests/test_wiretap.py` via `wiretap.sh` |
 | L6 live | Real API behavior. | `examples/**/*.md` via mdtest |
@@ -150,7 +150,7 @@ drafts while it fails.
 
 `mise install` installs every pinned tool, including `wiretap`, `bats`,
 `shellcheck`, `actionlint`, `twine`, and `mdtest` (built with the pinned Go).
-Wiretap runs as a local binary in mock mode; it doesn't need Docker or Podman.
+Wiretap runs as a local binary in mock mode and doesn't need Docker or Podman.
 No task except `examples` needs UpCloud credentials or makes real UpCloud requests,
 but the first run needs network access to install tools and dependencies.
 
@@ -158,7 +158,7 @@ The existing endpoint and Wiretap findings remain strict failures, not exemption
 `generator/scripts/wiretap.sh` starts Wiretap, sends a deliberately invalid canary
 request, runs the Python tests, and then fails if the report is missing, lacks the
 canary, or contains any other violation. It writes `wiretap.log` and
-`wiretap-report.json`; the Python tests add the `coverage.json` case inventory,
+`wiretap-report.json`. The Python tests add the `coverage.json` case inventory,
 which lists operations without generated code under `missing` (`check:endpoints`
 reports them as failures). All three go to `validation-artifacts/` (override with
 `VALIDATION_ARTIFACTS`). CI uploads these diagnostics.
@@ -169,7 +169,7 @@ The task names, their inputs, and their exit semantics are the portable interfac
 `setup`, `lint`, `generate`, `test:tools`, `test:preprocess`, `test:unit`,
 `check:generated`, `check:endpoints`, `test:contract`, `check`, `findings`,
 `build`, `spec:download`, `regenerate`, `examples`, and `version:set`. Go and PHP
-SDK repositories can use the same names; only the `run` bodies are
+SDK repositories can use the same names. Only the `run` bodies are
 language-specific.
 
 Scripts with the header line `Copied unchanged into each UpCloud SDK repository`
@@ -199,7 +199,7 @@ deliberately want a newer released spec.
 
 Downloading is optional. Set `SPECS_ACCESS_PAT` in your shell before downloading a
 release asset. The URL
-must be a GitHub API release-asset URL; `--spec-file` selects the tarball member and
+must be a GitHub API release-asset URL. `--spec-file` selects the tarball member and
 defaults to `upcloud-public-openapi.json`:
 
 ```bash
@@ -211,7 +211,7 @@ mise run regenerate
 
 Downloading replaces `generator/openapi/spec.json` only after the selected member
 has been downloaded and checked as an OpenAPI JSON document. The token is sent only
-to `api.github.com`; curl doesn't forward it when the asset redirects to another
+to `api.github.com`. curl doesn't forward it when the asset redirects to another
 host. Use an actual release asset
 ID rather than the placeholder above. Package version changes are separate and explicit:
 
@@ -226,7 +226,7 @@ remain GitHub Actions responsibilities, not local tasks.
 ### Live examples
 
 The root is the distributable `upcloud-api` package. Set `UPCLOUD_TOKEN` for a
-separate development account before running a live example; `mise install`
+separate development account before running a live example. `mise install`
 provides [mdtest](https://github.com/UpCloudLtd/mdtest):
 
 ```bash
@@ -241,12 +241,12 @@ These tasks create real UpCloud resources and can incur charges. They run
 checks the token and mdtest availability before invocation, and sets the absolute
 `UPCLOUD_SDK_PATH` so mdtest imports the local SDK from its temporary
 working directory. CI runs `mise run examples` for same-repository PRs and manual
-dispatches; fork PRs are skipped because they cannot read the token.
+dispatches. Fork PRs are skipped because they cannot read the token.
 
-`SPEC_VERSION` follows the OpenAPI spec, while the package version in the root
-`pyproject.toml` defaults to `3.0.0.dev0` for development builds. The v3 release
-workflows replace it with the release tag or manual TestPyPI input (for example,
-`3.0.0a1`) before building.
+`SPEC_VERSION` follows the OpenAPI spec, while the package version is tracked in the root
+`pyproject.toml` and `uv.lock`. The v3 release
+workflows update it from the release tag or manual TestPyPI input (for example,
+`3.0.0a1`) via `mise run version:set` before building.
 The root `pyproject.toml`, README, and license are not overwritten by regeneration.
 
 ## Changelog
