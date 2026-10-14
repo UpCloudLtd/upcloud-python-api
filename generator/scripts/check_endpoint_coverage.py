@@ -12,7 +12,7 @@ from collections import Counter
 from pathlib import Path
 
 HTTP_METHODS = {"get", "put", "post", "delete", "patch", "head", "options", "trace"}
-SURFACES = {"sync_detailed", "asyncio_detailed"}
+FUNCTIONS = {"sync_detailed", "asyncio_detailed"}
 
 
 def normalize_path(path: str) -> str:
@@ -46,13 +46,13 @@ def endpoint_contract(path: Path) -> tuple[str, str]:
         for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     }
-    missing = SURFACES - functions.keys()
+    missing = FUNCTIONS - functions.keys()
     if missing:
-        raise ValueError(f"{path}: missing call surfaces {sorted(missing)}")
+        raise ValueError(f"{path}: missing functions {sorted(missing)}")
     if not isinstance(functions["asyncio_detailed"], ast.AsyncFunctionDef):
         raise ValueError(f"{path}: asyncio_detailed is not async")
     if ("sync" in functions) != ("asyncio" in functions):
-        raise ValueError(f"{path}: inconsistent parsed sync/async surfaces")
+        raise ValueError(f"{path}: inconsistent sync/async functions")
     builder = functions.get("_get_kwargs")
     if builder is None:
         raise ValueError(f"{path}: missing _get_kwargs")
@@ -115,7 +115,7 @@ def check_coverage(spec: dict, directory: Path, patched: dict | None = None) -> 
     ids = Counter(operation["operationId"] for operation in expected.values())
     errors.extend(f"Duplicate operationId: {name}" for name, count in ids.items() if count > 1)
     if patched is not None and expected.keys() != operations(patched).keys():
-        errors.append("Preprocessing changed the method/path inventory")
+        errors.append("Preprocessing changed the operations")
     return errors
 
 

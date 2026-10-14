@@ -48,7 +48,7 @@ def recover_documented_parse_failure(case, mode, error, responses, requests):
 
 
 class WiretapTests(unittest.IsolatedAsyncioTestCase):
-    """Exercise the SDK; generator/scripts/wiretap.sh owns the server and the report check."""
+    """Run SDK calls against Wiretap (wiretap.sh starts the server and checks the report)."""
 
     @classmethod
     def setUpClass(cls):

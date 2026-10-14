@@ -38,7 +38,7 @@ class EndpointCoverageTests(unittest.TestCase):
             self.assertTrue(any("Missing" in error for error in errors))
             self.assertTrue(any("Unexpected" in error for error in errors))
 
-    def test_duplicates_and_missing_surfaces_fail(self):
+    def test_duplicates_and_missing_functions_fail(self):
         with tempfile.TemporaryDirectory() as directory:
             api = Path(directory)
             (api / "server").mkdir()
@@ -48,7 +48,7 @@ class EndpointCoverageTests(unittest.TestCase):
             second.write_text(SOURCE)
             self.assertTrue(any("Duplicate generated" in e for e in check_coverage(SPEC, api)))
             second.write_text(SOURCE.replace("async def asyncio_detailed(): pass", ""))
-            self.assertTrue(any("missing call surfaces" in e for e in check_coverage(SPEC, api)))
+            self.assertTrue(any("missing functions" in e for e in check_coverage(SPEC, api)))
 
     def test_unsupported_expressions_and_removed_operations_fail(self):
         with tempfile.TemporaryDirectory() as directory:

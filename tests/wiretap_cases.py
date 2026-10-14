@@ -159,7 +159,7 @@ def derive_cases(
     generated, errors = generated_operations(api_directory)
     cases = []
     unsupported = []
-    # check:endpoints owns missing-operation failures; they are inventoried here only.
+    # check:endpoints checks for missing operations. Here we only record them.
     missing = []
     for contract, operation in operations(spec).items():
         if contract not in generated:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# wiretap.sh report gate, with fake wiretap and curl binaries; jq is real.
+# Test wiretap.sh with fake wiretap and curl binaries (jq is real).
 
 bats_require_minimum_version 1.5.0
 

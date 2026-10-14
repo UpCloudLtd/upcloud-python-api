@@ -52,23 +52,22 @@ jobs:
           SPECS_ACCESS_PAT: ${{ secrets.SPECS_ACCESS_PAT }}
         run: mise run spec:download "$SPEC_VERSION" "$ASSET_URL" --spec-file "$SPEC_FILE"
 
-      # Integrity gate: if generation or `check` fails, no PR is opened.
-      - name: Generate, then run the check gate
+      - name: Generate and run checks
         id: regenerate
         run: mise run regenerate
 
-      - name: Run the findings gate (reported in the PR; does not block it)
+      - name: Run endpoint and contract checks
         id: findings
         if: ${{ !cancelled() && (steps.regenerate.outcome == 'success' || steps.regenerate.outcome == 'failure') }}
         continue-on-error: true
         run: mise run findings
 
-      - name: Save the generated changes as a patch
+      - name: Save generated changes as a patch
         run: |
           git add -A -- generator/openapi upcloud_api
           git diff --cached --binary > regenerate.patch
 
-      - name: Upload generated changes and contract diagnostics
+      - name: Upload generated changes and Wiretap artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -124,8 +123,8 @@ jobs:
           body: |
             Automated regeneration for spec version `${{ env.SPEC_VERSION }}`.
 
-            The integrity gate (`mise run check`) passed.
-            Findings gate (`mise run findings`): **${{ needs.generate.outputs.findings }}**.
-            The PR is a draft while findings fail; see the `regenerated-sdk` artifact
+            `mise run check` passed.
+            `mise run findings`: **${{ needs.generate.outputs.findings }}**.
+            The PR is opened as a draft when `findings` fails. See the `regenerated-sdk` artifact
             of ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             for the Wiretap and endpoint reports.

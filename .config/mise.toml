@@ -29,40 +29,40 @@ description = "Static checks: ruff, shellcheck, and actionlint via pre-commit"
 run = "uv run pre-commit run --all-files"
 
 [tasks."test:tools"]
-description = "L1: test the shared shell scripts offline (bats)"
+description = "Test shell scripts offline with bats"
 run = "bats generator/scripts/tests"
 
 [tasks."test:preprocess"]
-description = "L2: test spec patching and the endpoint checker"
+description = "Test spec patching and endpoint coverage"
 run = "uv run python -m unittest generator.tests.test_strip_schema_titles generator.tests.test_openapi_overlay generator.tests.test_endpoint_coverage"
 
 [tasks."test:unit"]
-description = "L4: test the generated SDK and contract-case derivation offline"
+description = "Run unit tests offline"
 run = "uv run python -m unittest tests.test_sdk_smoke tests.test_wiretap_cases"
 
 [tasks."check:generated"]
-description = "L3: fail if regeneration changes upcloud_api/ or the patched spec"
+description = "Fail if regeneration changes upcloud_api/ or the patched spec"
 run = "bash generator/scripts/check_generated.sh upcloud_api generator/openapi/spec.patched.json -- mise run generate --force"
 
 [tasks."check:endpoints"]
-description = "L3: check that every spec operation has generated code"
+description = "Check that every spec operation has generated code"
 run = "uv run python generator/scripts/check_endpoint_coverage.py generator/openapi/spec.json generator/openapi/spec.patched.json upcloud_api/api"
 
 [tasks."test:contract"]
-description = "L5: run SDK calls against a local Wiretap mock; writes validation-artifacts/"
+description = "Run SDK calls against a local Wiretap mock (writes validation-artifacts/)"
 run = 'VALIDATION_ARTIFACTS="${VALIDATION_ARTIFACTS:-validation-artifacts}" bash generator/scripts/wiretap.sh generator/openapi/spec.patched.json uv run python -m unittest tests.test_wiretap'
 
 [tasks.check]
 alias = "test"
-description = "Integrity gate (must be green): lint, test:tools, test:preprocess, test:unit, check:generated"
+description = "Run required checks: lint, test:tools, test:preprocess, test:unit, check:generated"
 run = "mise run --jobs 1 lint ::: test:tools ::: test:preprocess ::: test:unit ::: check:generated"
 
 [tasks.findings]
-description = "Findings gate (red on known spec/generator defects): check:endpoints, test:contract"
+description = "Run check:endpoints and test:contract (fails on known spec/generator issues)"
 run = "mise run --continue-on-error --jobs 1 check:endpoints ::: test:contract"
 
 [tasks.validate]
-description = "Run check and findings, even if check fails (kept for one release)"
+description = "Run check and findings, even if check fails"
 run = "mise run --continue-on-error --jobs 1 check ::: findings"
 
 [tasks.build]
@@ -95,10 +95,10 @@ flag "--spec-file <file>" default="upcloud-public-openapi.json" help="Spec membe
 run = 'bash generator/scripts/download_spec.sh --version "$usage_version" --asset-url "$usage_asset_url" --spec-file "$usage_spec_file"'
 
 [tasks.regenerate]
-description = "Generate, then run the check gate; stops at the first failure"
+description = "Generate the SDK and run checks"
 run = ["mise run generate", "mise run check"]
 
 [tasks.examples]
-description = "L6: run live mdtest examples, all by default (creates real UpCloud resources; requires UPCLOUD_TOKEN)"
+description = "Run live mdtest examples (creates real UpCloud resources, requires UPCLOUD_TOKEN)"
 usage = 'arg "[name]..." var=#true help="Directory under examples/ (default: all)"'
 run = 'bash generator/scripts/run_examples.sh ${usage_name:-file-storage object-storage tag kubernetes}'

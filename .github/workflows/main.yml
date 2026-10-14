@@ -26,7 +26,7 @@ jobs:
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
           version: 2026.10.3
-      - name: Integrity gate (must be green)
+      - name: Run checks
         run: mise run check
   unit:
     runs-on: ubuntu-latest
@@ -59,9 +59,9 @@ jobs:
         uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
         with:
           version: 2026.10.3
-      - name: Findings gate (red on known spec or generator defects; does not block release)
+      - name: Run endpoint and contract checks
         run: mise run findings
-      - name: Upload contract diagnostics
+      - name: Upload Wiretap artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

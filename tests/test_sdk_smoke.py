@@ -70,7 +70,7 @@ async def call_gateway_plan_async(client):
 
 
 class SDKSmokeTests(unittest.TestCase):
-    """Check generated surfaces without making any network requests."""
+    """Test generated client and models without network requests."""
 
     def test_every_generated_api_and_model_module_imports(self):
         """Generator output and spec patches: every `api/` and `models/` module imports."""

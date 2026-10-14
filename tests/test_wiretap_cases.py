@@ -115,8 +115,8 @@ class CaseDerivationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             convert("invalid", Literal["yes", "no"])
 
-    def test_operation_without_generated_code_is_inventoried_as_missing(self):
-        """A later derivable operation must not erase the missing-operation inventory."""
+    def test_operation_without_generated_code_is_recorded_as_missing(self):
+        """A later derivable operation must not clear the missing operations list."""
         ok = {"responses": {"200": {"description": "ok"}}}
         spec = {
             "paths": {
@@ -318,7 +318,7 @@ class KnownWiretapLimitationsTests(unittest.TestCase):
         )
         changed_title = json.loads(documented_body())
         changed_title["title"] = "Other"
-        # Parse failures before classification surface as the genuine model KeyError, not as
+        # Parse failures before classification raise the model KeyError, not
         # an AssertionError, because only the exact documented response is adapted.
         scenarios = {
             "wrong status": (self.serve(status=500), label, KeyError),
