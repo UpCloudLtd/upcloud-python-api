@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0a1] - 2026-10-14
+
 ### Changed
 
 - **Breaking (v3 alpha):** replace the handwritten `CloudManager` client with an OpenAPI-generated client (`from upcloud_api import AuthenticatedClient`). Install with `pip install "upcloud-api==3.0.0a1"`. Default `pip install upcloud-api` remains 2.x.
-- Rebased on the uv-based v2 developer tooling; use a root uv workspace and `uv_build` for the generated SDK, and run examples against the local SDK.
 
 ## [2.9.0] - 2025-09-25
 
@@ -326,7 +327,7 @@ Move to X.Y.Z versioning and bump version from 0.1(.0) to 0.1.1
 
 First release, available at https://pypi.python.org/pypi/upcloud-api-python
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v2.9.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v3.0.0a1...HEAD
 [0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1.1
 [0.2.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.2.0
@@ -356,3 +357,4 @@ First release, available at https://pypi.python.org/pypi/upcloud-api-python
 [2.7.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.7.0
 [2.8.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.8.0
 [2.9.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.9.0
+[3.0.0a1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/3.0.0a1

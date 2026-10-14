@@ -1,6 +1,6 @@
 [project]
 name = "upcloud-api"
-version = "3.0.0.dev0"
+version = "3.0.0a1"
 description = "A client library for accessing UpCloud API"
 authors = []
 maintainers = [{ name = "UpCloud", email = "hello@upcloud.com" }]
