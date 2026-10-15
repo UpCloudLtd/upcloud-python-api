@@ -12,7 +12,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.create_network_request_network_ip_networks import CreateNetworkRequestNetworkIpNetworks
-    from ..models.network_labels import NetworkLabels
+    from ..models.network_label import NetworkLabel
 
 
 T = TypeVar("T", bound="CreateNetworkRequestNetwork")
@@ -31,8 +31,7 @@ class CreateNetworkRequestNetwork:
         zone (str): Zone identifier
         ip_networks (CreateNetworkRequestNetworkIpNetworks):
         router (UUID | Unset): Universally unique identifier Example: 0414e0d7-4436-4037-9dd8-6eaf47dce599.
-        labels (NetworkLabels | Unset): Collection of key/value labels for a resource. Example: {'label': [{'key':
-            'env', 'value': 'prod'}, {'key': 'team', 'value': 'network'}]}.
+        labels (list[NetworkLabel] | Unset): Key/value labels attached to the network.
     """
 
     type_: NetworkType
@@ -40,7 +39,7 @@ class CreateNetworkRequestNetwork:
     zone: str
     ip_networks: CreateNetworkRequestNetworkIpNetworks
     router: UUID | Unset = UNSET
-    labels: NetworkLabels | Unset = UNSET
+    labels: list[NetworkLabel] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -56,9 +55,12 @@ class CreateNetworkRequestNetwork:
         if not isinstance(self.router, Unset):
             router = str(self.router)
 
-        labels: dict[str, Any] | Unset = UNSET
+        labels: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.labels, Unset):
-            labels = self.labels.to_dict()
+            labels = []
+            for labels_item_data in self.labels:
+                labels_item = labels_item_data.to_dict()
+                labels.append(labels_item)
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -82,7 +84,7 @@ class CreateNetworkRequestNetwork:
         from ..models.create_network_request_network_ip_networks import (
             CreateNetworkRequestNetworkIpNetworks,  # noqa: PLC0415
         )
-        from ..models.network_labels import NetworkLabels  # noqa: PLC0415
+        from ..models.network_label import NetworkLabel  # noqa: PLC0415
 
         d = dict(src_dict)
         type_ = NetworkType(d.pop("type"))
@@ -101,11 +103,13 @@ class CreateNetworkRequestNetwork:
             router = UUID(_router)
 
         _labels = d.pop("labels", UNSET)
-        labels: NetworkLabels | Unset
-        if isinstance(_labels, Unset):
-            labels = UNSET
-        else:
-            labels = NetworkLabels.from_dict(_labels)
+        labels: list[NetworkLabel] | Unset = UNSET
+        if _labels is not UNSET:
+            labels = []
+            for labels_item_data in _labels:
+                labels_item = NetworkLabel.from_dict(labels_item_data)
+
+                labels.append(labels_item)
 
         create_network_request_network = cls(
             type_=type_,

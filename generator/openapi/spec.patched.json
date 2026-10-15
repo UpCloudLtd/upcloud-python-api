@@ -16778,7 +16778,11 @@
                 ]
               },
               "labels": {
-                "$ref": "#/components/schemas/networkLabels"
+                "type": "array",
+                "description": "Key/value labels attached to the network.",
+                "items": {
+                  "$ref": "#/components/schemas/networkLabel"
+                }
               }
             },
             "required": [
@@ -16854,9 +16858,6 @@
               "tags": {
                 "$ref": "#/components/schemas/networkTags"
               },
-              "labels": {
-                "$ref": "#/components/schemas/networkLabels"
-              },
               "router": {
                 "$ref": "#/components/schemas/networkUuid"
               },
@@ -16921,6 +16922,13 @@
               },
               "main_account_id": {
                 "$ref": "#/components/schemas/networkAccountId"
+              },
+              "labels": {
+                "type": "array",
+                "description": "Key/value labels attached to the network.",
+                "items": {
+                  "$ref": "#/components/schemas/networkLabel"
+                }
               }
             },
             "required": [
@@ -17169,6 +17177,13 @@
           },
           "zone": {
             "$ref": "#/components/schemas/networkZone"
+          },
+          "labels": {
+            "type": "array",
+            "description": "Key/value labels attached to the network.",
+            "items": {
+              "$ref": "#/components/schemas/networkLabel"
+            }
           }
         },
         "required": [

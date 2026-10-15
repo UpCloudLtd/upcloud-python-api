@@ -13,7 +13,7 @@ from ..models.network_type import NetworkType
 
 if TYPE_CHECKING:
     from ..models.modify_network_request_network_ip_networks import ModifyNetworkRequestNetworkIpNetworks
-    from ..models.network_labels import NetworkLabels
+    from ..models.network_label import NetworkLabel
     from ..models.network_tags import NetworkTags
 
 
@@ -29,27 +29,26 @@ class ModifyNetworkRequestNetwork:
         zone (str): Zone identifier
         tags (NetworkTags): Container object for resource tags. Example: {'tags': {'tag': [{'name': 'PROD',
             'description': 'Production servers', 'servers': {'server': ['0077fa3d-32db-4b09-9f5f-30d9e9afb565']}}]}}.
-        labels (NetworkLabels): Collection of key/value labels for a resource. Example: {'label': [{'key': 'env',
-            'value': 'prod'}, {'key': 'team', 'value': 'network'}]}.
         router (UUID): Universally unique identifier Example: 0414e0d7-4436-4037-9dd8-6eaf47dce599.
         grt_export (NetworkBoolean01): Schema for boolean-like values encoded as 0 or 1.
         parent_network (str):
         ip_networks (ModifyNetworkRequestNetworkIpNetworks):
         network_features (NetworkFeatures): Features available for a network
         main_account_id (int): Unique numeric identifier of an account.
+        labels (list[NetworkLabel]): Key/value labels attached to the network.
     """
 
     type_: NetworkType
     name: str
     zone: str
     tags: NetworkTags
-    labels: NetworkLabels
     router: UUID
     grt_export: NetworkBoolean01
     parent_network: str
     ip_networks: ModifyNetworkRequestNetworkIpNetworks
     network_features: NetworkFeatures
     main_account_id: int
+    labels: list[NetworkLabel]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -60,8 +59,6 @@ class ModifyNetworkRequestNetwork:
         zone = self.zone
 
         tags = self.tags.to_dict()
-
-        labels = self.labels.to_dict()
 
         router = str(self.router)
 
@@ -75,6 +72,11 @@ class ModifyNetworkRequestNetwork:
 
         main_account_id = self.main_account_id
 
+        labels = []
+        for labels_item_data in self.labels:
+            labels_item = labels_item_data.to_dict()
+            labels.append(labels_item)
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -83,13 +85,13 @@ class ModifyNetworkRequestNetwork:
                 "name": name,
                 "zone": zone,
                 "tags": tags,
-                "labels": labels,
                 "router": router,
                 "grt_export": grt_export,
                 "parent_network": parent_network,
                 "ip_networks": ip_networks,
                 "network_features": network_features,
                 "main_account_id": main_account_id,
+                "labels": labels,
             }
         )
 
@@ -100,7 +102,7 @@ class ModifyNetworkRequestNetwork:
         from ..models.modify_network_request_network_ip_networks import (
             ModifyNetworkRequestNetworkIpNetworks,  # noqa: PLC0415
         )
-        from ..models.network_labels import NetworkLabels  # noqa: PLC0415
+        from ..models.network_label import NetworkLabel  # noqa: PLC0415
         from ..models.network_tags import NetworkTags  # noqa: PLC0415
 
         d = dict(src_dict)
@@ -111,8 +113,6 @@ class ModifyNetworkRequestNetwork:
         zone = d.pop("zone")
 
         tags = NetworkTags.from_dict(d.pop("tags"))
-
-        labels = NetworkLabels.from_dict(d.pop("labels"))
 
         router = UUID(d.pop("router"))
 
@@ -126,18 +126,25 @@ class ModifyNetworkRequestNetwork:
 
         main_account_id = d.pop("main_account_id")
 
+        labels = []
+        _labels = d.pop("labels")
+        for labels_item_data in _labels:
+            labels_item = NetworkLabel.from_dict(labels_item_data)
+
+            labels.append(labels_item)
+
         modify_network_request_network = cls(
             type_=type_,
             name=name,
             zone=zone,
             tags=tags,
-            labels=labels,
             router=router,
             grt_export=grt_export,
             parent_network=parent_network,
             ip_networks=ip_networks,
             network_features=network_features,
             main_account_id=main_account_id,
+            labels=labels,
         )
 
         modify_network_request_network.additional_properties = d

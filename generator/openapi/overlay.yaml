@@ -336,3 +336,35 @@ actions:
             - direction: out
               action: drop
               family: IPv6
+
+  # Network create and modify requests send labels as a plain array of key/value pairs,
+  # not the {"label": [...]} wrapper that the networkLabels schema describes.
+  # Source fix needed: define the request labels property as an array of networkLabel.
+  - target: $.components.schemas.createNetworkRequest.properties.network.properties.labels
+    remove: true
+  - target: $.components.schemas.createNetworkRequest.properties.network.properties
+    update:
+      labels:
+        type: array
+        description: Key/value labels attached to the network.
+        items:
+          $ref: "#/components/schemas/networkLabel"
+  - target: $.components.schemas.modifyNetworkRequest.properties.network.properties.labels
+    remove: true
+  - target: $.components.schemas.modifyNetworkRequest.properties.network.properties
+    update:
+      labels:
+        type: array
+        description: Key/value labels attached to the network.
+        items:
+          $ref: "#/components/schemas/networkLabel"
+
+  # Network details responses return labels as a plain array of key/value pairs.
+  # Source fix needed: declare the labels property on networkDetails as an array of networkLabel.
+  - target: $.components.schemas.networkDetails.properties
+    update:
+      labels:
+        type: array
+        description: Key/value labels attached to the network.
+        items:
+          $ref: "#/components/schemas/networkLabel"
