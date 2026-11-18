@@ -1,8 +1,32 @@
+import importlib.metadata
 import ssl
+from collections.abc import Mapping
 from typing import Any
 
 import httpx
 from attrs import define, evolve, field
+
+try:
+    USER_AGENT = f"upcloud-python-api/{importlib.metadata.version('upcloud-api')}"
+except importlib.metadata.PackageNotFoundError:
+    USER_AGENT = "upcloud-python-api/unknown"
+
+
+def _apply_headers(current: httpx.Headers, headers: Mapping[str, str]) -> httpx.Headers:
+    """Copy current headers and apply new ones. A User-Agent value is appended to the current one"""
+    merged = httpx.Headers(current)
+    for name, value in headers.items():
+        if name.lower() != "user-agent":
+            merged[name] = value
+        elif caller := value.strip(" \t"):
+            base = merged.get("User-Agent")
+            merged["User-Agent"] = f"{base} {caller}" if base else caller
+    return merged
+
+
+def _request_headers(headers: Mapping[str, str]) -> httpx.Headers:
+    """Build request headers on top of the SDK User-Agent"""
+    return _apply_headers(httpx.Headers({"User-Agent": USER_AGENT}), headers)
 
 
 @define
@@ -15,7 +39,7 @@ class Client:
 
         ``cookies``: A dictionary of cookies to be sent with every request
 
-        ``headers``: A dictionary of headers to be sent with every request
+        ``headers``: A dictionary of headers to be sent with every request. A ``User-Agent`` value is appended to the SDK default.
 
         ``timeout``: The maximum amount of a time a request can take. API functions will raise
         httpx.TimeoutException if this is exceeded.
@@ -47,11 +71,12 @@ class Client:
 
     def with_headers(self, headers: dict[str, str]) -> "Client":
         """Get a new client matching this one with additional headers"""
+        evolved = _apply_headers(httpx.Headers(self._headers), headers)
         if self._client is not None:
-            self._client.headers.update(headers)
+            self._client.headers = _apply_headers(self._client.headers, headers)
         if self._async_client is not None:
-            self._async_client.headers.update(headers)
-        return evolve(self, headers={**self._headers, **headers})
+            self._async_client.headers = _apply_headers(self._async_client.headers, headers)
+        return evolve(self, headers=dict(evolved))
 
     def with_cookies(self, cookies: dict[str, str]) -> "Client":
         """Get a new client matching this one with additional cookies"""
@@ -83,7 +108,7 @@ class Client:
             self._client = httpx.Client(
                 base_url=self._base_url,
                 cookies=self._cookies,
-                headers=self._headers,
+                headers=_request_headers(self._headers),
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 follow_redirects=self._follow_redirects,
@@ -114,7 +139,7 @@ class Client:
             self._async_client = httpx.AsyncClient(
                 base_url=self._base_url,
                 cookies=self._cookies,
-                headers=self._headers,
+                headers=_request_headers(self._headers),
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 follow_redirects=self._follow_redirects,
@@ -142,7 +167,7 @@ class AuthenticatedClient:
 
         ``cookies``: A dictionary of cookies to be sent with every request
 
-        ``headers``: A dictionary of headers to be sent with every request
+        ``headers``: A dictionary of headers to be sent with every request. A ``User-Agent`` value is appended to the SDK default.
 
         ``timeout``: The maximum amount of a time a request can take. API functions will raise
         httpx.TimeoutException if this is exceeded.
@@ -181,11 +206,12 @@ class AuthenticatedClient:
 
     def with_headers(self, headers: dict[str, str]) -> "AuthenticatedClient":
         """Get a new client matching this one with additional headers"""
+        evolved = _apply_headers(httpx.Headers(self._headers), headers)
         if self._client is not None:
-            self._client.headers.update(headers)
+            self._client.headers = _apply_headers(self._client.headers, headers)
         if self._async_client is not None:
-            self._async_client.headers.update(headers)
-        return evolve(self, headers={**self._headers, **headers})
+            self._async_client.headers = _apply_headers(self._async_client.headers, headers)
+        return evolve(self, headers=dict(evolved))
 
     def with_cookies(self, cookies: dict[str, str]) -> "AuthenticatedClient":
         """Get a new client matching this one with additional cookies"""
@@ -218,7 +244,7 @@ class AuthenticatedClient:
             self._client = httpx.Client(
                 base_url=self._base_url,
                 cookies=self._cookies,
-                headers=self._headers,
+                headers=_request_headers(self._headers),
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 follow_redirects=self._follow_redirects,
@@ -250,7 +276,7 @@ class AuthenticatedClient:
             self._async_client = httpx.AsyncClient(
                 base_url=self._base_url,
                 cookies=self._cookies,
-                headers=self._headers,
+                headers=_request_headers(self._headers),
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 follow_redirects=self._follow_redirects,
