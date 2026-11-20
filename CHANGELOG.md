@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0a2] - 2026-11-20
+
 ### Added
 
 - Send `User-Agent: upcloud-python-api/<version>`. A `User-Agent` value in `headers` is appended to it.
@@ -58,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Server object helper function `get_utility_ip` for fetching server utility IP
 
-# Fixed
+### Fixed
 
 - Fixed server IP helper functions `get_public_ip` and `get_private_ip` to support private networking.
 
@@ -108,7 +110,7 @@ that many added features. It was mostly done to make future development easier.
 
 ----
 
-## [1.0.1] - 11 Feb 2021
+## [1.0.1] - 2021-02-11
 
 ### Fixed
 
@@ -116,7 +118,7 @@ that many added features. It was mostly done to make future development easier.
 
 ----
 
-## [1.0.0] - 11 Feb 2021
+## [1.0.0] - 2021-02-11
 
 ### Added
 
@@ -141,7 +143,7 @@ that many added features. It was mostly done to make future development easier.
 
 ----
 
-## [0.4.6] - 28 Aug 2020
+## [0.4.6] - 2020-08-28
 
 - Support for new templates: CentOS 8.0 and Ubuntu 20.04
 - Removed obsolete templates
@@ -149,13 +151,13 @@ that many added features. It was mostly done to make future development easier.
 
 ----
 
-## [0.4.5] - 3 Dec 2019
+## [0.4.5] - 2019-12-03
 
 Template updates.
 
 ----
 
-## [0.4.3] - 3 Dec 2018
+## [0.4.3] - 2018-12-03
 
 - Python 3.3 deprecated
 - Zone San Jose added
@@ -163,27 +165,27 @@ Template updates.
 
 ----
 
-## [0.4.2] - 22 Feb 2018
+## [0.4.2] - 2018-02-22
 
 - Added missing zones and missing templates.
 - Also removed old template windows 2008, which is not supported any more.
 
 ----
 
-## [0.4.1] - 2 Feb 2018
+## [0.4.1] - 2018-02-02
 
 - CI fixes
 - Small bug fix
 
 ----
 
-## [0.4.0] - 1 Feb 2018
+## [0.4.0] - 2018-02-01
 
 ...
 
 ----
 
-## [0.3.9] - 16 Nov 2016
+## [0.3.9] - 2016-11-16
 
 Note: 0.3.8 was never released at pip / github releases.
 
@@ -208,7 +210,7 @@ manager.create_server(
 
 ----
 
-## [0.3.7] - 4 Aug 2016
+## [0.3.7] - 2016-08-04
 
 - support for Server.user_data
 - improve Server.stop_and_destroy
@@ -217,7 +219,7 @@ manager.create_server(
 
 ----
 
-## [0.3.6] - 18 Jul 2016
+## [0.3.6] - 2016-07-18
 
 - remove `future` dependency
 - loosely declare dependencies (`six` and `requests`) with `>=`
@@ -227,7 +229,7 @@ manager.create_server(
 
 ----
 
-## [0.3.5] - 1 Jul 2016
+## [0.3.5] - 2016-07-01
 
 Bugfix: allow new Firewall attributes, add comment attribute default
 
@@ -235,7 +237,7 @@ The above fix is necessary for upcloud's firewall ansible module to work.
 
 ----
 
-## [0.3.4] - 21 Jun 2016
+## [0.3.4] - 2016-06-21
 
 **Support `avoid_host` and `login_user` features of UpCloud's Servers API.**
 
@@ -254,7 +256,7 @@ Note: username is optional (defaults to `root` in API)
 
 ----
 
-## [0.3.3] - 8 Feb 2016
+## [0.3.3] - 2016-02-08
 
 Allow setting timeout via
 
@@ -268,7 +270,7 @@ where timeout is an integer (seconds) or `None` (forever) or anything accepted b
 
 ----
 
-## [0.3.2] - 30 Nov 2015
+## [0.3.2] - 2015-11-30
 
 Small update, adds functionality to manage preconfigured servers ("fixed plan", see upcloud.com/pricing/)
 
@@ -277,7 +279,7 @@ Small update, adds functionality to manage preconfigured servers ("fixed plan", 
 
 ----
 
-## [0.3.1] - 20 Jul 2015
+## [0.3.1] - 2015-07-20
 
 Small update introducing Tags
 
@@ -286,7 +288,7 @@ Small update introducing Tags
 
 ----
 
-## [0.3.0] - 15 Jul 2015
+## [0.3.0] - 2015-07-15
 
 Major release introducing python2/3 support and several features for Ansible inventory/modules
 
@@ -303,7 +305,7 @@ Major release introducing python2/3 support and several features for Ansible inv
 
 ----
 
-## [0.2.0] - 29 Jun 2015
+## [0.2.0] - 2015-06-29
 
 Major update with new features related to UpCloud's API v1.2
 
@@ -316,7 +318,7 @@ Major update with new features related to UpCloud's API v1.2
 
 ----
 
-## [0.1.1] - 23 Jun 2015
+## [0.1.1] - 2015-06-23
 
 Move to X.Y.Z versioning and bump version from 0.1(.0) to 0.1.1
 
@@ -327,38 +329,38 @@ Move to X.Y.Z versioning and bump version from 0.1(.0) to 0.1.1
 
 ----
 
-## [0.1] - 23 Jun 2015
+## [0.1] - 2015-06-23
 
 First release, available at https://pypi.python.org/pypi/upcloud-api-python
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v3.0.0a1...HEAD
-[0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1
-[0.1.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1.1
-[0.2.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.2.0
-[0.3.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.0
-[0.3.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.1
-[0.3.2]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.2
-[0.3.3]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.3
-[0.3.4]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.4
-[0.3.5]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.5
-[0.3.6]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.6
-[0.3.7]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.7
-[0.3.8]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.8
-[0.3.9]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.9
-[0.4.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.0
-[0.4.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.1
-[0.4.2]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.2
-[0.4.3]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.3
-[0.4.5]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/0.4.5
-[0.4.6]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/0.4.6
-[1.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.0
-[1.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.1
-[2.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.0
-[2.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.1
-[2.5.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.0
-[2.5.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.1
-[2.6.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.6.0
-[2.7.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.7.0
-[2.8.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.8.0
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-python-api/compare/v3.0.0a2...HEAD
+[3.0.0a2]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v3.0.0a2
+[3.0.0a1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v3.0.0a1
 [2.9.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.9.0
-[3.0.0a1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/3.0.0a1
+[2.8.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.8.0
+[2.7.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.7.0
+[2.6.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.6.0
+[2.5.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.1
+[2.5.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.5.0
+[2.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.1
+[2.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v2.0.0
+[1.0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.1
+[1.0.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v1.0.0
+[0.4.6]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/0.4.6
+[0.4.5]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/0.4.5
+[0.4.3]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.3
+[0.4.2]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.2
+[0.4.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.1
+[0.4.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.4.0
+[0.3.9]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.9
+[0.3.7]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.7
+[0.3.6]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.6
+[0.3.5]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.5
+[0.3.4]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.4
+[0.3.3]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.3
+[0.3.2]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.2
+[0.3.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.1
+[0.3.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.3.0
+[0.2.0]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.2.0
+[0.1.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1.1
+[0.1]: https://github.com/UpCloudLtd/upcloud-python-api/releases/tag/v0.1
