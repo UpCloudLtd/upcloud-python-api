@@ -29,6 +29,12 @@ def _request_headers(headers: Mapping[str, str]) -> httpx.Headers:
     return _apply_headers(httpx.Headers({"User-Agent": USER_AGENT}), headers)
 
 
+def _with_sdk_user_agent(client: httpx.Client | httpx.AsyncClient) -> None:
+    """Set the SDK User-Agent on a caller's client that has no custom User-Agent"""
+    if client.headers.get("User-Agent") in (None, f"python-httpx/{httpx.__version__}"):
+        client.headers["User-Agent"] = USER_AGENT
+
+
 @define
 class Client:
     """A class for keeping track of data related to the API
@@ -98,7 +104,10 @@ class Client:
         """Manually set the underlying httpx.Client
 
         **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+
+        The SDK User-Agent is set on the client in place unless it already has a custom User-Agent.
         """
+        _with_sdk_user_agent(client)
         self._client = client
         return self
 
@@ -129,7 +138,10 @@ class Client:
         """Manually set the underlying httpx.AsyncClient
 
         **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+
+        The SDK User-Agent is set on the client in place unless it already has a custom User-Agent.
         """
+        _with_sdk_user_agent(async_client)
         self._async_client = async_client
         return self
 
@@ -233,7 +245,10 @@ class AuthenticatedClient:
         """Manually set the underlying httpx.Client
 
         **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+
+        The SDK User-Agent is set on the client in place unless it already has a custom User-Agent.
         """
+        _with_sdk_user_agent(client)
         self._client = client
         return self
 
@@ -265,7 +280,10 @@ class AuthenticatedClient:
         """Manually set the underlying httpx.AsyncClient
 
         **NOTE**: This will override any other settings on the client, including cookies, headers, and timeout.
+
+        The SDK User-Agent is set on the client in place unless it already has a custom User-Agent.
         """
+        _with_sdk_user_agent(async_client)
         self._async_client = async_client
         return self
 

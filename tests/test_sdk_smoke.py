@@ -217,6 +217,53 @@ class SDKSmokeTests(unittest.TestCase):
                 updated.get_httpx_client().headers.get_list("user-agent"), [f"{ua} first second"]
             )
 
+    def test_custom_client_gets_sdk_user_agent_unless_custom(self):
+        """client.py.jinja: set_httpx_client sends the SDK User-Agent unless the caller set one."""
+        ua = upcloud_api.client.USER_AGENT
+        seen: list[str] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            seen.append(request.headers["user-agent"])
+            return httpx.Response(200)
+
+        with self.subTest(client="default httpx.Client"):
+            client = Client().set_httpx_client(
+                httpx.Client(transport=httpx.MockTransport(handler))
+            )
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], ua)
+        with self.subTest(client="deleted User-Agent"):
+            http_client = httpx.Client(transport=httpx.MockTransport(handler))
+            del http_client.headers["User-Agent"]
+            client = Client().set_httpx_client(http_client)
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], ua)
+        with self.subTest(client="custom User-Agent"):
+            client = Client().set_httpx_client(
+                httpx.Client(
+                    transport=httpx.MockTransport(handler), headers={"User-Agent": "base/1.0"}
+                )
+            )
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], "base/1.0")
+
+        async def send_async(headers: dict[str, str]) -> str:
+            async def async_handler(request: httpx.Request) -> httpx.Response:
+                seen.append(request.headers["user-agent"])
+                return httpx.Response(200)
+
+            async_client = httpx.AsyncClient(
+                transport=httpx.MockTransport(async_handler), headers=headers
+            )
+            client = Client().set_async_httpx_client(async_client)
+            await client.get_async_httpx_client().get("https://example.test/")
+            return seen[-1]
+
+        with self.subTest(client="default httpx.AsyncClient"):
+            self.assertEqual(asyncio.run(send_async({})), ua)
+        with self.subTest(client="custom User-Agent on httpx.AsyncClient"):
+            self.assertEqual(asyncio.run(send_async({"User-Agent": "base/1.0"})), "base/1.0")
+
     def test_empty_string_unions_parse_both_branches(self):
         """Empty-string union members do not shadow the other branch."""
         server = {
