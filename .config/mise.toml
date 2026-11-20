@@ -101,4 +101,4 @@ run = ["mise run generate", "mise run check"]
 [tasks.examples]
 description = "Run live mdtest examples (creates real UpCloud resources, requires UPCLOUD_TOKEN)"
 usage = 'arg "[name]..." var=#true help="Directory under examples/ (default: all)"'
-run = 'bash generator/scripts/run_examples.sh ${usage_name:-file-storage object-storage tag kubernetes}'
+run = 'bash generator/scripts/run_examples.sh ${usage_name:-file-storage object-storage tag kubernetes network}'

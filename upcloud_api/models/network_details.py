@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from ..models.network_details_peerings import NetworkDetailsPeerings
     from ..models.network_details_servers import NetworkDetailsServers
     from ..models.network_details_services import NetworkDetailsServices
+    from ..models.network_label import NetworkLabel
 
 
 T = TypeVar("T", bound="NetworkDetails")
@@ -49,6 +50,7 @@ class NetworkDetails:
         tags (list[str] | Unset):
         type_ (NetworkType | Unset): Network access type Example: public.
         uuid (UUID | Unset):
+        labels (list[NetworkLabel] | Unset): Key/value labels attached to the network.
     """
 
     name: str
@@ -64,6 +66,7 @@ class NetworkDetails:
     tags: list[str] | Unset = UNSET
     type_: NetworkType | Unset = UNSET
     uuid: UUID | Unset = UNSET
+    labels: list[NetworkLabel] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -115,6 +118,13 @@ class NetworkDetails:
         if not isinstance(self.uuid, Unset):
             uuid = str(self.uuid)
 
+        labels: list[dict[str, Any]] | Unset = UNSET
+        if not isinstance(self.labels, Unset):
+            labels = []
+            for labels_item_data in self.labels:
+                labels_item = labels_item_data.to_dict()
+                labels.append(labels_item)
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -145,6 +155,8 @@ class NetworkDetails:
             field_dict["type"] = type_
         if uuid is not UNSET:
             field_dict["uuid"] = uuid
+        if labels is not UNSET:
+            field_dict["labels"] = labels
 
         return field_dict
 
@@ -154,6 +166,7 @@ class NetworkDetails:
         from ..models.network_details_peerings import NetworkDetailsPeerings  # noqa: PLC0415
         from ..models.network_details_servers import NetworkDetailsServers  # noqa: PLC0415
         from ..models.network_details_services import NetworkDetailsServices  # noqa: PLC0415
+        from ..models.network_label import NetworkLabel  # noqa: PLC0415
 
         d = dict(src_dict)
         name = d.pop("name")
@@ -227,6 +240,15 @@ class NetworkDetails:
         else:
             uuid = UUID(_uuid)
 
+        _labels = d.pop("labels", UNSET)
+        labels: list[NetworkLabel] | Unset = UNSET
+        if _labels is not UNSET:
+            labels = []
+            for labels_item_data in _labels:
+                labels_item = NetworkLabel.from_dict(labels_item_data)
+
+                labels.append(labels_item)
+
         network_details = cls(
             name=name,
             zone=zone,
@@ -241,6 +263,7 @@ class NetworkDetails:
             tags=tags,
             type_=type_,
             uuid=uuid,
+            labels=labels,
         )
 
         network_details.additional_properties = d

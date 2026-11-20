@@ -94,6 +94,21 @@ def database_example(version):
     }
 
 
+def network_request_schema():
+    """Return a network request whose labels use the wrapped networkLabels schema."""
+    return {
+        "type": "object",
+        "properties": {
+            "network": {
+                "type": "object",
+                "properties": {
+                    "labels": {"$ref": "#/components/schemas/networkLabels"},
+                },
+            },
+        },
+    }
+
+
 def defective_spec():
     """Return a minimal spec with the defects the overlay fixes, plus unrelated data."""
     spec = {
@@ -166,6 +181,9 @@ def defective_spec():
                 },
                 "unrelated": {"title": "Keep", "type": "string"},
                 "storageLabelFilter": {"type": "string", "pattern": OLD_LABEL_FILTER_PATTERN},
+                "createNetworkRequest": network_request_schema(),
+                "modifyNetworkRequest": network_request_schema(),
+                "networkDetails": {"type": "object", "properties": {"name": {"type": "string"}}},
                 "kubernetesPrefixedClaimOrExpression": {
                     "type": "object",
                     "properties": {
@@ -460,6 +478,16 @@ class OpenAPIOverlayTests(unittest.TestCase):
         responses = expected["paths"][CLUSTER_PATH]["post"]["responses"]
         responses["200"] = responses.pop("201")
         schemas["storageLabelFilter"]["pattern"] = NEW_LABEL_FILTER_PATTERN
+        network_labels = {
+            "type": "array",
+            "description": "Key/value labels attached to the network.",
+            "items": {"$ref": "#/components/schemas/networkLabel"},
+        }
+        for name in ("createNetworkRequest", "modifyNetworkRequest"):
+            schemas[name]["properties"]["network"]["properties"]["labels"] = copy.deepcopy(
+                network_labels
+            )
+        schemas["networkDetails"]["properties"]["labels"] = copy.deepcopy(network_labels)
         prefix = schemas["kubernetesPrefixedClaimOrExpression"]["properties"]["prefix"]
         prefix.pop("nullable")
         prefix["type"] = ["string", "null"]
@@ -799,6 +827,26 @@ class OpenAPIOverlayTests(unittest.TestCase):
         self.assertEqual(len(source_clone["oneOf"]), 5)
         self.assertEqual(output_clone["oneOf"], source_clone["oneOf"])
         self.assertEqual(output_clone["properties"], source_clone["properties"])
+
+    def test_network_labels_are_plain_arrays(self):
+        """Network requests and responses use labels as an array, not the networkLabels wrapper."""
+        output = self.overlay_document(json.loads(SPEC.read_text(encoding="utf-8")))
+        schemas = output["components"]["schemas"]
+        request_networks = [
+            schemas[name]["properties"]["network"]["properties"]
+            for name in ("createNetworkRequest", "modifyNetworkRequest")
+        ]
+        for name, properties in zip(
+            ("createNetworkRequest", "modifyNetworkRequest", "networkDetails"),
+            [*request_networks, schemas["networkDetails"]["properties"]],
+            strict=True,
+        ):
+            with self.subTest(schema=name):
+                self.assertEqual(properties["labels"]["type"], "array")
+                self.assertEqual(
+                    properties["labels"]["items"],
+                    {"$ref": "#/components/schemas/networkLabel"},
+                )
 
     def test_rewritten_patterns_preserve_intended_matching(self):
         import re
