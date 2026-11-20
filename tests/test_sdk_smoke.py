@@ -171,6 +171,99 @@ class SDKSmokeTests(unittest.TestCase):
                     self.assertEqual(http_client.headers["X-Custom"], "preserved")
                     self.assertNotIn("Authorization", http_client.headers)
 
+    def test_user_agent_default_and_appended_caller_value(self):
+        """client.py.jinja: default User-Agent is sent once; a caller value of any casing is appended."""
+        ua = upcloud_api.client.USER_AGENT
+        self.assertTrue(ua.startswith("upcloud-python-api/"))
+        with Client() as client:
+            self.assertEqual(client.get_httpx_client().headers.get_list("user-agent"), [ua])
+        for name in ("User-Agent", "user-agent", "uSeR-aGeNt"):
+            with self.subTest(header=name):
+                with Client().with_headers({name: "custom/1.0"}) as client:
+                    self.assertEqual(
+                        client.get_httpx_client().headers.get_list("user-agent"),
+                        [f"{ua} custom/1.0"],
+                    )
+        with self.subTest(header="blank"):
+            with Client().with_headers({"User-Agent": " \t "}) as client:
+                self.assertEqual(client.get_httpx_client().headers.get_list("user-agent"), [ua])
+
+    def test_with_headers_keeps_user_agent_on_initialized_client(self):
+        """client.py.jinja: with_headers appends a User-Agent value on an initialized client."""
+        ua = upcloud_api.client.USER_AGENT
+        client = Client()
+        http_client = client.get_httpx_client()
+        client.with_headers({"User-Agent": "custom/1.0"})
+        self.assertEqual(http_client.headers.get_list("user-agent"), [f"{ua} custom/1.0"])
+
+    def test_with_headers_keeps_existing_headers_on_custom_client(self):
+        """client.py.jinja: with_headers keeps headers of a custom httpx client and appends User-Agent."""
+        client = Client().set_httpx_client(
+            httpx.Client(headers={"Authorization": "Bearer token", "User-Agent": "base/1.0"})
+        )
+        client.with_headers({"X-Test": "1", "user-agent": "custom/1.0"})
+        http_client = client.get_httpx_client()
+        self.assertEqual(http_client.headers["Authorization"], "Bearer token")
+        self.assertEqual(http_client.headers["X-Test"], "1")
+        self.assertEqual(http_client.headers.get_list("user-agent"), ["base/1.0 custom/1.0"])
+
+    def test_with_headers_appends_user_agent_across_clients(self):
+        """client.py.jinja: a client from with_headers keeps earlier appended User-Agent values."""
+        ua = upcloud_api.client.USER_AGENT
+        client = Client().with_headers({"User-Agent": "first"})
+        updated = client.with_headers({"User-Agent": "second"})
+        with updated:
+            self.assertEqual(
+                updated.get_httpx_client().headers.get_list("user-agent"), [f"{ua} first second"]
+            )
+
+    def test_custom_client_gets_sdk_user_agent_unless_custom(self):
+        """client.py.jinja: set_httpx_client sends the SDK User-Agent unless the caller set one."""
+        ua = upcloud_api.client.USER_AGENT
+        seen: list[str] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            seen.append(request.headers["user-agent"])
+            return httpx.Response(200)
+
+        with self.subTest(client="default httpx.Client"):
+            client = Client().set_httpx_client(
+                httpx.Client(transport=httpx.MockTransport(handler))
+            )
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], ua)
+        with self.subTest(client="deleted User-Agent"):
+            http_client = httpx.Client(transport=httpx.MockTransport(handler))
+            del http_client.headers["User-Agent"]
+            client = Client().set_httpx_client(http_client)
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], ua)
+        with self.subTest(client="custom User-Agent"):
+            client = Client().set_httpx_client(
+                httpx.Client(
+                    transport=httpx.MockTransport(handler), headers={"User-Agent": "base/1.0"}
+                )
+            )
+            client.get_httpx_client().get("https://example.test/")
+            self.assertEqual(seen[-1], "base/1.0")
+
+        async def send_async(headers: dict[str, str]) -> str:
+            async def async_handler(request: httpx.Request) -> httpx.Response:
+                seen.append(request.headers["user-agent"])
+                return httpx.Response(200)
+
+            async_client = httpx.AsyncClient(
+                transport=httpx.MockTransport(async_handler), headers=headers
+            )
+            client = Client().set_async_httpx_client(async_client)
+            await client.get_async_httpx_client().get("https://example.test/")
+            return seen[-1]
+
+        with self.subTest(client="default httpx.AsyncClient"):
+            self.assertEqual(asyncio.run(send_async({})), ua)
+        with self.subTest(client="custom User-Agent on httpx.AsyncClient"):
+            self.assertEqual(asyncio.run(send_async({"User-Agent": "base/1.0"})), "base/1.0")
+
     def test_empty_string_unions_parse_both_branches(self):
         """Empty-string union members do not shadow the other branch."""
         server = {

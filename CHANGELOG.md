@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Send `User-Agent: upcloud-python-api/<version>`. A `User-Agent` value in `headers` is appended to it.
+
 ## [3.0.0a1] - 2026-10-14
 
 ### Changed
